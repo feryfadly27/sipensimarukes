@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sipenmaru Uji Kesehatan - Dashboard</title>
+<meta name="description" content="Sistem Informasi Uji Kesehatan Sipenmaru Poltekkes Kemenkes">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" onload="window.lucideLoaded=true; if(window.initLucide) window.initLucide();"></script>
+<script>
+  window.initLucide = function() { if(window.lucide) lucide.createIcons(); };
+  document.addEventListener('DOMContentLoaded', function() { if(window.lucideLoaded) window.initLucide(); });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #00BCD4;
+    --primary-hover: #0097A7;
+    --foreground: #1F2937;
+    --secondary: #6B7280;
+    --muted: #F3F4F6;
+    --border: #E5E7EB;
+    --card-grey: #F9FAFB;
+    --card-message: #CCFBF1;
+    --accent-blue: #CCFBF1;
+    --accent-teal: #00CCA3;
+    --success: #00CCA3;
+    --success-light: #D1FAE5;
+    --error: #EF4444;
+    --error-light: #FEE2E2;
+    --warning: #D4E157;
+    --warning-light: #FEF9C3;
+    --warning-dark: #9E9D24;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-success: var(--success);
+    --color-success-light: var(--success-light);
+    --color-error: var(--error);
+    --color-error-light: var(--error-light);
+    --color-warning: var(--warning);
+    --color-warning-light: var(--warning-light);
+    --font-sans: var(--font-sans);
+    --radius-card: 24px;
+    --radius-button: 50px;
+    --radius-icon: 12px;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="font-sans bg-white min-h-screen overflow-x-hidden">
+
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen max-h-screen flex-1 bg-muted overflow-hidden">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="flex flex-col w-[280px] shrink-0 h-screen fixed inset-y-0 left-0 z-50 bg-white border-r border-border transform -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-hidden">
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between border-b border-border h-[90px] px-5 gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-9 bg-primary rounded-xl flex items-center justify-center">
+          <i data-lucide="layout-grid" class="w-5 h-5 text-white"></i>
+        </div>
+        <h1 class="font-semibold text-xl">NexusCRM</h1>
+      </div>
+      <button onclick="toggleSidebar()" aria-label="Close sidebar" class="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="x" class="size-6 text-secondary"></i>
+      </button>
+    </div>
+
+    <!-- Navigation -->
+    <div class="flex flex-col p-5 pb-28 gap-6 overflow-y-auto flex-1">
+      <div class="flex flex-col gap-4">
+        <h3 class="font-medium text-sm text-secondary">Main Menu</h3>
+        <div class="flex flex-col gap-1">
+          <a href="#" class="group active cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="layout-dashboard" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Overview</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="users" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Leads</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="briefcase" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Deals</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="check-square" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Tasks</span>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4">
+        <h3 class="font-medium text-sm text-secondary">Insights</h3>
+        <div class="flex flex-col gap-1">
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="pie-chart" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Reports</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="settings" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Settings</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Card -->
+    <div class="absolute bottom-0 left-0 w-[280px]">
+      <div class="flex items-center justify-between border-t bg-white border-border p-5 gap-3">
+        <div class="min-w-0">
+          <p class="font-semibold text-foreground">Need help?</p>
+          <a href="#" class="cursor-pointer"><span class="text-sm text-secondary hover:text-primary hover:underline transition-all duration-300">Contact Support</span></a>
+        </div>
+        <div class="size-11 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="message-circle-question" class="size-6 text-primary"></i>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 lg:ml-[280px] flex flex-col bg-white min-h-screen overflow-x-hidden">
+    <!-- Header -->
+    <div class="flex items-center justify-between w-full h-[90px] shrink-0 border-b border-border bg-white px-5 md:px-8">
+      <button onclick="toggleSidebar()" aria-label="Open menu" class="lg:hidden size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="menu" class="size-6 text-foreground"></i>
+      </button>
+      <h2 class="hidden lg:block font-bold text-2xl text-foreground">Dashboard Overview</h2>
+      <div class="flex items-center gap-3">
+        <button onclick="openSearchModal()" class="size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer" aria-label="Search">
+          <i data-lucide="search" class="size-6 text-secondary"></i>
+        </button>
+        <button class="size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer relative" aria-label="Notifications">
+          <i data-lucide="bell" class="size-6 text-secondary"></i>
+          <span class="absolute -top-1 -right-1 h-5 px-1.5 rounded-full bg-error text-white text-xs font-medium flex items-center justify-center">5</span>
+        </button>
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-border">
+          <div class="text-right">
+            <p class="font-semibold text-foreground text-sm">Alex Johnson</p>
+            <p class="text-secondary text-xs">Sales Manager</p>
+          </div>
+          <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop" alt="Profile" class="size-11 rounded-full object-cover ring-2 ring-border">
+        </div>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="flex-1 overflow-y-auto p-5 md:p-8">
+      
+      <!-- Stats Grid (5 Cards) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 mb-6">
+        <!-- 1. Total Revenue -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300 cursor-default">
+          <div class="flex items-center gap-[6px]">
+            <div class="size-11 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+              <i data-lucide="dollar-sign" class="size-6 text-primary"></i>
+            </div>
+            <p class="font-medium text-secondary truncate">Total Revenue</p>
+          </div>
+          <div class="flex items-end justify-between gap-2">
+            <p class="font-bold text-[28px] leading-8">$128K</p>
+            <span class="flex items-center text-success text-xs font-bold bg-success-light px-2 py-1 rounded-full mb-1">+12%</span>
+          </div>
+        </div>
+
+        <!-- 2. Active Leads -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300 cursor-default">
+          <div class="flex items-center gap-[6px]">
+            <div class="size-11 bg-success/10 rounded-xl flex items-center justify-center shrink-0">
+              <i data-lucide="users" class="size-6 text-success"></i>
+            </div>
+            <p class="font-medium text-secondary truncate">Active Leads</p>
+          </div>
+          <div class="flex items-end justify-between gap-2">
+            <p class="font-bold text-[28px] leading-8">1,240</p>
+            <span class="flex items-center text-success text-xs font-bold bg-success-light px-2 py-1 rounded-full mb-1">+5.2%</span>
+          </div>
+        </div>
+
+        <!-- 3. New Customers -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300 cursor-default">
+          <div class="flex items-center gap-[6px]">
+            <div class="size-11 bg-warning/10 rounded-xl flex items-center justify-center shrink-0">
+              <i data-lucide="user-plus" class="size-6 text-warning"></i>
+            </div>
+            <p class="font-medium text-secondary truncate">New Customers</p>
+          </div>
+          <div class="flex items-end justify-between gap-2">
+            <p class="font-bold text-[28px] leading-8">85</p>
+            <span class="flex items-center text-success text-xs font-bold bg-success-light px-2 py-1 rounded-full mb-1">+18%</span>
+          </div>
+        </div>
+
+        <!-- 4. Deals Won -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300 cursor-default">
+          <div class="flex items-center gap-[6px]">
+            <div class="size-11 bg-accent-blue rounded-xl flex items-center justify-center shrink-0">
+              <i data-lucide="trophy" class="size-6 text-primary"></i>
+            </div>
+            <p class="font-medium text-secondary truncate">Deals Won</p>
+          </div>
+          <div class="flex items-end justify-between gap-2">
+            <p class="font-bold text-[28px] leading-8">42</p>
+            <span class="flex items-center text-success text-xs font-bold bg-success-light px-2 py-1 rounded-full mb-1">+8.5%</span>
+          </div>
+        </div>
+
+        <!-- 5. Tasks Pending -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300 cursor-default">
+          <div class="flex items-center gap-[6px]">
+            <div class="size-11 bg-error/10 rounded-xl flex items-center justify-center shrink-0">
+              <i data-lucide="list-todo" class="size-6 text-error"></i>
+            </div>
+            <p class="font-medium text-secondary truncate">Tasks Pending</p>
+          </div>
+          <div class="flex items-end justify-between gap-2">
+            <p class="font-bold text-[28px] leading-8">12</p>
+            <span class="flex items-center text-secondary text-xs font-medium bg-muted px-2 py-1 rounded-full mb-1">Due soon</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <!-- Sales Performance Line Chart (2/3 width) -->
+        <div class="lg:col-span-2 flex flex-col rounded-2xl border border-border p-6 gap-4 bg-white">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div>
+              <h3 class="font-bold text-lg text-foreground">Sales Performance</h3>
+              <p class="text-secondary text-sm">Revenue growth over last 6 months</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button class="px-3 py-1.5 rounded-lg text-sm font-medium bg-primary/10 text-primary">Monthly</button>
+              <button class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-muted text-secondary transition-colors cursor-pointer">Quarterly</button>
+            </div>
+          </div>
+          <div class="w-full h-[300px]">
+            <canvas id="salesChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Customer Demographics Pie Chart (1/3 width) -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-4 bg-white">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg text-foreground">Demographics</h3>
+            <button class="p-1.5 hover:bg-muted rounded-lg transition-colors cursor-pointer">
+              <i data-lucide="more-horizontal" class="size-5 text-secondary"></i>
+            </button>
+          </div>
+          <div class="flex-1 flex items-center justify-center min-h-[220px]">
+            <canvas id="demographicsChart"></canvas>
+          </div>
+          <div class="flex items-center justify-center gap-4 text-xs text-secondary mt-2">
+            <div class="flex items-center gap-1.5">
+              <span class="size-2 rounded-full bg-primary"></span> Enterprise
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="size-2 rounded-full bg-accent-teal"></span> SMB
+            </div>
+            <div class="flex items-center gap-1.5">
+              <span class="size-2 rounded-full bg-warning"></span> Startups
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Lists Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Recent Activities Feed (2/3 width) -->
+        <div class="lg:col-span-2 flex flex-col rounded-2xl border border-border p-6 bg-white">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="font-bold text-lg text-foreground">Recent Activities</h3>
+            <a href="#" class="cursor-pointer text-sm text-primary font-semibold hover:underline">View All</a>
+          </div>
+          
+          <div class="flex flex-col">
+            <!-- Item 1 -->
+            <a href="#" class="group cursor-pointer">
+              <div class="flex items-start gap-4 py-4 border-b border-border hover:bg-muted/30 -mx-2 px-2 rounded-xl transition-all duration-300">
+                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="Sarah profile" class="size-11 rounded-full object-cover shrink-0 ring-1 ring-border">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="font-semibold text-foreground text-sm">Sarah Jenkins <span class="font-medium text-secondary">added a new deal</span></p>
+                    <span class="text-xs text-secondary shrink-0">2 min ago</span>
+                  </div>
+                  <p class="text-sm text-secondary line-clamp-1">TechCorp SaaS Implementation - $45K value</p>
+                </div>
+                <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <i data-lucide="plus" class="size-4 text-primary"></i>
+                </div>
+              </div>
+            </a>
+
+            <!-- Item 2 -->
+            <a href="#" class="group cursor-pointer">
+              <div class="flex items-start gap-4 py-4 border-b border-border hover:bg-muted/30 -mx-2 px-2 rounded-xl transition-all duration-300">
+                <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="Mike profile" class="size-11 rounded-full object-cover shrink-0 ring-1 ring-border">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="font-semibold text-foreground text-sm">Mike Thompson <span class="font-medium text-secondary">scheduled a meeting</span></p>
+                    <span class="text-xs text-secondary shrink-0">1 hour ago</span>
+                  </div>
+                  <p class="text-sm text-secondary line-clamp-1">Product Demo with Apex Inc. team</p>
+                </div>
+                <div class="size-8 rounded-full bg-warning/10 flex items-center justify-center shrink-0">
+                  <i data-lucide="calendar" class="size-4 text-warning-dark"></i>
+                </div>
+              </div>
+            </a>
+
+            <!-- Item 3 -->
+            <a href="#" class="group cursor-pointer">
+              <div class="flex items-start gap-4 py-4 border-b border-border hover:bg-muted/30 -mx-2 px-2 rounded-xl transition-all duration-300">
+                <div class="size-11 rounded-full bg-success/10 flex items-center justify-center shrink-0 ring-1 ring-border">
+                  <i data-lucide="check-circle" class="size-5 text-success"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="font-semibold text-foreground text-sm">System Automation <span class="font-medium text-secondary">completed a task</span></p>
+                    <span class="text-xs text-secondary shrink-0">3 hours ago</span>
+                  </div>
+                  <p class="text-sm text-secondary line-clamp-1">Monthly lead scoring update finished successfully</p>
+                </div>
+              </div>
+            </a>
+            
+            <!-- Item 4 -->
+            <a href="#" class="group cursor-pointer">
+              <div class="flex items-start gap-4 py-4 hover:bg-muted/30 -mx-2 px-2 rounded-xl transition-all duration-300">
+                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop" alt="David profile" class="size-11 rounded-full object-cover shrink-0 ring-1 ring-border">
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center justify-between mb-1">
+                    <p class="font-semibold text-foreground text-sm">David Chen <span class="font-medium text-secondary">sent an email</span></p>
+                    <span class="text-xs text-secondary shrink-0">5 hours ago</span>
+                  </div>
+                  <p class="text-sm text-secondary line-clamp-1">Re: Q3 Contract Renewal discussion</p>
+                </div>
+                <div class="size-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <i data-lucide="mail" class="size-4 text-primary"></i>
+                </div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+        <!-- Tasks Progress (1/3 width) -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-6 bg-white">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg text-foreground">Active Tasks</h3>
+            <button class="size-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors cursor-pointer">
+              <i data-lucide="plus" class="size-5 text-secondary"></i>
+            </button>
+          </div>
+          
+          <div class="flex flex-col gap-6">
+            <!-- Task 1 -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <p class="font-semibold text-sm text-foreground">Client Onboarding</p>
+                <span class="text-xs font-bold text-primary">75%</span>
+              </div>
+              <div class="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div class="h-full bg-primary rounded-full" style="width: 75%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-secondary mt-0.5">
+                <span>Due: Tomorrow</span>
+                <div class="flex -space-x-2">
+                   <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=50&h=50&fit=crop" class="size-5 rounded-full ring-2 ring-white">
+                   <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=50&h=50&fit=crop" class="size-5 rounded-full ring-2 ring-white">
+                </div>
+              </div>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <p class="font-semibold text-sm text-foreground">Q4 Sales Strategy</p>
+                <span class="text-xs font-bold text-warning-dark">30%</span>
+              </div>
+              <div class="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div class="h-full bg-warning rounded-full" style="width: 30%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-secondary mt-0.5">
+                <span>Due: Next Week</span>
+                <div class="flex -space-x-2">
+                   <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=50&h=50&fit=crop" class="size-5 rounded-full ring-2 ring-white">
+                </div>
+              </div>
+            </div>
+
+            <!-- Task 3 -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <p class="font-semibold text-sm text-foreground">Website Redesign Review</p>
+                <span class="text-xs font-bold text-success">90%</span>
+              </div>
+              <div class="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div class="h-full bg-success rounded-full" style="width: 90%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-secondary mt-0.5">
+                <span>Due: Today</span>
+                <div class="flex -space-x-2">
+                   <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=50&h=50&fit=crop" class="size-5 rounded-full ring-2 ring-white">
+                   <span class="size-5 rounded-full bg-gray-200 text-[8px] flex items-center justify-center font-bold ring-2 ring-white text-gray-600">+2</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task 4 -->
+            <div class="flex flex-col gap-2">
+              <div class="flex items-center justify-between">
+                <p class="font-semibold text-sm text-foreground">Update CRM Records</p>
+                <span class="text-xs font-bold text-secondary">10%</span>
+              </div>
+              <div class="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div class="h-full bg-secondary rounded-full" style="width: 10%"></div>
+              </div>
+              <div class="flex items-center justify-between text-xs text-secondary mt-0.5">
+                <span>Due: Friday</span>
+                <span class="text-[10px] bg-muted px-1.5 py-0.5 rounded">Low Priority</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Search Modal -->
+<div id="search-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4">
+  <div class="bg-white rounded-3xl w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-2xl">
+    <div class="p-4 border-b border-border">
+      <div class="flex items-center gap-3 bg-muted rounded-xl px-4">
+        <i data-lucide="search" class="size-5 text-secondary"></i>
+        <input type="text" id="search-input" placeholder="Search leads, deals, or tasks..." class="flex-1 py-3 bg-transparent outline-none text-foreground placeholder:text-secondary">
+        <kbd class="hidden sm:inline-flex items-center gap-1 px-2 py-1 bg-white rounded-lg text-xs text-secondary border border-border">ESC</kbd>
+      </div>
+    </div>
+    <div class="p-4 overflow-y-auto max-h-[60vh]">
+      <p class="text-sm text-secondary mb-3">Recent searches</p>
+      <div class="flex flex-col gap-2">
+        <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-all cursor-pointer">
+          <div class="size-10 bg-primary/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="users" class="size-5 text-primary"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-foreground truncate">TechCorp Inc.</p>
+            <p class="text-sm text-secondary truncate">Active Lead • Software</p>
+          </div>
+          <i data-lucide="arrow-right" class="size-4 text-secondary"></i>
+        </a>
+        <a href="#" class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-all cursor-pointer">
+          <div class="size-10 bg-success/10 rounded-xl flex items-center justify-center">
+            <i data-lucide="trophy" class="size-5 text-success"></i>
+          </div>
+          <div class="flex-1 min-w-0">
+            <p class="font-medium text-foreground truncate">Q3 Expansion Deal</p>
+            <p class="text-sm text-secondary truncate">Won • $45,000</p>
+          </div>
+          <i data-lucide="arrow-right" class="size-4 text-secondary"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page Not Found Modal -->
+<div id="page-not-found-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex items-center justify-center p-4">
+  <div class="bg-white rounded-card p-6 max-w-sm w-full text-center">
+    <div class="w-16 h-16 bg-warning-light rounded-full flex items-center justify-center mx-auto mb-4">
+      <i data-lucide="alert-triangle" class="w-8 h-8 text-warning-dark"></i>
+    </div>
+    <h3 class="text-foreground text-xl font-bold mb-2">Page Not Available</h3>
+    <p class="text-gray-500 text-sm mb-6">This page hasn't been created yet. Generate it using the chat!</p>
+    <button onclick="closePageNotFoundModal()" class="w-full px-4 py-2.5 bg-primary text-white rounded-button font-medium hover:bg-primary-hover transition-all duration-200 cursor-pointer">
+      Got it
+    </button>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  lucide.createIcons();
+
+  // Show modal for dummy links
+  document.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('page-not-found-modal').classList.remove('hidden');
+    });
+  });
+
+  initCharts();
+});
+
+function initCharts() {
+  // Sales Performance Line Chart
+  const ctxSales = document.getElementById('salesChart').getContext('2d');
+  
+  // Gradient fill
+  const gradient = ctxSales.createLinearGradient(0, 0, 0, 300);
+  gradient.addColorStop(0, 'rgba(0, 188, 212, 0.2)');
+  gradient.addColorStop(1, 'rgba(0, 188, 212, 0)');
+
+  new Chart(ctxSales, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+      datasets: [{
+        label: 'Revenue',
+        data: [65000, 72000, 68000, 95000, 110000, 128000],
+        borderColor: '#00BCD4',
+        backgroundColor: gradient,
+        borderWidth: 3,
+        pointBackgroundColor: '#fff',
+        pointBorderColor: '#00BCD4',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        fill: true,
+        tension: 0.4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1E293B',
+          padding: 12,
+          displayColors: false,
+          callbacks: {
+            label: function(context) {
+              return '$' + context.raw.toLocaleString();
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#F3F4F3' },
+          ticks: {
+            font: { family: "'Lexend Deca', sans-serif", size: 11 },
+            color: '#6A7686',
+            callback: function(value) {
+              if (value >= 1000) return '$' + value/1000 + 'k';
+              return '$' + value;
+            }
+          },
+          border: { display: false }
+        },
+        x: {
+          grid: { display: false },
+          ticks: {
+            font: { family: "'Lexend Deca', sans-serif", size: 11 },
+            color: '#6A7686'
+          },
+          border: { display: false }
+        }
+      }
+    }
+  });
+
+  // Customer Demographics Doughnut Chart
+  const ctxDemo = document.getElementById('demographicsChart').getContext('2d');
+  new Chart(ctxDemo, {
+    type: 'doughnut',
+    data: {
+      labels: ['Enterprise', 'SMB', 'Startups'],
+      datasets: [{
+        data: [35, 40, 25],
+        backgroundColor: [
+          '#00BCD4', // Turquoise Medium (Primary)
+          '#00CCA3', // Turquoise (Success)
+          '#D4E157'  // Hijau Kuning (Warning)
+        ],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '75%',
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#1E293B',
+          padding: 12,
+          callbacks: {
+            label: function(context) {
+              return context.label + ': ' + context.raw + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('-translate-x-full');
+  overlay.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+
+function openSearchModal() {
+  document.getElementById('search-modal').classList.remove('hidden');
+  document.getElementById('search-modal').classList.add('flex');
+  document.getElementById('search-input').focus();
+}
+
+function closeSearchModal() {
+  document.getElementById('search-modal').classList.add('hidden');
+  document.getElementById('search-modal').classList.remove('flex');
+}
+
+document.getElementById('search-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeSearchModal();
+});
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeSearchModal();
+    closePageNotFoundModal();
+  }
+});
+
+function closePageNotFoundModal() {
+  document.getElementById('page-not-found-modal').classList.add('hidden');
+}
+</script>
+</body>
+</html>
