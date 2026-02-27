@@ -19,7 +19,7 @@ class UserSeeder extends Seeder
                 'nama' => 'Super Admin',
                 'role' => 'superadmin',
                 'username' => 'superadmin',
-                'password' => Hash::make('password'),
+                'password' => Hash::make('arteriahelena'),
                 'no_telp' => '081234567890',
             ],
             [
@@ -57,7 +57,7 @@ class UserSeeder extends Seeder
         }
         
         $this->command->info('✓ 5 users created successfully!');
-        $this->command->info('  - superadmin / password');
+        $this->command->info('  - superadmin / arteriahelena');
         $this->command->info('  - admin / password');
         $this->command->info('  - pendaftaran / password');
         $this->command->info('  - plp / password');
