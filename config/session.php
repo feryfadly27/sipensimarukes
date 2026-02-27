@@ -152,11 +152,11 @@ return [
     |
     | This value determines the domain and subdomains the session cookie is
     | available to. By default, the cookie will be available to the root
-    | domain without subdomains. Typically, this shouldn't be changed.
+    | domain without subdomains. Set to null for localhost development.
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => (env('SESSION_DOMAIN') === 'null' || env('SESSION_DOMAIN') === '') ? null : env('SESSION_DOMAIN'),
 
     /*
     |--------------------------------------------------------------------------

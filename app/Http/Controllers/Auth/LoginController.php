@@ -82,11 +82,17 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
+        // Clear all cookies explicitly
         $response = redirect()->route('login')
             ->with('success', 'Anda telah berhasil logout');
         
-        // Add cache control headers to prevent back button access
-        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        // Clear session cookies
+        $response->withoutCookie('XSRF-TOKEN');
+        $response->withoutCookie('sipenmaru-uji-kesehatan-session');
+        $response->withoutCookie(config('session.cookie'));
+        
+        // Add cache control headers
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0, private');
         $response->header('Pragma', 'no-cache');
         $response->header('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT');
         
