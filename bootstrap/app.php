@@ -11,7 +11,13 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Trust Codespaces proxy headers so URL generation uses the public host.
+        $middleware->trustProxies(at: '*');
+        
+        // Register custom middleware
+        $middleware->alias([
+            'prevent_cache' => \App\Http\Middleware\PreventCache::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

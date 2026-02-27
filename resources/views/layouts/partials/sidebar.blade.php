@@ -115,12 +115,45 @@
                 <p class="font-semibold text-foreground">{{ auth()->user()->nama ?? 'User' }}</p>
                 <p class="text-sm text-secondary truncate">{{ ucfirst(auth()->user()->role ?? 'guest') }}</p>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
+            <form method="POST" action="{{ route('logout') }}" id="logout-form">
                 @csrf
-                <button type="submit" class="size-11 bg-error/10 rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-error/20 transition-all duration-300">
+                <button type="submit" class="size-11 bg-error/10 rounded-xl flex items-center justify-center flex-shrink-0 hover:bg-error/20 transition-all duration-300" onclick="handleLogout(event)">
                     <i data-lucide="log-out" class="size-6 text-error"></i>
                 </button>
             </form>
         </div>
     </div>
+    
+    <script>
+        function handleLogout(event) {
+            event.preventDefault();
+            
+            // Prevent back button access by clearing browser cache
+            if (window.history.forward(1) == null) {
+                window.history.go(1);
+            }
+            
+            // Submit logout form
+            document.getElementById('logout-form').submit();
+        }
+        
+        // Prevent accessing cached pages via back button
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                // Force reload if page was loaded from cache
+                window.location.reload();
+            }
+        });
+        
+        // Set cache control for back button behavior
+        window.addEventListener('pagehide', function() {
+            // Add meta tags dynamically
+            if (!document.querySelector('meta[http-equiv="Cache-Control"]')) {
+                const meta = document.createElement('meta');
+                meta.httpEquiv = 'Cache-Control';
+                meta.content = 'no-store, no-cache, must-revalidate, max-age=0';
+                document.head.appendChild(meta);
+            }
+        });
+    </script>
 </aside>

@@ -17,8 +17,8 @@ Route::middleware('guest')->group(function () {
 
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Protected Routes
-Route::middleware('auth')->group(function () {
+// Protected Routes with cache prevention
+Route::middleware(['auth', 'prevent_cache'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Placeholder routes untuk menu (akan dibuat nanti)

@@ -18,7 +18,14 @@ class LoginController extends Controller
             return redirect()->route('dashboard');
         }
         
-        return view('auth.login');
+        $response = response()->view('auth.login');
+        
+        // Prevent caching of login page
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->header('Pragma', 'no-cache');
+        $response->header('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT');
+        
+        return $response;
     }
 
     /**
@@ -75,7 +82,14 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login')
+        $response = redirect()->route('login')
             ->with('success', 'Anda telah berhasil logout');
+        
+        // Add cache control headers to prevent back button access
+        $response->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        $response->header('Pragma', 'no-cache');
+        $response->header('Expires', 'Thu, 01 Jan 1970 00:00:00 GMT');
+        
+        return $response;
     }
 }
