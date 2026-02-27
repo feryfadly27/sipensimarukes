@@ -222,6 +222,11 @@ class MahasiswaController extends Controller
         $writer->save('php://output');
         exit;
     }
+
+    /**
+     * Import peserta from Excel file
+     */
+    public function importExcel(Request $request)
     {
         $request->validate([
             'file' => 'required|file|mimes:xlsx,xls,csv|max:10240', // Max 10MB
