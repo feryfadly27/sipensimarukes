@@ -23,6 +23,9 @@ class PemeriksaanPlp extends Model
         'tinggi_badan',
         'berat_badan',
         'bmi',
+        'status_pemeriksaan',
+        'started_at',
+        'ended_at',
     ];
 
     protected $casts = [
@@ -31,6 +34,8 @@ class PemeriksaanPlp extends Model
         'tinggi_badan' => 'decimal:2',
         'berat_badan' => 'decimal:2',
         'bmi' => 'decimal:2',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime',
     ];
 
     /**

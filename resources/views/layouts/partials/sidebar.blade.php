@@ -40,16 +40,6 @@
                     </a>
                     @endif
                     
-                    @if($role === 'pendaftaran')
-                    <!-- Konfirmasi Kehadiran -->
-                    <a href="{{ route('pendaftaran.index') }}" class="group {{ request()->routeIs('pendaftaran.*') ? 'active' : '' }} cursor-pointer">
-                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
-                            <i data-lucide="clipboard-check" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
-                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Konfirmasi Kehadiran</span>
-                        </div>
-                    </a>
-                    @endif
-                    
                     @if($role === 'plp')
                     <!-- Pemeriksaan PLP -->
                     <a href="{{ route('plp.index') }}" class="group {{ request()->routeIs('plp.*') ? 'active' : '' }} cursor-pointer">
@@ -61,11 +51,10 @@
                     @endif
                     
                     @if($role === 'dokter')
-                    <!-- Pemeriksaan Dokter -->
-                    <a href="{{ route('dokter.index') }}" class="group {{ request()->routeIs('dokter.*') ? 'active' : '' }} cursor-pointer">
+                    <a href="{{ route('dokter.completed') }}" class="group {{ request()->routeIs('dokter.completed') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
-                            <i data-lucide="stethoscope" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
-                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Pemeriksaan Dokter</span>
+                            <i data-lucide="clipboard-check" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Sudah Diperiksa</span>
                         </div>
                     </a>
                     @endif
@@ -82,7 +71,7 @@
                             <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Laporan</span>
                         </div>
                     </a>
-                    <a href="{{ route('log.index') }}" class="group {{ request()->routeIs('log.*') ? 'active' : '' }} cursor-pointer">
+                    <a href="{{ route('logs.index') }}" class="group {{ request()->routeIs('logs.*') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                             <i data-lucide="history" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
                             <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Log Aktivitas</span>

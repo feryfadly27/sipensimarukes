@@ -78,6 +78,16 @@ class LogAktivitas extends Model
     }
 
     /**
+     * Scope untuk exclude superadmin users
+     */
+    public function scopeExcludingSuperadmin($query)
+    {
+        return $query->whereHas('user', function($q) {
+            $q->where('role', '!=', 'superadmin');
+        });
+    }
+
+    /**
      * Helper method untuk mencatat aktivitas
      */
     public static function catat($aksi, $targetId = null, $targetTabel = null, $dataLama = null, $dataBaru = null)

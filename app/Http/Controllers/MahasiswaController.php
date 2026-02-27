@@ -6,6 +6,7 @@ use App\Models\Mahasiswa;
 use App\Models\LogAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class MahasiswaController extends Controller
@@ -16,6 +17,11 @@ class MahasiswaController extends Controller
     public function index(Request $request)
     {
         $query = Mahasiswa::query();
+        $allowedPerPage = [10, 25, 50, 100];
+        $perPage = (int) $request->get('per_page', 25);
+        if (!in_array($perPage, $allowedPerPage, true)) {
+            $perPage = 25;
+        }
         
         // Filter by prodi
         if ($request->filled('prodi')) {
@@ -37,7 +43,7 @@ class MahasiswaController extends Controller
             });
         }
         
-        $mahasiswa = $query->orderBy('nama', 'asc')->paginate(20);
+        $mahasiswa = $query->orderBy('nama', 'asc')->paginate($perPage)->withQueryString();
         
         $prodis = Mahasiswa::distinct()->pluck('prodi')->filter();
         
@@ -102,6 +108,14 @@ class MahasiswaController extends Controller
     }
 
     /**
+     * Display peserta details
+     */
+    public function show(Mahasiswa $mahasiswa)
+    {
+        return view('mahasiswa.show', compact('mahasiswa'));
+    }
+
+    /**
      * Update peserta in storage
      */
     public function update(Request $request, Mahasiswa $mahasiswa)
@@ -114,6 +128,8 @@ class MahasiswaController extends Controller
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
             'prodi' => 'required|string|max:50',
+            'prodi_pilihan_1' => 'nullable|string|max:50',
+            'prodi_pilihan_2' => 'nullable|string|max:50',
             'asal_sekolah' => 'required|string|max:100',
         ]);
 
@@ -164,10 +180,6 @@ class MahasiswaController extends Controller
      */
     public function templateExcel()
     {
-        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
-        $sheet = $spreadsheet->getActiveSheet();
-
-        // Set header
         $headers = [
             'No. Pendaftaran',
             'No. Identitas/KTP',
@@ -179,11 +191,35 @@ class MahasiswaController extends Controller
             'Asal Sekolah'
         ];
 
+        $sampleData = [
+            ['PEN2026001', '123456789012345', 'Ahmad Rizki Pratama', 'Jakarta', '2005-01-15', 'Laki-laki', 'Keperawatan', 'SMA Negeri 1 Jakarta'],
+            ['PEN2026002', '123456789012346', 'Siti Nurhaliza', 'Bandung', '2004-06-20', 'Perempuan', 'Kebidanan', 'SMA Negeri 3 Bandung'],
+        ];
+
+        // Fallback to CSV if Zip extension is missing.
+        if (!extension_loaded('zip')) {
+            $filename = 'Template_Data_Peserta_' . date('YmdHis') . '.csv';
+
+            return response()->streamDownload(function () use ($headers, $sampleData) {
+                $handle = fopen('php://output', 'w');
+                fputcsv($handle, $headers);
+                foreach ($sampleData as $row) {
+                    fputcsv($handle, $row);
+                }
+                fclose($handle);
+            }, $filename, [
+                'Content-Type' => 'text/csv',
+                'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+            ]);
+        }
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+
         foreach ($headers as $key => $header) {
             $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
         }
 
-        // Style header
         $headerStyle = [
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '00BCD4']],
@@ -194,33 +230,29 @@ class MahasiswaController extends Controller
             $sheet->getStyleByColumnAndRow($i, 1)->applyFromArray($headerStyle);
         }
 
-        // Add sample data
-        $sampleData = [
-            ['PEN2026001', '123456789012345', 'Ahmad Rizki Pratama', 'Jakarta', '2005-01-15', 'Laki-laki', 'Keperawatan', 'SMA Negeri 1 Jakarta'],
-            ['PEN2026002', '123456789012346', 'Siti Nurhaliza', 'Bandung', '2004-06-20', 'Perempuan', 'Kebidanan', 'SMA Negeri 3 Bandung'],
-        ];
-
         foreach ($sampleData as $rowIndex => $rowData) {
             foreach ($rowData as $colIndex => $cellValue) {
                 $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $cellValue);
             }
         }
 
-        // Auto-resize columns
         for ($i = 1; $i <= count($headers); $i++) {
             $sheet->getColumnDimensionByColumn($i)->setAutoSize(true);
         }
 
-        // Create Excel file
-        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
         $filename = 'Template_Data_Peserta_' . date('YmdHis') . '.xlsx';
+        $storagePath = 'public/exports/' . $filename;
+        
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+        $writer->save(storage_path('app/' . $storagePath));
 
-        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Disposition: attachment;filename="' . $filename . '"');
-        header('Cache-Control: max-age=0');
-
-        $writer->save('php://output');
-        exit;
+        // Direct file response for Codespaces compatibility
+        $fullPath = storage_path('app/' . $storagePath);
+        
+        return response()->file($fullPath, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ])->deleteFileAfterSend(true);
     }
 
     /**
@@ -253,7 +285,7 @@ class MahasiswaController extends Controller
                 if (empty($row[0])) continue;
 
                 try {
-                    // Map columns: A=no_pendaftaran, B=no_identitas, C=nama, D=tempat_lahir, E=tanggal_lahir, F=jenis_kelamin, G=prodi, H=asal_sekolah
+                    // Map columns: A=no_pendaftaran, B=no_identitas, C=nama, D=tempat_lahir, E=tanggal_lahir, F=jenis_kelamin, G=prodi_pilihan_1, H=prodi_pilihan_2, I=asal_sekolah
                     $data = [
                         'no_pendaftaran' => $row[0] ?? null,
                         'no_identitas' => $row[1] ?? null,
@@ -261,13 +293,15 @@ class MahasiswaController extends Controller
                         'tempat_lahir' => $row[3] ?? null,
                         'tanggal_lahir' => $row[4] ?? null,
                         'jenis_kelamin' => $row[5] ?? null,
-                        'prodi' => $row[6] ?? null,
-                        'asal_sekolah' => $row[7] ?? null,
+                        'prodi_pilihan_1' => $row[6] ?? null,
+                        'prodi_pilihan_2' => $row[7] ?? null,
+                        'asal_sekolah' => $row[8] ?? null,
+                        'prodi' => $row[6] ?? null, // Default prodi = prodi_pilihan_1
                     ];
 
                     // Validate required fields
-                    if (!$data['no_pendaftaran'] || !$data['no_identitas'] || !$data['nama']) {
-                        $errors[] = "Baris " . ($index + 1) . ": Data tidak lengkap (no_pendaftaran, no_identitas, nama wajib)";
+                    if (!$data['no_pendaftaran'] || !$data['no_identitas'] || !$data['nama'] || !$data['prodi_pilihan_1']) {
+                        $errors[] = "Baris " . ($index + 1) . ": Data tidak lengkap (no_pendaftaran, no_identitas, nama, prodi_pilihan_1 wajib)";
                         $failed++;
                         continue;
                     }

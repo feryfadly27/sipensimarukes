@@ -71,6 +71,16 @@
                 </select>
             </div>
 
+            <!-- Per Page -->
+            <div class="sm:w-40">
+                <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
+                <select name="per_page" class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                    @foreach([10, 25, 50, 100] as $size)
+                        <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
+                    @endforeach
+                </select>
+            </div>
+
             <!-- Buttons -->
             <div class="flex gap-2">
                 <button type="submit" class="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-hover transition-all">
@@ -89,6 +99,7 @@
             <table class="w-full">
                 <thead class="bg-muted border-b border-border">
                     <tr>
+                        <th class="px-6 py-4 text-center text-sm font-semibold text-foreground" style="width: 60px">No</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">No. Pendaftaran</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Nama</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Program Studi</th>
@@ -98,8 +109,9 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-border">
-                    @forelse($mahasiswa as $peserta)
+                    @forelse($mahasiswa as $index => $peserta)
                         <tr class="hover:bg-muted/50 transition-colors">
+                            <td class="px-6 py-4 text-center text-sm text-secondary font-medium">{{ $mahasiswa->firstItem() + $index }}</td>
                             <td class="px-6 py-4 text-sm text-foreground font-medium">{{ $peserta->no_pendaftaran }}</td>
                             <td class="px-6 py-4 text-sm text-foreground">
                                 <div>{{ $peserta->nama }}</div>
@@ -118,23 +130,21 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-center">
-                                <div class="flex items-center justify-center gap-2">
-                                    <a href="{{ route('mahasiswa.edit', $peserta) }}" class="p-2 rounded-lg text-primary hover:bg-primary/10 transition-all" title="Edit">
-                                        <i data-lucide="edit-2" class="size-5"></i>
+                                <div class="inline-flex items-center gap-2">
+                                    <a href="{{ route('mahasiswa.show', $peserta) }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all">
+                                        <i data-lucide="eye" class="size-4"></i>
+                                        Lihat
                                     </a>
-                                    <form method="POST" action="{{ route('mahasiswa.destroy', $peserta) }}" class="inline-block" onsubmit="return confirm('Hapus data peserta ini?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="p-2 rounded-lg text-error hover:bg-error/10 transition-all" title="Hapus">
-                                            <i data-lucide="trash-2" class="size-5"></i>
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('mahasiswa.edit', $peserta) }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-warning text-white text-sm font-medium hover:bg-warning/90 transition-all">
+                                        <i data-lucide="pencil" class="size-4"></i>
+                                        Edit
+                                    </a>
                                 </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center">
+                            <td colspan="7" class="px-6 py-12 text-center">
                                 <div class="flex flex-col items-center justify-center gap-3">
                                     <i data-lucide="inbox" class="size-12 text-secondary/30"></i>
                                     <div class="text-secondary">Tidak ada data peserta</div>
@@ -203,7 +213,7 @@
 
                 <!-- Download Template -->
                 <div class="mb-6">
-                    <a href="{{ route('mahasiswa.templateExcel') }}" download class="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-primary text-primary font-medium hover:bg-primary/10 transition-all w-full">
+                    <a href="{{ asset('templates/Template_Data_Peserta.xlsx') }}" download="Template_Data_Peserta.xlsx" class="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-primary text-primary font-medium hover:bg-primary/10 transition-all w-full">
                         <i data-lucide="download" class="size-4"></i>
                         Download Template
                     </a>

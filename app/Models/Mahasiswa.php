@@ -13,13 +13,19 @@ class Mahasiswa extends Model
 
     protected $fillable = [
         'no_pendaftaran',
+        'no_identitas',
         'nama',
         'jenis_kelamin',
-        'prodi_pilihan',
+        'prodi',
+        'prodi_pilihan_1',
+        'prodi_pilihan_2',
         'tempat_lahir',
         'tanggal_lahir',
+        'asal_sekolah',
         'alamat',
         'status_kehadiran',
+        'nomor_urut',
+        'foto_kehadiran',
         'status_plp',
         'status_dokter',
         'kesimpulan_akhir',
@@ -56,7 +62,7 @@ class Mahasiswa extends Model
 
     public function scopeBelumHadir($query)
     {
-        return $query->where('status_kehadiran', 'belum_hadir');
+        return $query->where('status_kehadiran', 'belum_konfirmasi');
     }
 
     /**
@@ -109,7 +115,7 @@ class Mahasiswa extends Model
     public function getStatusKehadiranTextAttribute()
     {
         return match($this->status_kehadiran) {
-            'belum_hadir' => 'Belum Hadir',
+            'belum_konfirmasi' => 'Belum Konfirmasi',
             'hadir' => 'Hadir',
             'tidak_hadir' => 'Tidak Hadir',
             default => '-'

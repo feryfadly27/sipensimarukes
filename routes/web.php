@@ -4,6 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\LogAktivitasController;
+use App\Http\Controllers\PendaftaranController;
+use App\Http\Controllers\PlpController;
+use App\Http\Controllers\DokterController;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -26,32 +31,36 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
     Route::middleware('role:admin,superadmin')->group(function () {
         Route::resource('mahasiswa', MahasiswaController::class);
         Route::post('mahasiswa/import', [MahasiswaController::class, 'importExcel'])->name('mahasiswa.importExcel');
-        Route::get('mahasiswa/template/excel', [MahasiswaController::class, 'templateExcel'])->name('mahasiswa.templateExcel');
+
+        Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
     });
     
-    // Placeholder routes untuk menu (akan dibuat nanti)
-    Route::get('/pendaftaran', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('pendaftaran.index');
+    // Pendaftaran validasi (now part of dashboard but keeping route for modal submission)
+    Route::post('/pendaftaran/{mahasiswa}/validasi', [PendaftaranController::class, 'validasi'])->name('pendaftaran.validasi');
     
-    Route::get('/plp', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('plp.index');
+    // PLP examination (new route for PLP form submission)
+    Route::post('/plp/{mahasiswa}', [PlpController::class, 'store'])->name('plp.store');
+    Route::get('/plp/check-ongoing', [PlpController::class, 'checkOngoing'])->name('plp.checkOngoing');
+    Route::post('/plp/{mahasiswa}/start', [PlpController::class, 'startExamination'])->name('plp.start');
+    Route::get('/plp/{mahasiswa}/verify', [PlpController::class, 'verifyStudent'])->name('plp.verify');
+
+    // Dokter examination
+    Route::get('/dokter/selesai', [DokterController::class, 'completed'])->name('dokter.completed')->middleware('role:dokter');
+    Route::get('/dokter/selesai/{mahasiswa}', [DokterController::class, 'show'])->name('dokter.show')->middleware('role:dokter');
+    Route::get('/dokter/selesai/{mahasiswa}/cetak', [DokterController::class, 'print'])->name('dokter.print')->middleware('role:dokter');
+    Route::get('/dokter/{mahasiswa}/periksa', [DokterController::class, 'form'])->name('dokter.form')->middleware('role:dokter');
+    Route::post('/dokter/{mahasiswa}', [DokterController::class, 'store'])->name('dokter.store')->middleware('role:dokter');
     
-    Route::get('/dokter', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('dokter.index');
-    
-    Route::get('/laporan', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('laporan.index');
-    
-    Route::get('/log', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('log.index');
-    
-    Route::get('/users', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('users.index');
+    // Placeholder routes
+    Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index');
+    Route::get('/dokter', [DashboardController::class, 'index'])->name('dokter.index');
+    Route::get('/log', [LogAktivitasController::class, 'index'])->name('logs.index');
+    Route::get('/users', [DashboardController::class, 'index'])->name('users.index');
+});
+
+// File download routes (separate from prevent_cache to avoid header conflicts)
+Route::middleware(['auth', 'role:admin,superadmin'])->group(function () {
+    Route::get('mahasiswa/template/excel', [MahasiswaController::class, 'templateExcel'])->name('mahasiswa.templateExcel');
+    Route::get('/laporan/export', [LaporanController::class, 'exportExcel'])->name('laporan.export');
 });
 

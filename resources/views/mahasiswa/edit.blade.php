@@ -71,7 +71,7 @@
                 <!-- Tanggal Lahir -->
                 <div>
                     <label for="tanggal_lahir" class="block text-sm font-medium text-foreground mb-2">Tanggal Lahir *</label>
-                    <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir', $mahasiswa->tanggal_lahir) }}" required
+                          <input type="date" id="tanggal_lahir" name="tanggal_lahir" value="{{ old('tanggal_lahir', $mahasiswa->tanggal_lahir?->format('Y-m-d')) }}" required
                            class="w-full px-4 py-3 rounded-xl border {{ $errors->has('tanggal_lahir') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
                     @error('tanggal_lahir')
                         <p class="mt-1 text-sm text-error">{{ $message }}</p>
@@ -106,6 +106,39 @@
                         @endforeach
                     </select>
                     @error('prodi')
+                        <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            <!-- Row 4: Program Studi 1 & Program Studi 2 -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Program Studi 1 -->
+                <div>
+                    <label for="prodi_pilihan_1" class="block text-sm font-medium text-foreground mb-2">Program Studi 1</label>
+                    <select id="prodi_pilihan_1" name="prodi_pilihan_1"
+                            class="w-full px-4 py-3 rounded-xl border {{ $errors->has('prodi_pilihan_1') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                        <option value="">-- Pilih Program Studi --</option>
+                        @foreach($prodis as $prodi)
+                            <option value="{{ $prodi }}" {{ old('prodi_pilihan_1', $mahasiswa->prodi_pilihan_1) === $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
+                        @endforeach
+                    </select>
+                    @error('prodi_pilihan_1')
+                        <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Program Studi 2 -->
+                <div>
+                    <label for="prodi_pilihan_2" class="block text-sm font-medium text-foreground mb-2">Program Studi 2</label>
+                    <select id="prodi_pilihan_2" name="prodi_pilihan_2"
+                            class="w-full px-4 py-3 rounded-xl border {{ $errors->has('prodi_pilihan_2') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                        <option value="">-- Pilih Program Studi --</option>
+                        @foreach($prodis as $prodi)
+                            <option value="{{ $prodi }}" {{ old('prodi_pilihan_2', $mahasiswa->prodi_pilihan_2) === $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
+                        @endforeach
+                    </select>
+                    @error('prodi_pilihan_2')
                         <p class="mt-1 text-sm text-error">{{ $message }}</p>
                     @enderror
                 </div>
