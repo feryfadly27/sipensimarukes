@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MahasiswaController;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -21,11 +22,14 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 Route::middleware(['auth', 'prevent_cache'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
-    // Placeholder routes untuk menu (akan dibuat nanti)
-    Route::get('/mahasiswa', function() {
-        return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
-    })->name('mahasiswa.index');
+    // Data Peserta Management (Admin & Superadmin)
+    Route::middleware('role:admin,superadmin')->group(function () {
+        Route::resource('mahasiswa', MahasiswaController::class);
+        Route::post('mahasiswa/import', [MahasiswaController::class, 'importExcel'])->name('mahasiswa.importExcel');
+        Route::get('mahasiswa/template/excel', [MahasiswaController::class, 'templateExcel'])->name('mahasiswa.templateExcel');
+    });
     
+    // Placeholder routes untuk menu (akan dibuat nanti)
     Route::get('/pendaftaran', function() {
         return view('dashboard.index')->with('stats', [])->with('recent_activities', []);
     })->name('pendaftaran.index');
