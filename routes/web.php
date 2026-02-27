@@ -9,6 +9,7 @@ use App\Http\Controllers\LogAktivitasController;
 use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\PlpController;
 use App\Http\Controllers\DokterController;
+use App\Http\Controllers\UserController;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -33,6 +34,8 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
         Route::post('mahasiswa/import', [MahasiswaController::class, 'importExcel'])->name('mahasiswa.importExcel');
 
         Route::get('/laporan', [LaporanController::class, 'index'])->name('laporan.index');
+        Route::get('/laporan/ringkas', [LaporanController::class, 'ringkas'])->name('laporan.ringkas');
+        Route::get('/laporan/ringkas/export', [LaporanController::class, 'exportRingkas'])->name('laporan.ringkas.export');
     });
     
     // Pendaftaran validasi (now part of dashboard but keeping route for modal submission)
@@ -45,17 +48,25 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
     Route::get('/plp/{mahasiswa}/verify', [PlpController::class, 'verifyStudent'])->name('plp.verify');
 
     // Dokter examination
-    Route::get('/dokter/selesai', [DokterController::class, 'completed'])->name('dokter.completed')->middleware('role:dokter');
-    Route::get('/dokter/selesai/{mahasiswa}', [DokterController::class, 'show'])->name('dokter.show')->middleware('role:dokter');
-    Route::get('/dokter/selesai/{mahasiswa}/cetak', [DokterController::class, 'print'])->name('dokter.print')->middleware('role:dokter');
-    Route::get('/dokter/{mahasiswa}/periksa', [DokterController::class, 'form'])->name('dokter.form')->middleware('role:dokter');
-    Route::post('/dokter/{mahasiswa}', [DokterController::class, 'store'])->name('dokter.store')->middleware('role:dokter');
+    Route::get('/dokter/selesai', [DokterController::class, 'completed'])->name('dokter.completed')->middleware('role:dokter,superadmin');
+    Route::get('/dokter/selesai/{mahasiswa}', [DokterController::class, 'show'])->name('dokter.show')->middleware('role:dokter,superadmin');
+    Route::get('/dokter/selesai/{mahasiswa}/cetak', [DokterController::class, 'print'])->name('dokter.print')->middleware('role:dokter,superadmin');
+    Route::get('/dokter/{mahasiswa}/periksa', [DokterController::class, 'form'])->name('dokter.form')->middleware('role:dokter,superadmin');
+    Route::post('/dokter/{mahasiswa}', [DokterController::class, 'store'])->name('dokter.store')->middleware('role:dokter,superadmin');
     
     // Placeholder routes
+    Route::get('/pendaftaran', [DashboardController::class, 'index'])->name('pendaftaran.index');
     Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index');
     Route::get('/dokter', [DashboardController::class, 'index'])->name('dokter.index');
     Route::get('/log', [LogAktivitasController::class, 'index'])->name('logs.index');
-    Route::get('/users', [DashboardController::class, 'index'])->name('users.index');
+    Route::middleware('role:superadmin')->group(function () {
+        Route::get('/users', [UserController::class, 'index'])->name('users.index');
+        Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+        Route::post('/users', [UserController::class, 'store'])->name('users.store');
+        Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
+        Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+        Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    });
 });
 
 // File download routes (separate from prevent_cache to avoid header conflicts)

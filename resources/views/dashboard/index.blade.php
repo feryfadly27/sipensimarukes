@@ -114,7 +114,7 @@
 @endif
 
 <!-- Pendaftaran Section (Validasi Kehadiran) -->
-@if(auth()->user()->role === 'pendaftaran')
+@if(auth()->user()->role === 'pendaftaran' || (auth()->user()->role === 'superadmin' && request()->routeIs('pendaftaran.index')))
 <div class="space-y-6">
     <!-- Pendaftaran Header -->
     <div class="flex flex-col gap-2">
@@ -274,7 +274,7 @@
 @endif
 
 <!-- Dokter Section (Pemeriksaan Dokter) -->
-@if(auth()->user()->role === 'dokter')
+@if(auth()->user()->role === 'dokter' || (auth()->user()->role === 'superadmin' && request()->routeIs('dokter.index')))
 <div class="space-y-6">
     <!-- Dokter Header -->
     <div class="flex flex-col gap-2">
@@ -433,7 +433,7 @@
 @endif
 
 <!-- PLP Section (Pemeriksaan Lab) -->
-@if(auth()->user()->role === 'plp')
+@if(auth()->user()->role === 'plp' || (auth()->user()->role === 'superadmin' && request()->routeIs('plp.index')))
 <div class="space-y-6">
     <!-- PLP Header -->
     <div class="flex flex-col gap-2">

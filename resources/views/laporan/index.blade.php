@@ -10,10 +10,16 @@
             <h1 class="text-3xl font-bold text-foreground">Laporan Pemeriksaan</h1>
             <p class="text-secondary mt-1">Rekap data pemeriksaan kesehatan peserta</p>
         </div>
-        <a href="{{ route('laporan.export', request()->query()) }}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-success text-white font-medium hover:opacity-90 transition-all">
-            <i data-lucide="download" class="size-5"></i>
-            Unduh Excel
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('laporan.ringkas') }}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-hover transition-all">
+                <i data-lucide="layout-list" class="size-5"></i>
+                Laporan Ringkas
+            </a>
+            <a href="{{ route('laporan.export', request()->query()) }}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-success text-white font-medium hover:opacity-90 transition-all">
+                <i data-lucide="download" class="size-5"></i>
+                Unduh Excel
+            </a>
+        </div>
     </div>
 
     <!-- Summary Cards -->
@@ -125,6 +131,26 @@
                 </thead>
                 <tbody class="divide-y divide-border">
                     @forelse($mahasiswa as $index => $row)
+                        @php
+                            $plpDone = $row->status_plp === 'selesai'
+                                || ($row->pemeriksaanPlp
+                                    && (($row->pemeriksaanPlp->status_pemeriksaan ?? null) === 'selesai'
+                                        || $row->pemeriksaanPlp->tgl_periksa
+                                        || $row->pemeriksaanPlp->ended_at));
+
+                            $dokterDone = $row->status_dokter === 'selesai'
+                                || ($row->pemeriksaanDokter
+                                    && ($row->pemeriksaanDokter->is_locked
+                                        || $row->pemeriksaanDokter->tgl_periksa
+                                        || $row->pemeriksaanDokter->kesimpulan));
+
+                            $kesimpulanEfektif = $row->kesimpulan_akhir;
+                            if (($kesimpulanEfektif === '-' || empty($kesimpulanEfektif)) && $row->pemeriksaanDokter?->kesimpulan) {
+                                $kesimpulanEfektif = $row->pemeriksaanDokter->kesimpulan === 'Memenuhi Syarat'
+                                    ? 'memenuhi_syarat'
+                                    : 'tidak_memenuhi_syarat';
+                            }
+                        @endphp
                         <tr class="hover:bg-muted/50 transition-colors">
                             <td class="px-6 py-4 text-center text-sm text-secondary font-medium">{{ $mahasiswa->firstItem() + $index }}</td>
                             <td class="px-6 py-4 text-sm text-foreground font-medium">{{ $row->no_pendaftaran }}</td>
@@ -143,9 +169,9 @@
                                     {{ ucfirst(str_replace('_', ' ', $row->status_kehadiran)) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst($row->status_plp) }}</td>
-                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst($row->status_dokter) }}</td>
-                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst(str_replace('_', ' ', $row->kesimpulan_akhir)) }}</td>
+                            <td class="px-6 py-4 text-sm text-foreground">{{ $plpDone ? 'Selesai' : 'Belum' }}</td>
+                            <td class="px-6 py-4 text-sm text-foreground">{{ $dokterDone ? 'Selesai' : 'Belum' }}</td>
+                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst(str_replace('_', ' ', $kesimpulanEfektif)) }}</td>
                             <td class="px-6 py-4 text-center">
                                 <a href="{{ route('mahasiswa.show', $row) }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all">
                                     <i data-lucide="eye" class="size-4"></i>

@@ -14,12 +14,219 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class LaporanController extends Controller
 {
+    public function ringkas(Request $request)
+    {
+        $memenuhiBaseQuery = Mahasiswa::query()->where(function ($q) {
+            $q->where('kesimpulan_akhir', 'memenuhi_syarat')
+                ->orWhereHas('pemeriksaanDokter', function ($dokter) {
+                    $dokter->where('kesimpulan', 'Memenuhi Syarat');
+                });
+        });
+
+        $tidakMemenuhiBaseQuery = Mahasiswa::query()->where(function ($q) {
+            $q->where('kesimpulan_akhir', 'tidak_memenuhi_syarat')
+                ->orWhereHas('pemeriksaanDokter', function ($dokter) {
+                    $dokter->where('kesimpulan', 'Tidak Memenuhi Syarat');
+                });
+        });
+
+        $ringkasan = [
+            'total_peserta' => Mahasiswa::count(),
+            'hadir_hari_ini' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', today())
+                ->count(),
+            'hadir_hari_sebelumnya' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', today()->subDay())
+                ->count(),
+            'memenuhi_syarat' => (clone $memenuhiBaseQuery)->count(),
+            'tidak_memenuhi_syarat' => (clone $tidakMemenuhiBaseQuery)->count(),
+        ];
+
+        $memenuhiList = (clone $memenuhiBaseQuery)
+            ->select('id', 'nama', 'no_pendaftaran')
+            ->orderBy('nama')
+            ->paginate(20, ['*'], 'memenuhi_page')
+            ->withQueryString();
+
+        $tidakMemenuhiList = (clone $tidakMemenuhiBaseQuery)
+            ->select('id', 'nama', 'no_pendaftaran')
+            ->orderBy('nama')
+            ->paginate(20, ['*'], 'tidak_page')
+            ->withQueryString();
+
+        return view('laporan.ringkas', compact('ringkasan', 'memenuhiList', 'tidakMemenuhiList'));
+    }
+
+    public function exportRingkas()
+    {
+        $memenuhiBaseQuery = Mahasiswa::query()->where(function ($q) {
+            $q->where('kesimpulan_akhir', 'memenuhi_syarat')
+                ->orWhereHas('pemeriksaanDokter', function ($dokter) {
+                    $dokter->where('kesimpulan', 'Memenuhi Syarat');
+                });
+        });
+
+        $tidakMemenuhiBaseQuery = Mahasiswa::query()->where(function ($q) {
+            $q->where('kesimpulan_akhir', 'tidak_memenuhi_syarat')
+                ->orWhereHas('pemeriksaanDokter', function ($dokter) {
+                    $dokter->where('kesimpulan', 'Tidak Memenuhi Syarat');
+                });
+        });
+
+        $ringkasan = [
+            'Total Peserta' => Mahasiswa::count(),
+            'Hadir Hari Ini' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', today())
+                ->count(),
+            'Hadir Hari Sebelumnya' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', today()->subDay())
+                ->count(),
+            'Memenuhi Syarat' => (clone $memenuhiBaseQuery)->count(),
+            'Tidak Memenuhi Syarat' => (clone $tidakMemenuhiBaseQuery)->count(),
+        ];
+
+        $memenuhiList = (clone $memenuhiBaseQuery)
+            ->select('no_pendaftaran', 'nama')
+            ->orderBy('nama')
+            ->get();
+
+        $tidakMemenuhiList = (clone $tidakMemenuhiBaseQuery)
+            ->select('no_pendaftaran', 'nama')
+            ->orderBy('nama')
+            ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Laporan Ringkas');
+
+        $sheet->mergeCells('A1:C1');
+        $sheet->setCellValue('A1', 'LAPORAN RINGKAS UJI KESEHATAN');
+        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
+        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $sheet->setCellValue('A2', 'Tanggal Cetak');
+        $sheet->setCellValue('B2', ':');
+        $sheet->setCellValue('C2', now()->format('d-m-Y H:i:s'));
+
+        $sheet->setCellValue('A4', 'RINGKASAN');
+        $sheet->getStyle('A4')->getFont()->setBold(true);
+
+        $row = 5;
+        foreach ($ringkasan as $label => $value) {
+            $sheet->setCellValue('A' . $row, $label);
+            $sheet->setCellValue('B' . $row, ':');
+            $sheet->setCellValue('C' . $row, $value);
+            $row++;
+        }
+
+        $row += 1;
+        $sheet->setCellValue('A' . $row, 'DAFTAR MAHASISWA MEMENUHI SYARAT');
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        $row++;
+
+        $sheet->setCellValue('A' . $row, 'No');
+        $sheet->setCellValue('B' . $row, 'No. Pendaftaran');
+        $sheet->setCellValue('C' . $row, 'Nama');
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFill()->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('D1FAE5');
+        $row++;
+
+        foreach ($memenuhiList as $index => $item) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $item->no_pendaftaran);
+            $sheet->setCellValue('C' . $row, $item->nama);
+            $row++;
+        }
+
+        if ($memenuhiList->isEmpty()) {
+            $sheet->setCellValue('A' . $row, 'Tidak ada data');
+            $row++;
+        }
+
+        $row += 1;
+        $sheet->setCellValue('A' . $row, 'DAFTAR MAHASISWA TIDAK MEMENUHI SYARAT');
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        $row++;
+
+        $sheet->setCellValue('A' . $row, 'No');
+        $sheet->setCellValue('B' . $row, 'No. Pendaftaran');
+        $sheet->setCellValue('C' . $row, 'Nama');
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFill()->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setRGB('FEE2E2');
+        $row++;
+
+        foreach ($tidakMemenuhiList as $index => $item) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $item->no_pendaftaran);
+            $sheet->setCellValue('C' . $row, $item->nama);
+            $row++;
+        }
+
+        if ($tidakMemenuhiList->isEmpty()) {
+            $sheet->setCellValue('A' . $row, 'Tidak ada data');
+        }
+
+        foreach (['A', 'B', 'C'] as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+
+        LogAktivitas::catat(
+            'Unduh laporan ringkas',
+            auth()->id(),
+            'mahasiswa',
+            null,
+            [
+                'memenuhi' => $memenuhiList->count(),
+                'tidak_memenuhi' => $tidakMemenuhiList->count(),
+            ]
+        );
+
+        $filename = 'Laporan_Ringkas_Uji_Kesehatan_' . date('YmdHis') . '.xlsx';
+        $publicPath = public_path('exports/' . $filename);
+
+        if (!file_exists(public_path('exports'))) {
+            mkdir(public_path('exports'), 0777, true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($publicPath);
+
+        foreach (glob(public_path('exports') . '/*.xlsx') as $file) {
+            if (filemtime($file) < now()->subHour()->timestamp) {
+                @unlink($file);
+            }
+        }
+
+        return redirect(asset('exports/' . $filename));
+    }
+
     /**
      * Display laporan data peserta
      */
     public function index(Request $request)
     {
-        $query = Mahasiswa::query();
+        $plpCompletedScope = function ($q) {
+            $q->where(function ($qq) {
+                $qq->where('status_pemeriksaan', 'selesai')
+                    ->orWhereNotNull('tgl_periksa')
+                    ->orWhereNotNull('ended_at');
+            });
+        };
+
+        $dokterCompletedScope = function ($q) {
+            $q->where(function ($qq) {
+                $qq->where('is_locked', true)
+                    ->orWhereNotNull('tgl_periksa')
+                    ->orWhereNotNull('kesimpulan');
+            });
+        };
+
+        $query = Mahasiswa::query()->with([
+            'pemeriksaanPlp:id,mahasiswa_id,tgl_periksa,status_pemeriksaan,ended_at',
+            'pemeriksaanDokter:id,mahasiswa_id,tgl_periksa,is_locked,kesimpulan,keterangan_kesimpulan',
+        ]);
         $allowedPerPage = [10, 25, 50, 100];
         $perPage = (int) $request->get('per_page', 25);
         if (!in_array($perPage, $allowedPerPage, true)) {
@@ -44,15 +251,58 @@ class LaporanController extends Controller
         }
 
         if ($request->filled('status_plp')) {
-            $query->where('status_plp', $request->status_plp);
+            if ($request->status_plp === 'selesai') {
+                $query->where(function ($q) use ($plpCompletedScope) {
+                    $q->where('status_plp', 'selesai')
+                        ->orWhereHas('pemeriksaanPlp', $plpCompletedScope);
+                });
+            }
+
+            if ($request->status_plp === 'belum') {
+                $query->where('status_plp', 'belum')
+                    ->whereDoesntHave('pemeriksaanPlp', $plpCompletedScope);
+            }
         }
 
         if ($request->filled('status_dokter')) {
-            $query->where('status_dokter', $request->status_dokter);
+            if ($request->status_dokter === 'selesai') {
+                $query->where(function ($q) use ($dokterCompletedScope) {
+                    $q->where('status_dokter', 'selesai')
+                        ->orWhereHas('pemeriksaanDokter', $dokterCompletedScope);
+                });
+            }
+
+            if ($request->status_dokter === 'belum') {
+                $query->where('status_dokter', 'belum')
+                    ->whereDoesntHave('pemeriksaanDokter', $dokterCompletedScope);
+            }
         }
 
         if ($request->filled('kesimpulan_akhir')) {
-            $query->where('kesimpulan_akhir', $request->kesimpulan_akhir);
+            if ($request->kesimpulan_akhir === 'memenuhi_syarat') {
+                $query->where(function ($q) {
+                    $q->where('kesimpulan_akhir', 'memenuhi_syarat')
+                        ->orWhereHas('pemeriksaanDokter', function ($dokter) {
+                            $dokter->where('kesimpulan', 'Memenuhi Syarat');
+                        });
+                });
+            }
+
+            if ($request->kesimpulan_akhir === 'tidak_memenuhi_syarat') {
+                $query->where(function ($q) {
+                    $q->where('kesimpulan_akhir', 'tidak_memenuhi_syarat')
+                        ->orWhereHas('pemeriksaanDokter', function ($dokter) {
+                            $dokter->where('kesimpulan', 'Tidak Memenuhi Syarat');
+                        });
+                });
+            }
+
+            if ($request->kesimpulan_akhir === '-') {
+                $query->where('kesimpulan_akhir', '-')
+                    ->whereDoesntHave('pemeriksaanDokter', function ($dokter) {
+                        $dokter->whereNotNull('kesimpulan');
+                    });
+            }
         }
 
         $mahasiswa = $query->orderBy('nama')->paginate($perPage)->withQueryString();
@@ -210,6 +460,25 @@ class LaporanController extends Controller
         foreach ($rows as $row) {
             $plp = $row->pemeriksaanPlp;
             $dokter = $row->pemeriksaanDokter;
+
+            $statusPlpExport = $row->status_plp;
+            if ($plp && (($plp->status_pemeriksaan ?? null) === 'selesai' || $plp->tgl_periksa || $plp->ended_at)) {
+                $statusPlpExport = 'selesai';
+            }
+
+            $statusDokterExport = $row->status_dokter;
+            if ($dokter && ($dokter->is_locked || $dokter->tgl_periksa || $dokter->kesimpulan)) {
+                $statusDokterExport = 'selesai';
+            }
+
+            $kesimpulanAkhirExport = $row->kesimpulan_akhir;
+            if (($kesimpulanAkhirExport === '-' || empty($kesimpulanAkhirExport)) && $dokter?->kesimpulan) {
+                $kesimpulanAkhirExport = $dokter->kesimpulan === 'Memenuhi Syarat'
+                    ? 'memenuhi_syarat'
+                    : 'tidak_memenuhi_syarat';
+            }
+
+            $keteranganAkhirExport = $row->keterangan_kesimpulan ?? $dokter->keterangan_kesimpulan ?? '-';
             
             $data = [
                 // Data Dasar
@@ -235,7 +504,7 @@ class LaporanController extends Controller
                 $plp->tinggi_badan ?? '-',
                 $plp->berat_badan ?? '-',
                 $plp->bmi ?? '-',
-                $row->status_plp,
+                $statusPlpExport,
                 
                 // Hasil Pemeriksaan Dokter
                 $dokter ? optional($dokter->tgl_periksa)->format('Y-m-d H:i') : '-',
@@ -281,11 +550,11 @@ class LaporanController extends Controller
                 $dokter->cacat_tubuh ?? '-',
                 $dokter->kesimpulan ?? '-',
                 $dokter->keterangan_kesimpulan ?? '-',
-                $row->status_dokter,
+                $statusDokterExport,
                 
                 // Kesimpulan Akhir
-                $row->kesimpulan_akhir,
-                $row->keterangan_kesimpulan,
+                $kesimpulanAkhirExport,
+                $keteranganAkhirExport,
             ];
             
             foreach ($data as $colIndex => $value) {

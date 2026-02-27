@@ -13,6 +13,16 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
+        $activeRole = $user->role;
+        if ($user->role === 'superadmin') {
+            if ($request->routeIs('pendaftaran.index')) {
+                $activeRole = 'pendaftaran';
+            } elseif ($request->routeIs('plp.index')) {
+                $activeRole = 'plp';
+            } elseif ($request->routeIs('dokter.index')) {
+                $activeRole = 'dokter';
+            }
+        }
         $allowedPerPage = [10, 25, 50, 100];
         $perPage = (int) $request->get('per_page', 25);
         if (!in_array($perPage, $allowedPerPage, true)) {
@@ -29,7 +39,7 @@ class DashboardController extends Controller
         ];
         
         // Data untuk role-specific
-        switch ($user->role) {
+        switch ($activeRole) {
             case 'pendaftaran':
                 $stats['belum_hadir'] = Mahasiswa::where('status_kehadiran', 'belum_hadir')->count();
                 $stats['antrian_hari_ini'] = Mahasiswa::where('status_kehadiran', 'belum_hadir')->count();
@@ -94,7 +104,7 @@ class DashboardController extends Controller
             ];
         }
         
-        if ($user->role === 'pendaftaran') {
+        if ($activeRole === 'pendaftaran') {
             $queryPendaftaran = Mahasiswa::where('status_kehadiran', 'belum_konfirmasi');
 
             // Search
@@ -121,7 +131,7 @@ class DashboardController extends Controller
                 'total_hadir' => Mahasiswa::where('status_kehadiran', 'hadir')->count(),
                 'total_tidak_hadir' => Mahasiswa::where('status_kehadiran', 'tidak_hadir')->count(),
             ];
-        } elseif ($user->role === 'plp') {
+        } elseif ($activeRole === 'plp') {
             // PLP: Tampilkan mahasiswa yang sudah hadir tapi belum pemeriksaan PLP
             $queryPlp = Mahasiswa::where('status_kehadiran', 'hadir')
                 ->where('status_plp', 'belum');
@@ -150,7 +160,7 @@ class DashboardController extends Controller
                 'total_menunggu_plp' => Mahasiswa::where('status_kehadiran', 'hadir')->where('status_plp', 'belum')->count(),
                 'total_selesai_plp' => Mahasiswa::where('status_plp', 'selesai')->count(),
             ];
-        } elseif ($user->role === 'dokter') {
+        } elseif ($activeRole === 'dokter') {
             $queryDokter = Mahasiswa::antrianDokter();
 
             if ($request->filled('search')) {

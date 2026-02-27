@@ -39,8 +39,18 @@
                         </div>
                     </a>
                     @endif
+
+                    @if(in_array($role, ['superadmin', 'pendaftaran']))
+                    <!-- Validasi Kehadiran -->
+                    <a href="{{ route('pendaftaran.index') }}" class="group {{ request()->routeIs('pendaftaran.index') ? 'active' : '' }} cursor-pointer">
+                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+                            <i data-lucide="user-check" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Validasi Kehadiran</span>
+                        </div>
+                    </a>
+                    @endif
                     
-                    @if($role === 'plp')
+                    @if(in_array($role, ['plp', 'superadmin']))
                     <!-- Pemeriksaan PLP -->
                     <a href="{{ route('plp.index') }}" class="group {{ request()->routeIs('plp.*') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
@@ -49,8 +59,18 @@
                         </div>
                     </a>
                     @endif
+
+                    @if(in_array($role, ['dokter', 'superadmin']))
+                    <!-- Pemeriksaan Dokter -->
+                    <a href="{{ route('dokter.index') }}" class="group {{ request()->routeIs('dokter.index') ? 'active' : '' }} cursor-pointer">
+                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+                            <i data-lucide="stethoscope" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Pemeriksaan Dokter</span>
+                        </div>
+                    </a>
+                    @endif
                     
-                    @if($role === 'dokter')
+                    @if(in_array($role, ['dokter', 'superadmin']))
                     <a href="{{ route('dokter.completed') }}" class="group {{ request()->routeIs('dokter.completed') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                             <i data-lucide="clipboard-check" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
