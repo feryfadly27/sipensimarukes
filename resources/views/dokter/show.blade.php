@@ -106,7 +106,7 @@
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Mata</td>
-                    <td class="py-3 text-foreground">{{ $hasil->mata_kacamata ?: '-' }} | Minus: {{ $hasil->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_minus_nilai ? '(' . $hasil->mata_minus_nilai . ')' : '' }} | Silindris: {{ $hasil->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasil->mata_silindris_nilai ? '(' . $hasil->mata_silindris_nilai . ')' : '' }} | Strabismus: {{ $hasil->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_strabismus_nilai ? '(' . $hasil->mata_strabismus_nilai . ')' : '' }}</td>
+                    <td class="py-3 text-foreground">{{ $hasil->mata_kacamata ?: '-' }} | Normal: {{ $hasil->mata_normal ?: '-' }} | Minus: {{ $hasil->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_minus_nilai ? '(' . $hasil->mata_minus_nilai . ')' : '' }} | Silindris: {{ $hasil->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasil->mata_silindris_nilai ? '(' . $hasil->mata_silindris_nilai . ')' : '' }} | Strabismus: {{ $hasil->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_strabismus_nilai ? '(' . $hasil->mata_strabismus_nilai . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Telinga Kiri / Kanan</td>

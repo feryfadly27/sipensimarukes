@@ -5,7 +5,10 @@
             <div class="w-11 h-9 bg-primary rounded-xl flex items-center justify-center">
                 <i data-lucide="activity" class="w-5 h-5 text-white"></i>
             </div>
-            <h1 class="font-semibold text-xl">Sipenmaru</h1>
+            <div class="leading-tight">
+                <h1 class="font-semibold text-xl">Sipenmaru</h1>
+                <p class="text-xs text-secondary">Poltekkes Tasikmalaya</p>
+            </div>
         </div>
         <button onclick="toggleSidebar()" aria-label="Close sidebar" class="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
             <i data-lucide="x" class="size-6 text-secondary"></i>

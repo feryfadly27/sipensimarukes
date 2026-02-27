@@ -81,6 +81,7 @@
         <tr><th>Tanggal Pemeriksaan</th><td>{{ optional($hasilDokter?->tgl_periksa)->format('d-m-Y H:i') ?? '-' }}</td></tr>
         <tr><th>Kulit</th><td>{{ $hasilDokter->kulit ?? '-' }}</td></tr>
         <tr><th>Mata Kacamata</th><td>{{ $hasilDokter->mata_kacamata ?? '-' }}</td></tr>
+        <tr><th>Mata Normal</th><td>{{ $hasilDokter->mata_normal ?? '-' }}</td></tr>
         <tr><th>Mata Minus</th><td>{{ $hasilDokter->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_minus_nilai ? '(' . $hasilDokter->mata_minus_nilai . ')' : '' }}</td></tr>
         <tr><th>Mata Silindris</th><td>{{ $hasilDokter->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_silindris_nilai ? '(' . $hasilDokter->mata_silindris_nilai . ')' : '' }}</td></tr>
         <tr><th>Mata Strabismus</th><td>{{ $hasilDokter->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_strabismus_nilai ? '(' . $hasilDokter->mata_strabismus_nilai . ')' : '' }}</td></tr>

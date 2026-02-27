@@ -19,6 +19,7 @@ class PemeriksaanDokter extends Model
         'kulit',
         // Item 4: Mata
         'mata_kacamata',
+        'mata_normal',
         'mata_minus',
         'mata_minus_nilai',
         'mata_silindris',

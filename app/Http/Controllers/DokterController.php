@@ -150,6 +150,7 @@ class DokterController extends Controller
             'tgl_periksa' => 'required|date',
             'kulit' => 'required|in:Putih,Kuning,Hitam,Sawo matang',
             'mata_kacamata' => 'required|in:Berkacamata,Tidak berkacamata',
+            'mata_normal' => 'required|in:Normal,Tidak normal',
             'mata_minus' => 'required|boolean',
             'mata_minus_nilai' => 'nullable|numeric|required_if:mata_minus,1',
             'mata_silindris' => 'required|boolean',

@@ -109,6 +109,16 @@
                 </div>
             </div>
 
+            <div>
+                <label class="block text-sm font-medium text-foreground mb-2">Mata - Normal</label>
+                <select name="mata_normal" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
+                    <option value="">Belum diisi</option>
+                    <option value="Normal" @selected(old('mata_normal') === 'Normal')>Normal</option>
+                    <option value="Tidak normal" @selected(old('mata_normal') === 'Tidak normal')>Tidak normal</option>
+                </select>
+                @error('mata_normal')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Mata Minus</label>
