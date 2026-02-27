@@ -26,6 +26,7 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Protected Routes with cache prevention
 Route::middleware(['auth', 'prevent_cache'])->group(function () {
+    Route::get('/login-success', [LoginController::class, 'showLoginSuccess'])->name('login.success');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Data Peserta Management (Admin & Superadmin)

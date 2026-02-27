@@ -35,7 +35,7 @@
         }
     </style>
 </head>
-<body class="font-sans bg-gradient-to-br from-primary/5 via-white to-success/5 min-h-screen flex items-center justify-center p-4">
+<body class="font-sans bg-gradient-to-br from-primary/5 via-white to-success/5 min-h-screen flex items-center justify-center p-4 pb-20">
     
     <div class="w-full max-w-md">
         <!-- Logo & Title -->
@@ -44,7 +44,6 @@
                 <i data-lucide="activity" class="w-10 h-10 text-white"></i>
             </div>
             <h1 class="text-3xl font-bold text-foreground mb-2">Sipenmaru Uji Kesehatan</h1>
-            <p class="text-secondary">Poltekkes Kemenkes</p>
         </div>
         
         <!-- Login Card -->
@@ -131,17 +130,44 @@
             </form>
         </div>
         
-        <!-- Footer -->
-        <div class="text-center mt-6">
-            <p class="text-sm text-secondary">
-                &copy; {{ date('Y') }} Poltekkes Kemenkes. All rights reserved.
-            </p>
-        </div>
     </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 z-30 border-t border-border bg-white/95 backdrop-blur-sm">
+        <div class="px-5 md:px-8 py-3 text-right">
+            <p id="footer-live-clock" class="text-sm text-secondary"></p>
+        </div>
+    </footer>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
+
+            const footerClockElement = document.getElementById('footer-live-clock');
+            if (footerClockElement) {
+                const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+                    weekday: 'long',
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                const toTitleCase = (text) => text.replace(/\b\w/g, (char) => char.toUpperCase());
+
+                const updateFooterClock = () => {
+                    const now = new Date();
+                    const formattedDate = toTitleCase(dateFormatter.format(now));
+                    const timeParts = [
+                        String(now.getHours()).padStart(2, '0'),
+                        String(now.getMinutes()).padStart(2, '0'),
+                        String(now.getSeconds()).padStart(2, '0')
+                    ];
+
+                    footerClockElement.textContent = `${formattedDate} | ${timeParts.join('.')} || Made by Fery Fadly`;
+                };
+
+                updateFooterClock();
+                setInterval(updateFooterClock, 1000);
+            }
         });
     </script>
 </body>

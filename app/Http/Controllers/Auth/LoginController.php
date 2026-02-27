@@ -56,13 +56,32 @@ class LoginController extends Controller
                 ['username' => $request->username]
             );
 
-            return redirect()->intended(route('dashboard'))
-                ->with('success', 'Selamat datang, ' . auth()->user()->nama . '!');
+            return redirect()->route('login.success')
+                ->with('login_success', true)
+                ->with('welcome_name', auth()->user()->nama);
         }
 
         return back()
             ->withErrors(['username' => 'Username atau password salah'])
             ->withInput($request->only('username'));
+    }
+
+    /**
+     * Show login success page before redirecting to dashboard
+     */
+    public function showLoginSuccess(Request $request)
+    {
+        if (!auth()->check()) {
+            return redirect()->route('login');
+        }
+
+        if (!$request->session()->has('login_success')) {
+            return redirect()->route('dashboard');
+        }
+
+        return view('auth.login-success', [
+            'welcomeName' => $request->session()->get('welcome_name', auth()->user()->nama),
+        ]);
     }
 
     /**

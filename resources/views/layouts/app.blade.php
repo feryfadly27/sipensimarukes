@@ -84,7 +84,7 @@
             @include('layouts.partials.header')
             
             <!-- CONTENT -->
-            <div class="flex-1 overflow-y-auto p-5 md:p-8">
+            <div class="flex-1 overflow-y-auto p-5 md:p-8 pb-24">
                 @if(session('success'))
                     <div class="mb-6 flex items-center gap-3 bg-success-light border border-success rounded-2xl p-4">
                         <i data-lucide="check-circle" class="size-6 text-success shrink-0"></i>
@@ -103,6 +103,12 @@
             </div>
         </main>
     </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 lg:left-[280px] z-30 border-t border-border bg-white/95 backdrop-blur-sm">
+        <div class="px-5 md:px-8 py-3 text-right">
+            <p id="footer-live-clock" class="text-sm text-secondary"></p>
+        </div>
+    </footer>
     
     <script>
         function toggleSidebar() {
@@ -115,6 +121,33 @@
         
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
+
+            const footerClockElement = document.getElementById('footer-live-clock');
+            if (footerClockElement) {
+                const dateFormatter = new Intl.DateTimeFormat('id-ID', {
+                    weekday: 'long',
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric'
+                });
+
+                const toTitleCase = (text) => text.replace(/\b\w/g, (char) => char.toUpperCase());
+
+                const updateFooterClock = () => {
+                    const now = new Date();
+                    const formattedDate = toTitleCase(dateFormatter.format(now));
+                    const timeParts = [
+                        String(now.getHours()).padStart(2, '0'),
+                        String(now.getMinutes()).padStart(2, '0'),
+                        String(now.getSeconds()).padStart(2, '0')
+                    ];
+
+                    footerClockElement.textContent = `${formattedDate} | ${timeParts.join('.')} || Made by Fery Fadly`;
+                };
+
+                updateFooterClock();
+                setInterval(updateFooterClock, 1000);
+            }
         });
     </script>
     
