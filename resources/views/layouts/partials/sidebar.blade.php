@@ -52,10 +52,18 @@
                     
                     @if(in_array($role, ['dokter', 'superadmin']))
                     <!-- Pemeriksaan Dokter -->
-                    <a href="{{ route('dokter.index') }}" class="group {{ request()->routeIs('dokter.*') ? 'active' : '' }} cursor-pointer">
+                    <a href="{{ route('dokter.index') }}" class="group {{ request()->routeIs('dokter.index') || request()->routeIs('dokter.form') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                             <i data-lucide="stethoscope" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
                             <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Pemeriksaan Dokter</span>
+                        </div>
+                    </a>
+
+                    <!-- Hasil Pemeriksaan Dokter -->
+                    <a href="{{ route('dokter.completed') }}" class="group {{ request()->routeIs('dokter.completed') || request()->routeIs('dokter.show') || request()->routeIs('dokter.print') ? 'active' : '' }} cursor-pointer">
+                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+                            <i data-lucide="file-check-2" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Hasil Pemeriksaan</span>
                         </div>
                     </a>
                     @endif
