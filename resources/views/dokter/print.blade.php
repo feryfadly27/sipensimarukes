@@ -115,11 +115,6 @@
         <table class="ttd-table">
             <tr>
                 <td>
-                    <p>Diperiksa oleh PLP,</p>
-                    <div class="ttd-space"></div>
-                    <p><strong>{{ $hasilPlp->plp->nama ?? '-' }}</strong></p>
-                </td>
-                <td>
                     <p>Diperiksa oleh Dokter,</p>
                     <div class="ttd-space"></div>
                     <p><strong>{{ $hasilDokter->dokter->nama ?? '-' }}</strong></p>
