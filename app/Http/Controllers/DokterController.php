@@ -140,6 +140,11 @@ class DokterController extends Controller
 
     public function store(Request $request, Mahasiswa $mahasiswa)
     {
+        $request->merge([
+            'mata_minus_nilai' => $this->normalizeDecimalInput($request->input('mata_minus_nilai')),
+            'mata_silindris_nilai' => $this->normalizeDecimalInput($request->input('mata_silindris_nilai')),
+        ]);
+
         if ($mahasiswa->status_plp !== 'selesai' || $mahasiswa->status_dokter !== 'belum') {
             return redirect()->route('dokter.index')->with('error', 'Peserta tidak siap untuk pemeriksaan dokter.');
         }
@@ -155,9 +160,9 @@ class DokterController extends Controller
             'mata_ikterik' => 'required|in:Tidak,Ya',
             'mata_konjungtiva_anemis' => 'required|in:Tidak,Ya',
             'mata_minus' => 'required|boolean',
-            'mata_minus_nilai' => 'nullable|numeric|required_if:mata_minus,1',
+            'mata_minus_nilai' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_minus,1',
             'mata_silindris' => 'required|boolean',
-            'mata_silindris_nilai' => 'nullable|numeric|required_if:mata_silindris,1',
+            'mata_silindris_nilai' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_silindris,1',
             'mata_strabismus' => 'required|boolean',
             'mata_strabismus_nilai' => 'nullable|string|max:50|required_if:mata_strabismus,1',
             'pendengaran' => 'required|in:Normal,Terganggu',
@@ -210,6 +215,19 @@ class DokterController extends Controller
             $data = $validated;
             $data['dokter_id'] = Auth::id();
             $data['is_locked'] = true;
+
+            if ((string) ($validated['mata_minus'] ?? '0') !== '1') {
+                $data['mata_minus_nilai'] = null;
+            }
+
+            if ((string) ($validated['mata_silindris'] ?? '0') !== '1') {
+                $data['mata_silindris_nilai'] = null;
+            }
+
+            if ((string) ($validated['mata_strabismus'] ?? '0') !== '1') {
+                $data['mata_strabismus_nilai'] = null;
+            }
+
             $data['mata_normal'] = 'Normal';
             $data['mata_sklera'] = $validated['mata_ikterik'] === 'Ya' ? 'Tidak normal' : 'Normal';
             $data['mata_konjungtiba'] = $validated['mata_konjungtiva_anemis'] === 'Ya' ? 'Tidak normal' : 'Normal';
@@ -299,5 +317,21 @@ class DokterController extends Controller
         Cache::forget('dokter_active_' . Auth::id());
 
         return redirect()->route('dokter.index')->with('success', 'Pemeriksaan dokter berhasil disimpan dan dikunci.');
+    }
+
+    private function normalizeDecimalInput($value): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+
+        $normalized = trim((string) $value);
+        if ($normalized === '') {
+            return null;
+        }
+
+        $normalized = str_replace(',', '.', $normalized);
+
+        return $normalized;
     }
 }

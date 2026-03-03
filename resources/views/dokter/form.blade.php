@@ -163,7 +163,7 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Nilai Minus</label>
-                    <input type="number" step="0.25" name="mata_minus_nilai" value="{{ old('mata_minus_nilai') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional jika Tidak">
+                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_minus_nilai" value="{{ old('mata_minus_nilai') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional jika Tidak">
                     @error('mata_minus_nilai')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
@@ -179,7 +179,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Nilai Silindris</label>
-                    <input type="number" step="0.25" name="mata_silindris_nilai" value="{{ old('mata_silindris_nilai') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional jika Tidak">
+                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_silindris_nilai" value="{{ old('mata_silindris_nilai') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional jika Tidak">
                     @error('mata_silindris_nilai')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
