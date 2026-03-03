@@ -81,42 +81,34 @@
     <h2>Hasil Pemeriksaan Dokter</h2>
     <table>
         <tr><th>Tanggal Pemeriksaan</th><td>{{ optional($hasilDokter?->tgl_periksa)->format('d-m-Y H:i') ?? '-' }}</td></tr>
-        <tr><th>Kulit</th><td>{{ $hasilDokter->kulit ?? '-' }}</td></tr>
+        <tr><th>Kesimpulan Dokter</th><td>{{ $hasilDokter->kesimpulan_text }}</td></tr>
+        <tr><th>Status Kelulusan</th><td>{{ $hasilDokter->status_kelulusan ?? '-' }}</td></tr>
+        <tr><th>Keterangan Kesimpulan</th><td>{{ $hasilDokter->keterangan_kesimpulan ?? '-' }}</td></tr>
+        <tr><th>Surat Rujukan</th><td>{{ $hasilDokter->surat_rujukan ?? '-' }}</td></tr>
         <tr><th>Mata Kacamata</th><td>{{ $hasilDokter->mata_kacamata ?? '-' }}</td></tr>
-        <tr><th>Mata Normal</th><td>{{ $hasilDokter->mata_normal ?? '-' }}</td></tr>
         <tr><th>Mata Ikterik</th><td>{{ $hasilDokter->mata_ikterik ?? '-' }}</td></tr>
         <tr><th>Konjungtiva Anemis</th><td>{{ $hasilDokter->mata_konjungtiva_anemis ?? '-' }}</td></tr>
-        <tr><th>Mata Sklera</th><td>{{ $hasilDokter->mata_sklera ?? '-' }}</td></tr>
-        <tr><th>Mata Konjungtiba</th><td>{{ $hasilDokter->mata_konjungtiba ?? '-' }}</td></tr>
         <tr><th>Mata Minus</th><td>{{ $hasilDokter->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_minus_nilai ? '(' . $hasilDokter->mata_minus_nilai . ')' : '' }}</td></tr>
         <tr><th>Mata Silindris</th><td>{{ $hasilDokter->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_silindris_nilai ? '(' . $hasilDokter->mata_silindris_nilai . ')' : '' }}</td></tr>
         <tr><th>Mata Strabismus</th><td>{{ $hasilDokter->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_strabismus_nilai ? '(' . $hasilDokter->mata_strabismus_nilai . ')' : '' }}</td></tr>
-        <tr><th>Telinga Kiri</th><td>{{ $hasilDokter->telinga_kiri ?? '-' }}{{ $hasilDokter->telinga_kiri_ket ? ' (' . $hasilDokter->telinga_kiri_ket . ')' : '' }}</td></tr>
-        <tr><th>Telinga Kanan</th><td>{{ $hasilDokter->telinga_kanan ?? '-' }}{{ $hasilDokter->telinga_kanan_ket ? ' (' . $hasilDokter->telinga_kanan_ket . ')' : '' }}</td></tr>
+        <tr><th>Pendengaran</th><td>{{ $hasilDokter->pendengaran ?? '-' }}{{ $hasilDokter->pendengaran_ket ? ' (' . $hasilDokter->pendengaran_ket . ')' : '' }}</td></tr>
         <tr><th>Hidung Cuping</th><td>{{ $hasilDokter->hidung_cuping ? 'Ya' : 'Tidak' }}{{ $hasilDokter->hidung_cuping_ket ? ' (' . $hasilDokter->hidung_cuping_ket . ')' : '' }}</td></tr>
-        <tr><th>Lidah Kebersihan</th><td>{{ $hasilDokter->lidah_kebersihan ?? '-' }}{{ $hasilDokter->lidah_kebersihan_ket ? ' (' . $hasilDokter->lidah_kebersihan_ket . ')' : '' }}</td></tr>
-        <tr><th>Lidah Stomatitis</th><td>{{ $hasilDokter->lidah_stomatitis ? 'Ya' : 'Tidak' }}{{ $hasilDokter->lidah_stomatitis_ket ? ' (' . $hasilDokter->lidah_stomatitis_ket . ')' : '' }}</td></tr>
+        <tr><th>Mulut - Labioskisis</th><td>{{ $hasilDokter->mulut_labioskisis ?? '-' }}</td></tr>
+        <tr><th>Mulut - Palatoskisis</th><td>{{ $hasilDokter->mulut_palatoskisis ?? '-' }}</td></tr>
         <tr><th>Pharing Nyeri Tekan</th><td>{{ $hasilDokter->pharing_nyeri_tekan ? 'Ya' : 'Tidak' }}{{ $hasilDokter->pharing_nyeri_tekan_ket ? ' (' . $hasilDokter->pharing_nyeri_tekan_ket . ')' : '' }}</td></tr>
         <tr><th>Tonsil Kemerahan</th><td>{{ $hasilDokter->tonsil_kemerahan ? 'Ya' : 'Tidak' }}{{ $hasilDokter->tonsil_kemerahan_ket ? ' (' . $hasilDokter->tonsil_kemerahan_ket . ')' : '' }}</td></tr>
         <tr><th>Tonsil Pembesaran</th><td>{{ $hasilDokter->tonsil_pembesaran ? 'Ya' : 'Tidak' }}</td></tr>
         <tr><th>Gigi Lengkap</th><td>{{ $hasilDokter->gigi_lengkap ? 'Ya' : 'Tidak' }}</td></tr>
-        <tr><th>Tiroid</th><td>{{ $hasilDokter->tiroid ?? '-' }}</td></tr>
-        <tr><th>Jantung Murmur</th><td>{{ $hasilDokter->jantung_murmur ? 'Ya' : 'Tidak' }}{{ $hasilDokter->jantung_murmur_ket ? ' (' . $hasilDokter->jantung_murmur_ket . ')' : '' }}</td></tr>
-        <tr><th>Paru Suara Tambahan</th><td>{{ $hasilDokter->paru_suara_tambahan ? 'Ya' : 'Tidak' }}</td></tr>
+        <tr><th>Leher KGB Pembesaran</th><td>{{ $hasilDokter->leher_kgb_pembesaran ?? '-' }}</td></tr>
+        <tr><th>Jantung</th><td>{{ $hasilDokter->jantung_dbn ?? '-' }}{{ $hasilDokter->jantung_kelainan ? ' (' . $hasilDokter->jantung_kelainan . ')' : '' }}</td></tr>
+        <tr><th>Paru</th><td>{{ $hasilDokter->paru_dbn ?? '-' }}{{ $hasilDokter->paru_kelainan ? ' (' . $hasilDokter->paru_kelainan . ')' : '' }}</td></tr>
         <tr><th>Abdomen Hamil</th><td>{{ $hasilDokter->abdomen_hamil ? 'Ya' : 'Tidak' }}</td></tr>
-        <tr><th>Pupil</th><td>{{ $hasilDokter->pupil ?? '-' }}</td></tr>
-        <tr><th>Tulang Skoliosis</th><td>{{ $hasilDokter->tulang_skoliosis ? 'Ya' : 'Tidak' }}{{ $hasilDokter->tulang_skoliosis_ket ? ' (' . $hasilDokter->tulang_skoliosis_ket . ')' : '' }}</td></tr>
-        <tr><th>Tulang Lordosis</th><td>{{ $hasilDokter->tulang_lordosis ? 'Ya' : 'Tidak' }}{{ $hasilDokter->tulang_lordosis_ket ? ' (' . $hasilDokter->tulang_lordosis_ket . ')' : '' }}</td></tr>
-        <tr><th>Tulang Kifosis</th><td>{{ $hasilDokter->tulang_kifosis ? 'Ya' : 'Tidak' }}{{ $hasilDokter->tulang_kifosis_ket ? ' (' . $hasilDokter->tulang_kifosis_ket . ')' : '' }}</td></tr>
-        <tr><th>Tulang Lainnya</th><td>{{ $hasilDokter->tulang_lainnya ? 'Ya' : 'Tidak' }}{{ $hasilDokter->tulang_lainnya_ket ? ' (' . $hasilDokter->tulang_lainnya_ket . ')' : '' }}</td></tr>
+        <tr><th>Tulang Belakang</th><td>{{ $hasilDokter->tulang_belakang ?? '-' }}</td></tr>
+        <tr><th>Jari Tangan</th><td>{{ $hasilDokter->jari_tangan_lengkap ?? '-' }}{{ $hasilDokter->jari_tangan_ket ? ' (' . $hasilDokter->jari_tangan_ket . ')' : '' }}</td></tr>
         <tr><th>Bicara Artikulasi</th><td>{{ $hasilDokter->bicara_artikulasi ?? '-' }}{{ $hasilDokter->bicara_artikulasi_ket ? ' (' . $hasilDokter->bicara_artikulasi_ket . ')' : '' }}</td></tr>
         <tr><th>Cacat Tubuh</th><td>{{ $hasilDokter->cacat_tubuh ?? '-' }}</td></tr>
         <tr><th>Thorax Photo</th><td>{{ $hasilDokter->thorax_photo_file ? \Illuminate\Support\Facades\Storage::url($hasilDokter->thorax_photo_file) : '-' }}</td></tr>
         <tr><th>Keterangan Thorax</th><td>{{ $hasilDokter->thorax_photo_ket ?? '-' }}</td></tr>
-        <tr><th>Kesimpulan Dokter</th><td>{{ $hasilDokter->kesimpulan_text }}</td></tr>
-        <tr><th>Status Kelulusan</th><td>{{ $hasilDokter->status_kelulusan ?? '-' }}</td></tr>
-        <tr><th>Surat Rujukan</th><td>{{ $hasilDokter->surat_rujukan ?? '-' }}</td></tr>
-        <tr><th>Keterangan Kesimpulan</th><td>{{ $hasilDokter->keterangan_kesimpulan ?? '-' }}</td></tr>
     </table>
 
     <div class="ttd-wrap">

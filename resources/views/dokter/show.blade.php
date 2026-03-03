@@ -117,36 +117,36 @@
                     <td class="py-3 text-foreground">{{ $hasil->surat_rujukan ?: '-' }}</td>
                 </tr>
                 <tr class="border-b border-border">
-                    <td class="py-3 text-secondary">Kulit</td>
-                    <td class="py-3 text-foreground">{{ $hasil->kulit ?: '-' }}</td>
-                </tr>
-                <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Mata</td>
-                    <td class="py-3 text-foreground">{{ $hasil->mata_kacamata ?: '-' }} | Ikterik: {{ $hasil->mata_ikterik ?: '-' }} | Konjungtiva anemis: {{ $hasil->mata_konjungtiva_anemis ?: '-' }} | Sklera: {{ $hasil->mata_sklera ?: '-' }} | Konjungtiba: {{ $hasil->mata_konjungtiba ?: '-' }} | Minus: {{ $hasil->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_minus_nilai ? '(' . $hasil->mata_minus_nilai . ')' : '' }} | Silindris: {{ $hasil->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasil->mata_silindris_nilai ? '(' . $hasil->mata_silindris_nilai . ')' : '' }} | Strabismus: {{ $hasil->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_strabismus_nilai ? '(' . $hasil->mata_strabismus_nilai . ')' : '' }}</td>
+                    <td class="py-3 text-foreground">{{ $hasil->mata_kacamata ?: '-' }} | Ikterik: {{ $hasil->mata_ikterik ?: '-' }} | Konjungtiva anemis: {{ $hasil->mata_konjungtiva_anemis ?: '-' }} | Minus: {{ $hasil->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_minus_nilai ? '(' . $hasil->mata_minus_nilai . ')' : '' }} | Silindris: {{ $hasil->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasil->mata_silindris_nilai ? '(' . $hasil->mata_silindris_nilai . ')' : '' }} | Strabismus: {{ $hasil->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_strabismus_nilai ? '(' . $hasil->mata_strabismus_nilai . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
-                    <td class="py-3 text-secondary">Telinga Kiri / Kanan</td>
-                    <td class="py-3 text-foreground">{{ $hasil->telinga_kiri ?: '-' }}{{ $hasil->telinga_kiri_ket ? ' (' . $hasil->telinga_kiri_ket . ')' : '' }} | {{ $hasil->telinga_kanan ?: '-' }}{{ $hasil->telinga_kanan_ket ? ' (' . $hasil->telinga_kanan_ket . ')' : '' }} | Pendengaran: {{ $hasil->pendengaran ?: '-' }}{{ $hasil->pendengaran_ket ? ' (' . $hasil->pendengaran_ket . ')' : '' }}</td>
+                    <td class="py-3 text-secondary">Pendengaran</td>
+                    <td class="py-3 text-foreground">{{ $hasil->pendengaran ?: '-' }}{{ $hasil->pendengaran_ket ? ' (' . $hasil->pendengaran_ket . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
-                    <td class="py-3 text-secondary">Lidah</td>
-                    <td class="py-3 text-foreground">Kebersihan: {{ $hasil->lidah_kebersihan ?: '-' }}{{ $hasil->lidah_kebersihan_ket ? ' (' . $hasil->lidah_kebersihan_ket . ')' : '' }} | Stomatitis: {{ $hasil->lidah_stomatitis ? 'Ya' : 'Tidak' }}{{ $hasil->lidah_stomatitis_ket ? ' (' . $hasil->lidah_stomatitis_ket . ')' : '' }}</td>
+                    <td class="py-3 text-secondary">Hidung (Cuping)</td>
+                    <td class="py-3 text-foreground">{{ $hasil->hidung_cuping ? 'Ya' : 'Tidak' }}{{ $hasil->hidung_cuping_ket ? ' (' . $hasil->hidung_cuping_ket . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
-                    <td class="py-3 text-secondary">Pharing & Tonsil</td>
+                    <td class="py-3 text-secondary">Mulut</td>
+                    <td class="py-3 text-foreground">Labioskisis: {{ $hasil->mulut_labioskisis ?: '-' }} | Palatoskisis: {{ $hasil->mulut_palatoskisis ?: '-' }}</td>
+                </tr>
+                <tr class="border-b border-border">
+                    <td class="py-3 text-secondary">Pharing, Tonsil & Gigi</td>
                     <td class="py-3 text-foreground">Pharing nyeri tekan: {{ $hasil->pharing_nyeri_tekan ? 'Ya' : 'Tidak' }}{{ $hasil->pharing_nyeri_tekan_ket ? ' (' . $hasil->pharing_nyeri_tekan_ket . ')' : '' }} | Tonsil kemerahan: {{ $hasil->tonsil_kemerahan ? 'Ya' : 'Tidak' }}{{ $hasil->tonsil_kemerahan_ket ? ' (' . $hasil->tonsil_kemerahan_ket . ')' : '' }} | Tonsil pembesaran: {{ $hasil->tonsil_pembesaran ? 'Ya' : 'Tidak' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Jantung & Paru</td>
-                    <td class="py-3 text-foreground">Murmur: {{ $hasil->jantung_murmur ? 'Ya' : 'Tidak' }}{{ $hasil->jantung_murmur_ket ? ' (' . $hasil->jantung_murmur_ket . ')' : '' }} | Suara tambahan paru: {{ $hasil->paru_suara_tambahan ? 'Ya' : 'Tidak' }}</td>
+                    <td class="py-3 text-foreground">Jantung: {{ $hasil->jantung_dbn ?: '-' }}{{ $hasil->jantung_kelainan ? ' (' . $hasil->jantung_kelainan . ')' : '' }} | Paru: {{ $hasil->paru_dbn ?: '-' }}{{ $hasil->paru_kelainan ? ' (' . $hasil->paru_kelainan . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
-                    <td class="py-3 text-secondary">Pupil & Bicara</td>
-                    <td class="py-3 text-foreground">Pupil: {{ $hasil->pupil ?: '-' }} | Bicara: {{ $hasil->bicara_artikulasi ?: '-' }}{{ $hasil->bicara_artikulasi_ket ? ' (' . $hasil->bicara_artikulasi_ket . ')' : '' }}</td>
+                    <td class="py-3 text-secondary">Leher, Abdomen & Tulang Belakang</td>
+                    <td class="py-3 text-foreground">Leher KGB: {{ $hasil->leher_kgb_pembesaran ?: '-' }} | Abdomen hamil: {{ $hasil->abdomen_hamil ? 'Ya' : 'Tidak' }} | Tulang belakang: {{ $hasil->tulang_belakang ?: '-' }}</td>
                 </tr>
                 <tr class="border-b border-border">
-                    <td class="py-3 text-secondary">Tulang Belakang</td>
-                    <td class="py-3 text-foreground">Skoliosis: {{ $hasil->tulang_skoliosis ? 'Ya' : 'Tidak' }}{{ $hasil->tulang_skoliosis_ket ? ' (' . $hasil->tulang_skoliosis_ket . ')' : '' }} | Lordosis: {{ $hasil->tulang_lordosis ? 'Ya' : 'Tidak' }}{{ $hasil->tulang_lordosis_ket ? ' (' . $hasil->tulang_lordosis_ket . ')' : '' }} | Kifosis: {{ $hasil->tulang_kifosis ? 'Ya' : 'Tidak' }}{{ $hasil->tulang_kifosis_ket ? ' (' . $hasil->tulang_kifosis_ket . ')' : '' }} | Lainnya: {{ $hasil->tulang_lainnya ? 'Ya' : 'Tidak' }}{{ $hasil->tulang_lainnya_ket ? ' (' . $hasil->tulang_lainnya_ket . ')' : '' }}</td>
+                    <td class="py-3 text-secondary">Jari Tangan & Bicara</td>
+                    <td class="py-3 text-foreground">Jari tangan: {{ $hasil->jari_tangan_lengkap ?: '-' }}{{ $hasil->jari_tangan_ket ? ' (' . $hasil->jari_tangan_ket . ')' : '' }} | Bicara: {{ $hasil->bicara_artikulasi ?: '-' }}{{ $hasil->bicara_artikulasi_ket ? ' (' . $hasil->bicara_artikulasi_ket . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Cacat Tubuh</td>
