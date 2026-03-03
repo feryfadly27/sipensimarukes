@@ -32,6 +32,10 @@
                     <p class="text-foreground font-medium mt-1">{{ $mahasiswa->no_identitas }}</p>
                 </div>
                 <div>
+                    <label class="text-sm text-secondary font-medium">Nomor Telepon</label>
+                    <p class="text-foreground font-medium mt-1">{{ $mahasiswa->no_telp ?? '-' }}</p>
+                </div>
+                <div>
                     <label class="text-sm text-secondary font-medium">Nama Lengkap</label>
                     <p class="text-foreground font-medium mt-1">{{ $mahasiswa->nama }}</p>
                 </div>

@@ -50,7 +50,7 @@
     <!-- Filter Section -->
     <div class="rounded-2xl border border-border p-6 bg-white">
         <form action="{{ route('pendaftaran.index') }}" method="GET" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search -->
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Cari Nama atau No. Pendaftaran</label>
@@ -70,15 +70,6 @@
                         <option value="">Semua Program</option>
                         @foreach($prodis as $prodi)
                             <option value="{{ $prodi }}" @selected($prodi == request('prodi'))>{{ $prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                    <select name="per_page" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm">
-                        @foreach([10, 25, 50, 100] as $size)
-                            <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
                         @endforeach
                     </select>
                 </div>

@@ -70,6 +70,7 @@
         <tr><th>Suhu</th><td>{{ $hasilPlp?->suhu ? $hasilPlp->suhu . ' °C' : '-' }}</td></tr>
         <tr><th>Tensi</th><td>{{ $hasilPlp->tensi ?? '-' }}</td></tr>
         <tr><th>Riwayat Keluarga</th><td>{{ $hasilPlp->riwayat_keluarga ?? '-' }}</td></tr>
+        <tr><th>Keterangan Pemeriksaan PLP</th><td>{{ $hasilPlp->keterangan_pemeriksaan ?? '-' }}</td></tr>
         <tr><th>Buta Warna</th><td>{{ $hasilPlp->buta_warna ?? '-' }}</td></tr>
         <tr><th>Tinggi Badan</th><td>{{ $hasilPlp->tinggi_badan ?? '-' }}</td></tr>
         <tr><th>Berat Badan</th><td>{{ $hasilPlp->berat_badan ?? '-' }}</td></tr>
@@ -82,6 +83,8 @@
         <tr><th>Kulit</th><td>{{ $hasilDokter->kulit ?? '-' }}</td></tr>
         <tr><th>Mata Kacamata</th><td>{{ $hasilDokter->mata_kacamata ?? '-' }}</td></tr>
         <tr><th>Mata Normal</th><td>{{ $hasilDokter->mata_normal ?? '-' }}</td></tr>
+        <tr><th>Mata Sklera</th><td>{{ $hasilDokter->mata_sklera ?? '-' }}</td></tr>
+        <tr><th>Mata Konjungtiba</th><td>{{ $hasilDokter->mata_konjungtiba ?? '-' }}</td></tr>
         <tr><th>Mata Minus</th><td>{{ $hasilDokter->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_minus_nilai ? '(' . $hasilDokter->mata_minus_nilai . ')' : '' }}</td></tr>
         <tr><th>Mata Silindris</th><td>{{ $hasilDokter->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_silindris_nilai ? '(' . $hasilDokter->mata_silindris_nilai . ')' : '' }}</td></tr>
         <tr><th>Mata Strabismus</th><td>{{ $hasilDokter->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_strabismus_nilai ? '(' . $hasilDokter->mata_strabismus_nilai . ')' : '' }}</td></tr>

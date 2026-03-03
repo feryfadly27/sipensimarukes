@@ -4,42 +4,27 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Mahasiswa;
-use App\Models\PemeriksaanPlp;
 use App\Models\User;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Prodi;
 
 class DashboardController extends Controller
 {
     public function index(Request $request)
     {
         $user = auth()->user();
-        $activeRole = $user->role;
-        if ($user->role === 'superadmin') {
-            if ($request->routeIs('pendaftaran.index')) {
-                $activeRole = 'pendaftaran';
-            } elseif ($request->routeIs('plp.index')) {
-                $activeRole = 'plp';
-            } elseif ($request->routeIs('dokter.index')) {
-                $activeRole = 'dokter';
-            }
-        }
-        $allowedPerPage = [10, 25, 50, 100];
-        $perPage = (int) $request->get('per_page', 25);
-        if (!in_array($perPage, $allowedPerPage, true)) {
-            $perPage = 25;
-        }
         
         // Stats berdasarkan role
         $stats = [
             'total_peserta' => Mahasiswa::count(),
-            'total_hadir' => Mahasiswa::where('status_kehadiran', 'hadir')->count(),
+            'hadir_hari_ini' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', today())->count(),
             'plp_selesai' => Mahasiswa::where('status_plp', 'selesai')->count(),
             'dokter_selesai' => Mahasiswa::where('status_dokter', 'selesai')->count(),
             'memenuhi_syarat' => Mahasiswa::where('kesimpulan_akhir', 'memenuhi_syarat')->count(),
         ];
         
         // Data untuk role-specific
-        switch ($activeRole) {
+        switch ($user->role) {
             case 'pendaftaran':
                 $stats['belum_hadir'] = Mahasiswa::where('status_kehadiran', 'belum_hadir')->count();
                 $stats['antrian_hari_ini'] = Mahasiswa::where('status_kehadiran', 'belum_hadir')->count();
@@ -64,47 +49,14 @@ class DashboardController extends Controller
 
         // Pendaftaran confirmation data (only for pendaftaran role)
         $mahasiswa = null;
-        $prodis = null;
+        $prodis = $this->getProdiOptions();
         $statsPendaftaran = null;
         $plpData = null;
         $plpStats = null;
         $dokterData = null;
         $dokterStats = null;
-        $adminMonitoring = null;
-
-        if (in_array($user->role, ['admin', 'superadmin'])) {
-            $ongoingPlp = PemeriksaanPlp::where('status_pemeriksaan', 'sedang_diperiksa')
-                ->with(['mahasiswa:id,nama,no_pendaftaran,nomor_urut', 'plp:id,nama'])
-                ->orderByDesc('started_at')
-                ->get();
-
-            $activeDokter = User::where('role', 'dokter')
-                ->select('id', 'nama')
-                ->get()
-                ->map(function ($dokter) {
-                    $active = Cache::get('dokter_active_' . $dokter->id);
-
-                    if (!$active) {
-                        return null;
-                    }
-
-                    return [
-                        'dokter_nama' => $active['dokter_nama'] ?? $dokter->nama,
-                        'mahasiswa_nama' => $active['mahasiswa_nama'] ?? '-',
-                        'mahasiswa_no_pendaftaran' => $active['mahasiswa_no_pendaftaran'] ?? '-',
-                        'started_at' => $active['started_at'] ?? null,
-                    ];
-                })
-                ->filter()
-                ->values();
-
-            $adminMonitoring = [
-                'ongoing_plp' => $ongoingPlp,
-                'active_dokter' => $activeDokter,
-            ];
-        }
         
-        if ($activeRole === 'pendaftaran') {
+        if (in_array($user->role, ['pendaftaran', 'superadmin'])) {
             $queryPendaftaran = Mahasiswa::where('status_kehadiran', 'belum_konfirmasi');
 
             // Search
@@ -122,8 +74,7 @@ class DashboardController extends Controller
                 $queryPendaftaran->where('prodi', $request->prodi);
             }
 
-            $mahasiswa = $queryPendaftaran->orderBy('created_at', 'asc')->paginate($perPage)->withQueryString();
-            $prodis = Mahasiswa::select('prodi')->distinct()->whereNotNull('prodi')->pluck('prodi');
+            $mahasiswa = $queryPendaftaran->orderBy('created_at', 'asc')->paginate(15);
 
             // Stats pendaftaran
             $statsPendaftaran = [
@@ -131,7 +82,9 @@ class DashboardController extends Controller
                 'total_hadir' => Mahasiswa::where('status_kehadiran', 'hadir')->count(),
                 'total_tidak_hadir' => Mahasiswa::where('status_kehadiran', 'tidak_hadir')->count(),
             ];
-        } elseif ($activeRole === 'plp') {
+        }
+
+        if (in_array($user->role, ['plp', 'superadmin'])) {
             // PLP: Tampilkan mahasiswa yang sudah hadir tapi belum pemeriksaan PLP
             $queryPlp = Mahasiswa::where('status_kehadiran', 'hadir')
                 ->where('status_plp', 'belum');
@@ -151,8 +104,7 @@ class DashboardController extends Controller
                 $queryPlp->where('prodi', $request->prodi);
             }
 
-            $plpData = $queryPlp->orderBy('nomor_urut', 'asc')->paginate($perPage)->withQueryString();
-            $prodis = Mahasiswa::select('prodi')->distinct()->whereNotNull('prodi')->pluck('prodi');
+            $plpData = $queryPlp->orderBy('nomor_urut', 'asc')->paginate(15);
 
             // Stats PLP
             $plpStats = [
@@ -160,7 +112,9 @@ class DashboardController extends Controller
                 'total_menunggu_plp' => Mahasiswa::where('status_kehadiran', 'hadir')->where('status_plp', 'belum')->count(),
                 'total_selesai_plp' => Mahasiswa::where('status_plp', 'selesai')->count(),
             ];
-        } elseif ($activeRole === 'dokter') {
+        }
+
+        if (in_array($user->role, ['dokter', 'superadmin'])) {
             $queryDokter = Mahasiswa::antrianDokter();
 
             if ($request->filled('search')) {
@@ -176,8 +130,7 @@ class DashboardController extends Controller
                 $queryDokter->where('prodi', $request->prodi);
             }
 
-            $dokterData = $queryDokter->orderBy('updated_at', 'asc')->paginate($perPage)->withQueryString();
-            $prodis = Mahasiswa::select('prodi')->distinct()->whereNotNull('prodi')->pluck('prodi');
+            $dokterData = $queryDokter->orderBy('updated_at', 'asc')->paginate(15);
 
             $dokterStats = [
                 'total_plp_selesai' => Mahasiswa::where('status_plp', 'selesai')->count(),
@@ -186,6 +139,22 @@ class DashboardController extends Controller
             ];
         }
         
-        return view('dashboard.index', compact('stats', 'mahasiswa', 'prodis', 'statsPendaftaran', 'plpData', 'plpStats', 'dokterData', 'dokterStats', 'adminMonitoring'));
+        return view('dashboard.index', compact('stats', 'mahasiswa', 'prodis', 'statsPendaftaran', 'plpData', 'plpStats', 'dokterData', 'dokterStats'));
+    }
+
+    private function getProdiOptions()
+    {
+        $prodis = Prodi::aktif()->orderBy('nama')->pluck('nama');
+
+        if ($prodis->isNotEmpty()) {
+            return $prodis;
+        }
+
+        return Mahasiswa::query()
+            ->whereNotNull('prodi')
+            ->where('prodi', '!=', '')
+            ->distinct()
+            ->orderBy('prodi')
+            ->pluck('prodi');
     }
 }

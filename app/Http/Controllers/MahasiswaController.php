@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
 use App\Models\LogAktivitas;
+use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,11 +18,6 @@ class MahasiswaController extends Controller
     public function index(Request $request)
     {
         $query = Mahasiswa::query();
-        $allowedPerPage = [10, 25, 50, 100];
-        $perPage = (int) $request->get('per_page', 25);
-        if (!in_array($perPage, $allowedPerPage, true)) {
-            $perPage = 25;
-        }
         
         // Filter by prodi
         if ($request->filled('prodi')) {
@@ -39,13 +35,14 @@ class MahasiswaController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%")
                   ->orWhere('no_pendaftaran', 'like', "%{$search}%")
-                  ->orWhere('no_identitas', 'like', "%{$search}%");
+                  ->orWhere('no_identitas', 'like', "%{$search}%")
+                  ->orWhere('no_telp', 'like', "%{$search}%");
             });
         }
         
-        $mahasiswa = $query->orderBy('nama', 'asc')->paginate($perPage)->withQueryString();
+        $mahasiswa = $query->orderBy('nama', 'asc')->paginate(20);
         
-        $prodis = Mahasiswa::distinct()->pluck('prodi')->filter();
+        $prodis = $this->getProdiOptions();
         
         return view('mahasiswa.index', compact('mahasiswa', 'prodis'));
     }
@@ -55,7 +52,7 @@ class MahasiswaController extends Controller
      */
     public function create()
     {
-        $prodis = ['Kebidanan', 'Keperawatan', 'Kesehatan Masyarakat', 'Administrasi Kesehatan', 'Farmasi'];
+        $prodis = $this->getProdiOptions();
         
         return view('mahasiswa.create', compact('prodis'));
     }
@@ -65,21 +62,39 @@ class MahasiswaController extends Controller
      */
     public function store(Request $request)
     {
+        $request->merge([
+            'no_telp' => $this->normalizeNoTelpValue($request->input('no_telp')),
+        ]);
+
         $validated = $request->validate([
             'no_pendaftaran' => 'required|string|unique:mahasiswa,no_pendaftaran',
             'no_identitas' => 'required|string|unique:mahasiswa,no_identitas',
+            'no_telp' => ['nullable', 'regex:/^08\d{0,10}$/'],
             'nama' => 'required|string|max:100',
             'tempat_lahir' => 'required|string|max:50',
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'prodi' => 'required|string|max:50',
+            'prodi' => 'nullable|string|max:100|exists:prodis,nama',
+            'prodi_pilihan_1' => 'required|string|max:100|exists:prodis,nama',
+            'prodi_pilihan_2' => 'nullable|string|max:100|exists:prodis,nama',
             'asal_sekolah' => 'required|string|max:100',
         ], [
             'no_pendaftaran.unique' => 'No pendaftaran sudah terdaftar',
             'no_identitas.unique' => 'No identitas sudah terdaftar',
+            'no_telp.regex' => 'Nomor telepon harus diawali 08, hanya angka, dan maksimal 12 digit',
         ]);
 
         try {
+            if (empty($validated['prodi'])) {
+                $validated['prodi'] = $validated['prodi_pilihan_1'];
+            }
+
+            $this->syncProdiMasterFromValues([
+                $validated['prodi'] ?? null,
+                $validated['prodi_pilihan_1'] ?? null,
+                $validated['prodi_pilihan_2'] ?? null,
+            ]);
+
             Mahasiswa::create($validated);
             
             LogAktivitas::catat(
@@ -102,7 +117,7 @@ class MahasiswaController extends Controller
      */
     public function edit(Mahasiswa $mahasiswa)
     {
-        $prodis = ['Kebidanan', 'Keperawatan', 'Kesehatan Masyarakat', 'Administrasi Kesehatan', 'Farmasi'];
+        $prodis = $this->getProdiOptions();
         
         return view('mahasiswa.edit', compact('mahasiswa', 'prodis'));
     }
@@ -120,20 +135,33 @@ class MahasiswaController extends Controller
      */
     public function update(Request $request, Mahasiswa $mahasiswa)
     {
+        $request->merge([
+            'no_telp' => $this->normalizeNoTelpValue($request->input('no_telp')),
+        ]);
+
         $validated = $request->validate([
             'no_pendaftaran' => 'required|string|unique:mahasiswa,no_pendaftaran,' . $mahasiswa->id,
             'no_identitas' => 'required|string|unique:mahasiswa,no_identitas,' . $mahasiswa->id,
+            'no_telp' => ['nullable', 'regex:/^08\d{0,10}$/'],
             'nama' => 'required|string|max:100',
             'tempat_lahir' => 'required|string|max:50',
             'tanggal_lahir' => 'required|date',
             'jenis_kelamin' => 'required|in:Laki-laki,Perempuan',
-            'prodi' => 'required|string|max:50',
-            'prodi_pilihan_1' => 'nullable|string|max:50',
-            'prodi_pilihan_2' => 'nullable|string|max:50',
+            'prodi' => 'required|string|max:100|exists:prodis,nama',
+            'prodi_pilihan_1' => 'nullable|string|max:100|exists:prodis,nama',
+            'prodi_pilihan_2' => 'nullable|string|max:100|exists:prodis,nama',
             'asal_sekolah' => 'required|string|max:100',
+        ], [
+            'no_telp.regex' => 'Nomor telepon harus diawali 08, hanya angka, dan maksimal 12 digit',
         ]);
 
         try {
+            $this->syncProdiMasterFromValues([
+                $validated['prodi'] ?? null,
+                $validated['prodi_pilihan_1'] ?? null,
+                $validated['prodi_pilihan_2'] ?? null,
+            ]);
+
             $mahasiswa->update($validated);
             
             LogAktivitas::catat(
@@ -183,17 +211,19 @@ class MahasiswaController extends Controller
         $headers = [
             'No. Pendaftaran',
             'No. Identitas/KTP',
+            'No. Telepon',
             'Nama Lengkap',
             'Tempat Lahir',
             'Tanggal Lahir',
             'Jenis Kelamin',
-            'Program Studi',
+            'Program Studi Pilihan 1',
+            'Program Studi Pilihan 2',
             'Asal Sekolah'
         ];
 
         $sampleData = [
-            ['PEN2026001', '123456789012345', 'Ahmad Rizki Pratama', 'Jakarta', '2005-01-15', 'Laki-laki', 'Keperawatan', 'SMA Negeri 1 Jakarta'],
-            ['PEN2026002', '123456789012346', 'Siti Nurhaliza', 'Bandung', '2004-06-20', 'Perempuan', 'Kebidanan', 'SMA Negeri 3 Bandung'],
+            ['PEN2026001', '123456789012345', '081234567890', 'Ahmad Rizki Pratama', 'Jakarta', '2005-01-15', 'Laki-laki', 'Keperawatan', 'Farmasi', 'SMA Negeri 1 Jakarta'],
+            ['PEN2026002', '123456789012346', '082345678901', 'Siti Nurhaliza', 'Bandung', '2004-06-20', 'Perempuan', 'Kebidanan', 'Keperawatan', 'SMA Negeri 3 Bandung'],
         ];
 
         // Fallback to CSV if Zip extension is missing.
@@ -285,23 +315,38 @@ class MahasiswaController extends Controller
                 if (empty($row[0])) continue;
 
                 try {
-                    // Map columns: A=no_pendaftaran, B=no_identitas, C=nama, D=tempat_lahir, E=tanggal_lahir, F=jenis_kelamin, G=prodi_pilihan_1, H=prodi_pilihan_2, I=asal_sekolah
+                    // Map columns (new): A=no_pendaftaran, B=no_identitas, C=no_telp, D=nama, E=tempat_lahir, F=tanggal_lahir, G=jenis_kelamin, H=prodi_pilihan_1, I=prodi_pilihan_2, J=asal_sekolah
+                    // Backward compatibility (old): A=no_pendaftaran, B=no_identitas, C=nama, D=tempat_lahir, E=tanggal_lahir, F=jenis_kelamin, G=prodi_pilihan_1, H=prodi_pilihan_2, I=asal_sekolah
+                    $hasNoTelpColumn = isset($row[9]);
+
                     $data = [
                         'no_pendaftaran' => $row[0] ?? null,
                         'no_identitas' => $row[1] ?? null,
-                        'nama' => $row[2] ?? null,
-                        'tempat_lahir' => $row[3] ?? null,
-                        'tanggal_lahir' => $row[4] ?? null,
-                        'jenis_kelamin' => $row[5] ?? null,
-                        'prodi_pilihan_1' => $row[6] ?? null,
-                        'prodi_pilihan_2' => $row[7] ?? null,
-                        'asal_sekolah' => $row[8] ?? null,
-                        'prodi' => $row[6] ?? null, // Default prodi = prodi_pilihan_1
+                        'no_telp' => $hasNoTelpColumn ? ($row[2] ?? null) : null,
+                        'nama' => $hasNoTelpColumn ? ($row[3] ?? null) : ($row[2] ?? null),
+                        'tempat_lahir' => $hasNoTelpColumn ? ($row[4] ?? null) : ($row[3] ?? null),
+                        'tanggal_lahir' => $hasNoTelpColumn ? ($row[5] ?? null) : ($row[4] ?? null),
+                        'jenis_kelamin' => $hasNoTelpColumn ? ($row[6] ?? null) : ($row[5] ?? null),
+                        'prodi_pilihan_1' => $hasNoTelpColumn ? ($row[7] ?? null) : ($row[6] ?? null),
+                        'prodi_pilihan_2' => $hasNoTelpColumn ? ($row[8] ?? null) : ($row[7] ?? null),
+                        'asal_sekolah' => $hasNoTelpColumn ? ($row[9] ?? null) : ($row[8] ?? null),
+                        'prodi' => $hasNoTelpColumn ? ($row[7] ?? null) : ($row[6] ?? null), // Default prodi = prodi_pilihan_1
                     ];
+
+                    if (isset($data['no_telp'])) {
+                        $normalizedTelp = trim((string) $data['no_telp']);
+                        $data['no_telp'] = ($normalizedTelp === '' || $normalizedTelp === '-') ? null : $normalizedTelp;
+                    }
 
                     // Validate required fields
                     if (!$data['no_pendaftaran'] || !$data['no_identitas'] || !$data['nama'] || !$data['prodi_pilihan_1']) {
                         $errors[] = "Baris " . ($index + 1) . ": Data tidak lengkap (no_pendaftaran, no_identitas, nama, prodi_pilihan_1 wajib)";
+                        $failed++;
+                        continue;
+                    }
+
+                    if (!empty($data['no_telp']) && !preg_match('/^08\d{0,10}$/', (string) $data['no_telp'])) {
+                        $errors[] = "Baris " . ($index + 1) . ": Nomor telepon harus diawali 08, hanya angka, dan maksimal 12 digit";
                         $failed++;
                         continue;
                     }
@@ -318,6 +363,12 @@ class MahasiswaController extends Controller
                         $failed++;
                         continue;
                     }
+
+                    $this->syncProdiMasterFromValues([
+                        $data['prodi'] ?? null,
+                        $data['prodi_pilihan_1'] ?? null,
+                        $data['prodi_pilihan_2'] ?? null,
+                    ]);
 
                     // Create mahasiswa record
                     Mahasiswa::create($data);
@@ -350,5 +401,48 @@ class MahasiswaController extends Controller
         } catch (\Exception $e) {
             return back()->with('error', 'Gagal mengimpor file: ' . $e->getMessage());
         }
+    }
+
+    private function getProdiOptions()
+    {
+        $prodis = Prodi::aktif()->orderBy('nama')->pluck('nama');
+
+        if ($prodis->isNotEmpty()) {
+            return $prodis;
+        }
+
+        return Mahasiswa::query()
+            ->whereNotNull('prodi')
+            ->where('prodi', '!=', '')
+            ->distinct()
+            ->orderBy('prodi')
+            ->pluck('prodi');
+    }
+
+    private function syncProdiMasterFromValues(array $values): void
+    {
+        foreach ($values as $value) {
+            $nama = trim((string) $value);
+
+            if ($nama === '') {
+                continue;
+            }
+
+            Prodi::updateOrCreate(
+                ['nama' => $nama],
+                ['is_active' => true]
+            );
+        }
+    }
+
+    private function normalizeNoTelpValue($value): ?string
+    {
+        $normalized = trim((string) $value);
+
+        if ($normalized === '' || $normalized === '-') {
+            return null;
+        }
+
+        return $normalized;
     }
 }

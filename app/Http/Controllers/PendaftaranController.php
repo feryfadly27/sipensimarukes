@@ -4,18 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Mahasiswa;
 use App\Models\LogAktivitas;
+use App\Models\Prodi;
 use Illuminate\Http\Request;
 
 class PendaftaranController extends Controller
 {
     public function index(Request $request)
     {
-        $allowedPerPage = [10, 25, 50, 100];
-        $perPage = (int) $request->get('per_page', 25);
-        if (!in_array($perPage, $allowedPerPage, true)) {
-            $perPage = 25;
-        }
-
         // Get students that need confirmation (status belum_konfirmasi)
         $query = Mahasiswa::where('status_kehadiran', 'belum_konfirmasi');
 
@@ -34,10 +29,10 @@ class PendaftaranController extends Controller
             $query->where('prodi', $request->prodi);
         }
 
-        $mahasiswa = $query->orderBy('created_at', 'asc')->paginate($perPage)->withQueryString();
+        $mahasiswa = $query->orderBy('created_at', 'asc')->paginate(20);
         
         // Get list of programs for filter
-        $prodis = Mahasiswa::select('prodi')->distinct()->whereNotNull('prodi')->pluck('prodi');
+        $prodis = Prodi::aktif()->orderBy('nama')->pluck('nama');
 
         // Calculate stats
         $stats = [

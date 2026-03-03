@@ -11,11 +11,6 @@ class LogAktivitasController extends Controller
     {
         $query = LogAktivitas::with('user')
             ->excludingSuperadmin();
-        $allowedPerPage = [10, 25, 50, 100];
-        $perPage = (int) $request->get('per_page', 25);
-        if (!in_array($perPage, $allowedPerPage, true)) {
-            $perPage = 25;
-        }
 
         // Filter by user
         if ($request->filled('user_id')) {
@@ -51,7 +46,7 @@ class LogAktivitasController extends Controller
             });
         }
 
-        $logs = $query->orderBy('waktu', 'desc')->paginate($perPage)->withQueryString();
+        $logs = $query->orderBy('waktu', 'desc')->paginate(15);
         
         $users = \App\Models\User::where('role', '!=', 'superadmin')->pluck('nama', 'id');
         $tables = LogAktivitas::excludingSuperadmin()->distinct()->pluck('target_tabel');

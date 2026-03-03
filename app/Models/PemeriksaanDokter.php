@@ -20,6 +20,8 @@ class PemeriksaanDokter extends Model
         // Item 4: Mata
         'mata_kacamata',
         'mata_normal',
+        'mata_sklera',
+        'mata_konjungtiba',
         'mata_minus',
         'mata_minus_nilai',
         'mata_silindris',

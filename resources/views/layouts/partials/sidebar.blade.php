@@ -5,10 +5,7 @@
             <div class="w-11 h-9 bg-primary rounded-xl flex items-center justify-center">
                 <i data-lucide="activity" class="w-5 h-5 text-white"></i>
             </div>
-            <div class="leading-tight">
-                <h1 class="font-semibold text-xl">Sipenmaru</h1>
-                <p class="text-xs text-secondary">Poltekkes Tasikmalaya</p>
-            </div>
+            <h1 class="font-semibold text-xl">Sipenmaru</h1>
         </div>
         <button onclick="toggleSidebar()" aria-label="Close sidebar" class="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
             <i data-lucide="x" class="size-6 text-secondary"></i>
@@ -42,16 +39,6 @@
                         </div>
                     </a>
                     @endif
-
-                    @if(in_array($role, ['superadmin', 'pendaftaran']))
-                    <!-- Validasi Kehadiran -->
-                    <a href="{{ route('pendaftaran.index') }}" class="group {{ request()->routeIs('pendaftaran.index') ? 'active' : '' }} cursor-pointer">
-                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
-                            <i data-lucide="user-check" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
-                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Validasi Kehadiran</span>
-                        </div>
-                    </a>
-                    @endif
                     
                     @if(in_array($role, ['plp', 'superadmin']))
                     <!-- Pemeriksaan PLP -->
@@ -62,22 +49,13 @@
                         </div>
                     </a>
                     @endif
-
+                    
                     @if(in_array($role, ['dokter', 'superadmin']))
                     <!-- Pemeriksaan Dokter -->
-                    <a href="{{ route('dokter.index') }}" class="group {{ request()->routeIs('dokter.index') ? 'active' : '' }} cursor-pointer">
+                    <a href="{{ route('dokter.index') }}" class="group {{ request()->routeIs('dokter.*') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                             <i data-lucide="stethoscope" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
                             <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Pemeriksaan Dokter</span>
-                        </div>
-                    </a>
-                    @endif
-                    
-                    @if(in_array($role, ['dokter', 'superadmin']))
-                    <a href="{{ route('dokter.completed') }}" class="group {{ request()->routeIs('dokter.completed') ? 'active' : '' }} cursor-pointer">
-                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
-                            <i data-lucide="clipboard-check" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
-                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Sudah Diperiksa</span>
                         </div>
                     </a>
                     @endif
@@ -112,6 +90,12 @@
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                             <i data-lucide="user-cog" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
                             <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Kelola User</span>
+                        </div>
+                    </a>
+                    <a href="{{ route('prodis.index') }}" class="group {{ request()->routeIs('prodis.*') ? 'active' : '' }} cursor-pointer">
+                        <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+                            <i data-lucide="graduation-cap" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
+                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Kelola Prodi</span>
                         </div>
                     </a>
                 </div>

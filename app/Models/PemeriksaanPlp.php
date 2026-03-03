@@ -19,6 +19,7 @@ class PemeriksaanPlp extends Model
         'suhu',
         'tensi',
         'riwayat_keluarga',
+        'keterangan_pemeriksaan',
         'buta_warna',
         'tinggi_badan',
         'berat_badan',

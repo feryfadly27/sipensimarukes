@@ -58,6 +58,18 @@
                 @enderror
             </div>
 
+            <!-- Nomor Telepon -->
+            <div>
+                <label for="no_telp" class="block text-sm font-medium text-foreground mb-2">Nomor Telepon</label>
+                <input type="text" id="no_telp" name="no_telp" value="{{ old('no_telp') }}"
+                       inputmode="text" maxlength="12" pattern="(08[0-9]{0,10}|-)"
+                       class="w-full px-4 py-3 rounded-xl border {{ $errors->has('no_telp') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                       placeholder="Contoh: 081234567890 atau - (opsional)">
+                @error('no_telp')
+                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Row 2: Tempat Lahir & Tanggal Lahir -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Tempat Lahir -->
@@ -98,20 +110,34 @@
                     @enderror
                 </div>
 
-                <!-- Program Studi -->
+                <!-- Program Studi 1 -->
                 <div>
-                    <label for="prodi" class="block text-sm font-medium text-foreground mb-2">Program Studi *</label>
-                    <select id="prodi" name="prodi" required
-                            class="w-full px-4 py-3 rounded-xl border {{ $errors->has('prodi') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                    <label for="prodi_pilihan_1" class="block text-sm font-medium text-foreground mb-2">Program Studi 1 *</label>
+                    <select id="prodi_pilihan_1" name="prodi_pilihan_1" required
+                            class="w-full px-4 py-3 rounded-xl border {{ $errors->has('prodi_pilihan_1') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
                         <option value="">-- Pilih Program Studi --</option>
                         @foreach($prodis as $prodi)
-                            <option value="{{ $prodi }}" {{ old('prodi') === $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
+                            <option value="{{ $prodi }}" {{ old('prodi_pilihan_1') === $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
                         @endforeach
                     </select>
-                    @error('prodi')
+                    @error('prodi_pilihan_1')
                         <p class="mt-1 text-sm text-error">{{ $message }}</p>
                     @enderror
                 </div>
+            </div>
+
+            <div>
+                <label for="prodi_pilihan_2" class="block text-sm font-medium text-foreground mb-2">Program Studi 2</label>
+                <select id="prodi_pilihan_2" name="prodi_pilihan_2"
+                        class="w-full px-4 py-3 rounded-xl border {{ $errors->has('prodi_pilihan_2') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
+                    <option value="">-- Pilih Program Studi --</option>
+                    @foreach($prodis as $prodi)
+                        <option value="{{ $prodi }}" {{ old('prodi_pilihan_2') === $prodi ? 'selected' : '' }}>{{ $prodi }}</option>
+                    @endforeach
+                </select>
+                @error('prodi_pilihan_2')
+                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                @enderror
             </div>
 
             <!-- Asal Sekolah -->

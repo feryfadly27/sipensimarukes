@@ -45,7 +45,7 @@
             <!-- Search -->
             <div class="flex-1">
                 <label class="block text-sm font-medium text-foreground mb-2">Cari Peserta</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama atau No. Pendaftaran" 
+                  <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama / No. Pendaftaran / NIK / No. Telepon" 
                        class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
             </div>
 
@@ -68,16 +68,6 @@
                     <option value="belum_konfirmasi" {{ request('status_kehadiran') === 'belum_konfirmasi' ? 'selected' : '' }}>Belum Konfirmasi</option>
                     <option value="hadir" {{ request('status_kehadiran') === 'hadir' ? 'selected' : '' }}>Hadir</option>
                     <option value="tidak_hadir" {{ request('status_kehadiran') === 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
-                </select>
-            </div>
-
-            <!-- Per Page -->
-            <div class="sm:w-40">
-                <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                <select name="per_page" class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
-                    @foreach([10, 25, 50, 100] as $size)
-                        <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
-                    @endforeach
                 </select>
             </div>
 
@@ -116,6 +106,7 @@
                             <td class="px-6 py-4 text-sm text-foreground">
                                 <div>{{ $peserta->nama }}</div>
                                 <div class="text-xs text-secondary">{{ $peserta->no_identitas }}</div>
+                                <div class="text-xs text-secondary">{{ $peserta->no_telp ?: '-' }}</div>
                             </td>
                             <td class="px-6 py-4 text-sm text-foreground">{{ $peserta->prodi }}</td>
                             <td class="px-6 py-4 text-sm text-foreground">{{ $peserta->jenis_kelamin }}</td>
@@ -201,19 +192,21 @@
                     <div class="text-xs text-secondary space-y-1">
                         <p>• Kolom A: No. Pendaftaran *</p>
                         <p>• Kolom B: No. Identitas *</p>
-                        <p>• Kolom C: Nama Lengkap *</p>
-                        <p>• Kolom D: Tempat Lahir</p>
-                        <p>• Kolom E: Tanggal Lahir</p>
-                        <p>• Kolom F: Jenis Kelamin</p>
-                        <p>• Kolom G: Program Studi</p>
-                        <p>• Kolom H: Asal Sekolah</p>
+                        <p>• Kolom C: No. Telepon (opsional, boleh kosong atau diisi -)</p>
+                        <p>• Kolom D: Nama Lengkap *</p>
+                        <p>• Kolom E: Tempat Lahir</p>
+                        <p>• Kolom F: Tanggal Lahir</p>
+                        <p>• Kolom G: Jenis Kelamin</p>
+                        <p>• Kolom H: Program Studi Pilihan 1 *</p>
+                        <p>• Kolom I: Program Studi Pilihan 2</p>
+                        <p>• Kolom J: Asal Sekolah</p>
                         <p class="mt-2 text-xs text-secondary/70">* = Wajib diisi</p>
                     </div>
                 </div>
 
                 <!-- Download Template -->
                 <div class="mb-6">
-                    <a href="{{ asset('templates/Template_Data_Peserta.xlsx') }}" download="Template_Data_Peserta.xlsx" class="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-primary text-primary font-medium hover:bg-primary/10 transition-all w-full">
+                    <a href="{{ route('mahasiswa.templateExcel') }}" class="flex items-center justify-center gap-2 px-4 py-2 rounded-xl border border-primary text-primary font-medium hover:bg-primary/10 transition-all w-full">
                         <i data-lucide="download" class="size-4"></i>
                         Download Template
                     </a>

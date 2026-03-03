@@ -19,16 +19,16 @@
         </div>
     </div>
 
-    <!-- 2. Total Hadir -->
+    <!-- 2. Hadir Hari Ini -->
     <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300">
         <div class="flex items-center gap-[6px]">
             <div class="size-11 bg-success/10 rounded-xl flex items-center justify-center shrink-0">
                 <i data-lucide="user-check" class="size-6 text-success"></i>
             </div>
-            <p class="font-medium text-secondary truncate">Total Hadir</p>
+            <p class="font-medium text-secondary truncate">Hadir Hari Ini</p>
         </div>
         <div class="flex items-end justify-between gap-2">
-            <p class="font-bold text-[28px] leading-8">{{ $stats['total_hadir'] }}</p>
+            <p class="font-bold text-[28px] leading-8">{{ $stats['hadir_hari_ini'] }}</p>
         </div>
     </div>
 
@@ -72,49 +72,8 @@
     </div>
 </div>
 
-@if(in_array(auth()->user()->role, ['admin', 'superadmin']))
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-    <div class="rounded-2xl border border-border p-6 bg-white">
-        <div class="flex items-center gap-2 mb-4">
-            <i data-lucide="activity" class="size-5 text-warning-dark"></i>
-            <h3 class="font-semibold text-foreground">Sedang Diperiksa PLP</h3>
-        </div>
-        <div class="space-y-3">
-            @forelse(($adminMonitoring['ongoing_plp'] ?? collect()) as $exam)
-                <div class="p-3 rounded-lg border border-border bg-warning/5">
-                    <p class="text-sm font-semibold text-foreground">{{ $exam->mahasiswa->nama ?? '-' }}</p>
-                    <p class="text-xs text-secondary">No. Pendaftaran: {{ $exam->mahasiswa->no_pendaftaran ?? '-' }}</p>
-                    <p class="text-xs text-secondary">No. Urut: {{ $exam->mahasiswa->nomor_urut ?? '-' }}</p>
-                    <p class="text-xs text-secondary">PLP: {{ $exam->plp->nama ?? '-' }}</p>
-                </div>
-            @empty
-                <p class="text-sm text-secondary">Tidak ada pemeriksaan PLP yang sedang berjalan.</p>
-            @endforelse
-        </div>
-    </div>
-
-    <div class="rounded-2xl border border-border p-6 bg-white">
-        <div class="flex items-center gap-2 mb-4">
-            <i data-lucide="stethoscope" class="size-5 text-primary"></i>
-            <h3 class="font-semibold text-foreground">Dokter Aktif Memeriksa</h3>
-        </div>
-        <div class="space-y-3">
-            @forelse(($adminMonitoring['active_dokter'] ?? collect()) as $active)
-                <div class="p-3 rounded-lg border border-border bg-primary/5">
-                    <p class="text-sm font-semibold text-foreground">{{ $active['dokter_nama'] ?? '-' }}</p>
-                    <p class="text-xs text-secondary">Peserta: {{ $active['mahasiswa_nama'] ?? '-' }}</p>
-                    <p class="text-xs text-secondary">No. Pendaftaran: {{ $active['mahasiswa_no_pendaftaran'] ?? '-' }}</p>
-                </div>
-            @empty
-                <p class="text-sm text-secondary">Tidak ada dokter yang sedang aktif memeriksa.</p>
-            @endforelse
-        </div>
-    </div>
-</div>
-@endif
-
 <!-- Pendaftaran Section (Validasi Kehadiran) -->
-@if(auth()->user()->role === 'pendaftaran' || (auth()->user()->role === 'superadmin' && request()->routeIs('pendaftaran.index')))
+@if(in_array(auth()->user()->role, ['pendaftaran', 'superadmin']))
 <div class="space-y-6">
     <!-- Pendaftaran Header -->
     <div class="flex flex-col gap-2">
@@ -164,7 +123,7 @@
     <!-- Filter Section -->
     <div class="rounded-2xl border border-border p-6 bg-white">
         <form action="{{ route('dashboard') }}" method="GET" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search -->
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Cari Nama atau No. Pendaftaran</label>
@@ -184,15 +143,6 @@
                         <option value="">Semua Program</option>
                         @foreach($prodis as $prodi)
                             <option value="{{ $prodi }}" @selected($prodi == request('prodi'))>{{ $prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                    <select name="per_page" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm">
-                        @foreach([10, 25, 50, 100] as $size)
-                            <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -274,7 +224,7 @@
 @endif
 
 <!-- Dokter Section (Pemeriksaan Dokter) -->
-@if(auth()->user()->role === 'dokter' || (auth()->user()->role === 'superadmin' && request()->routeIs('dokter.index')))
+@if(in_array(auth()->user()->role, ['dokter', 'superadmin']))
 <div class="space-y-6">
     <!-- Dokter Header -->
     <div class="flex flex-col gap-2">
@@ -324,7 +274,7 @@
     <!-- Filter Section -->
     <div class="rounded-2xl border border-border p-6 bg-white">
         <form action="{{ route('dashboard') }}" method="GET" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search -->
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Cari Nama atau No. Pendaftaran</label>
@@ -344,15 +294,6 @@
                         <option value="">Semua Program</option>
                         @foreach($prodis as $prodi)
                             <option value="{{ $prodi }}" @selected($prodi == request('prodi'))>{{ $prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                    <select name="per_page" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm">
-                        @foreach([10, 25, 50, 100] as $size)
-                            <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -433,7 +374,7 @@
 @endif
 
 <!-- PLP Section (Pemeriksaan Lab) -->
-@if(auth()->user()->role === 'plp' || (auth()->user()->role === 'superadmin' && request()->routeIs('plp.index')))
+@if(in_array(auth()->user()->role, ['plp', 'superadmin']))
 <div class="space-y-6">
     <!-- PLP Header -->
     <div class="flex flex-col gap-2">
@@ -483,7 +424,7 @@
     <!-- Filter Section -->
     <div class="rounded-2xl border border-border p-6 bg-white">
         <form action="{{ route('dashboard') }}" method="GET" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <!-- Search -->
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Cari Nama atau No. Pendaftaran</label>
@@ -503,15 +444,6 @@
                         <option value="">Semua Program</option>
                         @foreach($prodis as $prodi)
                             <option value="{{ $prodi }}" @selected($prodi == request('prodi'))>{{ $prodi }}</option>
-                        @endforeach
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                    <select name="per_page" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm">
-                        @foreach([10, 25, 50, 100] as $size)
-                            <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -890,13 +822,11 @@
             
             <!-- Tanggal Periksa -->
             <div>
-                <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                    <span>Tanggal Pemeriksaan</span>
-                    <span id="status-tgl_periksa" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                </label>
+                <label class="block text-sm font-medium text-foreground mb-2">Tanggal Pemeriksaan</label>
                 <input 
                     type="date" 
                     name="tgl_periksa" 
+                    value="{{ date('Y-m-d') }}"
                     class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     required
                 >
@@ -905,32 +835,27 @@
 
             <!-- Riwayat Penyakit -->
             <div>
-                <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                    <span>Riwayat Penyakit</span>
-                    <span id="status-riwayat_penyakit" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                </label>
+                <label class="block text-sm font-medium text-foreground mb-2">Riwayat Penyakit</label>
                 <textarea 
                     name="riwayat_penyakit" 
                     placeholder="Cth: Diabates, Hipertensi, dll..."
                     class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     rows="2"
                     required
-                ></textarea>
+                >Tidak ada</textarea>
                 <span class="text-red-500 text-xs mt-1" style="display: none;"></span>
             </div>
 
             <!-- Suhu -->
             <div>
-                <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                    <span>Suhu (°C)</span>
-                    <span id="status-suhu" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                </label>
+                <label class="block text-sm font-medium text-foreground mb-2">Suhu (°C)</label>
                 <input 
                     type="number" 
                     name="suhu" 
                     step="0.1"
                     min="0"
                     max="42"
+                    value="0"
                     placeholder="36.5"
                     class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     required
@@ -940,13 +865,11 @@
 
             <!-- Tensi -->
             <div>
-                <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                    <span>Tekanan Darah (mmHg)</span>
-                    <span id="status-tensi" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                </label>
+                <label class="block text-sm font-medium text-foreground mb-2">Tekanan Darah (mmHg)</label>
                 <input 
                     type="text" 
                     name="tensi" 
+                    value="0"
                     placeholder="120/80"
                     class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     required
@@ -956,26 +879,33 @@
 
             <!-- Riwayat Keluarga -->
             <div>
-                <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                    <span>Riwayat Penyakit Keluarga</span>
-                    <span id="status-riwayat_keluarga" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                </label>
+                <label class="block text-sm font-medium text-foreground mb-2">Riwayat Penyakit Keluarga</label>
                 <textarea 
                     name="riwayat_keluarga" 
                     placeholder="Cth: Hipertensi (Ayah), dll..."
                     class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     rows="2"
                     required
+                >Tidak ada</textarea>
+                <span class="text-red-500 text-xs mt-1" style="display: none;"></span>
+            </div>
+
+            <!-- Keterangan Pemeriksaan PLP -->
+            <div>
+                <label class="block text-sm font-medium text-foreground mb-2">Keterangan Pemeriksaan PLP</label>
+                <textarea
+                    name="keterangan_pemeriksaan"
+                    placeholder="Tambahkan catatan pemeriksaan (opsional)"
+                    class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                    rows="2"
                 ></textarea>
+                <p class="text-xs text-secondary mt-1">Jika dikosongkan, akan disimpan sebagai -</p>
                 <span class="text-red-500 text-xs mt-1" style="display: none;"></span>
             </div>
 
             <!-- Buta Warna -->
             <div>
-                <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                    <span>Tes Buta Warna</span>
-                    <span id="status-buta_warna" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                </label>
+                <label class="block text-sm font-medium text-foreground mb-2">Tes Buta Warna</label>
                 <div class="space-y-2">
                     <label class="flex items-center gap-3 cursor-pointer p-3 border border-border rounded-lg hover:bg-secondary/5 transition-all">
                         <input 
@@ -983,6 +913,7 @@
                             name="buta_warna" 
                             value="Tidak buta warna"
                             class="size-4"
+                            checked
                             required
                         >
                         <span class="flex items-center gap-2">
@@ -1012,16 +943,14 @@
             <div class="grid grid-cols-2 gap-4">
                 <!-- Tinggi Badan -->
                 <div>
-                    <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                        <span>Tinggi Badan (cm)</span>
-                        <span id="status-tinggi_badan" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                    </label>
+                    <label class="block text-sm font-medium text-foreground mb-2">Tinggi Badan (cm)</label>
                     <input 
                         type="number" 
                         name="tinggi_badan" 
                         step="0.1"
                         min="0"
                         max="250"
+                        value="0"
                         placeholder="170"
                         class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         required
@@ -1031,16 +960,14 @@
 
                 <!-- Berat Badan -->
                 <div>
-                    <label class="flex items-center justify-between text-sm font-medium text-foreground mb-2">
-                        <span>Berat Badan (kg)</span>
-                        <span id="status-berat_badan" class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-error-light text-error">Belum diisi</span>
-                    </label>
+                    <label class="block text-sm font-medium text-foreground mb-2">Berat Badan (kg)</label>
                     <input 
                         type="number" 
                         name="berat_badan" 
                         step="0.1"
                         min="0"
                         max="200"
+                        value="0"
                         placeholder="70"
                         class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                         required
@@ -1468,88 +1395,17 @@
 
     function setPlpDefaultValues() {
         const form = document.getElementById('plpForm');
-        form.querySelector('input[name="tgl_periksa"]').value = '';
-        form.querySelector('textarea[name="riwayat_penyakit"]').value = '';
-        form.querySelector('input[name="suhu"]').value = '';
-        form.querySelector('input[name="tensi"]').value = '';
-        form.querySelector('textarea[name="riwayat_keluarga"]').value = '';
-        form.querySelectorAll('input[name="buta_warna"]').forEach((radio) => {
-            radio.checked = false;
-        });
-        form.querySelector('input[name="tinggi_badan"]').value = '';
-        form.querySelector('input[name="berat_badan"]').value = '';
+        form.querySelector('textarea[name="riwayat_penyakit"]').value = 'Tidak ada';
+        form.querySelector('input[name="suhu"]').value = '0';
+        form.querySelector('input[name="tensi"]').value = '0';
+        form.querySelector('textarea[name="riwayat_keluarga"]').value = 'Tidak ada';
+        form.querySelector('textarea[name="keterangan_pemeriksaan"]').value = '';
+        const normalRadio = form.querySelector('input[name="buta_warna"][value="Tidak buta warna"]');
+        if (normalRadio) normalRadio.checked = true;
+        form.querySelector('input[name="tinggi_badan"]').value = '0';
+        form.querySelector('input[name="berat_badan"]').value = '0';
         document.getElementById('bmiValue').value = '';
         document.getElementById('bmiStatus').textContent = 'Status: -';
-        updatePlpFieldStatuses();
-    }
-
-    function setPlpFieldStatus(fieldName, isFilled) {
-        const statusEl = document.getElementById(`status-${fieldName}`);
-        if (!statusEl) {
-            return;
-        }
-
-        if (isFilled) {
-            statusEl.textContent = 'Sudah terisi';
-            statusEl.classList.remove('bg-error-light', 'text-error');
-            statusEl.classList.add('bg-success-light', 'text-success');
-        } else {
-            statusEl.textContent = 'Belum diisi';
-            statusEl.classList.remove('bg-success-light', 'text-success');
-            statusEl.classList.add('bg-error-light', 'text-error');
-        }
-    }
-
-    function updatePlpFieldStatuses() {
-        const form = document.getElementById('plpForm');
-        if (!form) {
-            return;
-        }
-
-        const tglPeriksa = form.querySelector('input[name="tgl_periksa"]')?.value?.trim();
-        const riwayatPenyakit = form.querySelector('textarea[name="riwayat_penyakit"]')?.value?.trim();
-        const suhu = parseFloat(form.querySelector('input[name="suhu"]')?.value || '0');
-        const tensi = form.querySelector('input[name="tensi"]')?.value?.trim();
-        const riwayatKeluarga = form.querySelector('textarea[name="riwayat_keluarga"]')?.value?.trim();
-        const butaWarna = form.querySelector('input[name="buta_warna"]:checked')?.value;
-        const tinggiBadan = parseFloat(form.querySelector('input[name="tinggi_badan"]')?.value || '0');
-        const beratBadan = parseFloat(form.querySelector('input[name="berat_badan"]')?.value || '0');
-
-        setPlpFieldStatus('tgl_periksa', !!tglPeriksa);
-        setPlpFieldStatus('riwayat_penyakit', !!riwayatPenyakit);
-        setPlpFieldStatus('suhu', !Number.isNaN(suhu) && suhu > 0);
-        setPlpFieldStatus('tensi', !!tensi);
-        setPlpFieldStatus('riwayat_keluarga', !!riwayatKeluarga);
-        setPlpFieldStatus('buta_warna', !!butaWarna);
-        setPlpFieldStatus('tinggi_badan', !Number.isNaN(tinggiBadan) && tinggiBadan > 0);
-        setPlpFieldStatus('berat_badan', !Number.isNaN(beratBadan) && beratBadan > 0);
-    }
-
-    function bindPlpStatusListeners() {
-        const form = document.getElementById('plpForm');
-        if (!form) {
-            return;
-        }
-
-        const selectors = [
-            'input[name="tgl_periksa"]',
-            'textarea[name="riwayat_penyakit"]',
-            'input[name="suhu"]',
-            'input[name="tensi"]',
-            'textarea[name="riwayat_keluarga"]',
-            'input[name="buta_warna"]',
-            'input[name="tinggi_badan"]',
-            'input[name="berat_badan"]',
-        ];
-
-        selectors.forEach((selector) => {
-            form.querySelectorAll(selector).forEach((el) => {
-                const eventName = el.type === 'radio' ? 'change' : 'input';
-                el.addEventListener(eventName, updatePlpFieldStatuses);
-            });
-        });
-
-        updatePlpFieldStatuses();
     }
 
     document.getElementById('plpForm').addEventListener('submit', async function(e) {
@@ -1602,7 +1458,6 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons();
-        bindPlpStatusListeners();
         loadNextStudentInfo();
         loadOngoingExamInfo();
         

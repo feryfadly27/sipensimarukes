@@ -56,6 +56,18 @@
                 @enderror
             </div>
 
+            <!-- Nomor Telepon -->
+            <div>
+                <label for="no_telp" class="block text-sm font-medium text-foreground mb-2">Nomor Telepon</label>
+                <input type="text" id="no_telp" name="no_telp" value="{{ old('no_telp', $mahasiswa->no_telp) }}"
+                       inputmode="text" maxlength="12" pattern="(08[0-9]{0,10}|-)"
+                       class="w-full px-4 py-3 rounded-xl border {{ $errors->has('no_telp') ? 'border-error' : 'border-border' }} focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                       placeholder="Contoh: 081234567890 atau - (opsional)">
+                @error('no_telp')
+                    <p class="mt-1 text-sm text-error">{{ $message }}</p>
+                @enderror
+            </div>
+
             <!-- Row 2: Tempat Lahir & Tanggal Lahir -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Tempat Lahir -->

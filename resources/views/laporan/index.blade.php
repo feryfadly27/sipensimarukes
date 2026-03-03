@@ -10,16 +10,10 @@
             <h1 class="text-3xl font-bold text-foreground">Laporan Pemeriksaan</h1>
             <p class="text-secondary mt-1">Rekap data pemeriksaan kesehatan peserta</p>
         </div>
-        <div class="flex items-center gap-3">
-            <a href="{{ route('laporan.ringkas') }}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-hover transition-all">
-                <i data-lucide="layout-list" class="size-5"></i>
-                Laporan Ringkas
-            </a>
-            <a href="{{ route('laporan.export', request()->query()) }}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-success text-white font-medium hover:opacity-90 transition-all">
-                <i data-lucide="download" class="size-5"></i>
-                Unduh Excel
-            </a>
-        </div>
+        <a href="{{ route('laporan.export', request()->query()) }}" class="flex items-center gap-2 px-4 py-3 rounded-xl bg-success text-white font-medium hover:opacity-90 transition-all">
+            <i data-lucide="download" class="size-5"></i>
+            Unduh Excel
+        </a>
     </div>
 
     <!-- Summary Cards -->
@@ -47,7 +41,7 @@
         <form method="GET" action="{{ route('laporan.index') }}" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div>
                 <label class="block text-sm font-medium text-foreground mb-2">Cari</label>
-                <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama / No. Pendaftaran / NIK"
+                  <input type="text" name="search" value="{{ request('search') }}" placeholder="Nama / No. Pendaftaran / NIK / No. Telepon"
                        class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
             </div>
             <div>
@@ -93,14 +87,6 @@
                     <option value="-" {{ request('kesimpulan_akhir') === '-' ? 'selected' : '' }}>Belum Ada</option>
                 </select>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                <select name="per_page" class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
-                    @foreach([10, 25, 50, 100] as $size)
-                        <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
-                    @endforeach
-                </select>
-            </div>
             <div class="flex items-end gap-2">
                 <button type="submit" class="px-6 py-3 rounded-xl bg-primary text-white font-medium hover:bg-primary-hover transition-all">
                     Filter
@@ -131,32 +117,13 @@
                 </thead>
                 <tbody class="divide-y divide-border">
                     @forelse($mahasiswa as $index => $row)
-                        @php
-                            $plpDone = $row->status_plp === 'selesai'
-                                || ($row->pemeriksaanPlp
-                                    && (($row->pemeriksaanPlp->status_pemeriksaan ?? null) === 'selesai'
-                                        || $row->pemeriksaanPlp->tgl_periksa
-                                        || $row->pemeriksaanPlp->ended_at));
-
-                            $dokterDone = $row->status_dokter === 'selesai'
-                                || ($row->pemeriksaanDokter
-                                    && ($row->pemeriksaanDokter->is_locked
-                                        || $row->pemeriksaanDokter->tgl_periksa
-                                        || $row->pemeriksaanDokter->kesimpulan));
-
-                            $kesimpulanEfektif = $row->kesimpulan_akhir;
-                            if (($kesimpulanEfektif === '-' || empty($kesimpulanEfektif)) && $row->pemeriksaanDokter?->kesimpulan) {
-                                $kesimpulanEfektif = $row->pemeriksaanDokter->kesimpulan === 'Memenuhi Syarat'
-                                    ? 'memenuhi_syarat'
-                                    : 'tidak_memenuhi_syarat';
-                            }
-                        @endphp
                         <tr class="hover:bg-muted/50 transition-colors">
                             <td class="px-6 py-4 text-center text-sm text-secondary font-medium">{{ $mahasiswa->firstItem() + $index }}</td>
                             <td class="px-6 py-4 text-sm text-foreground font-medium">{{ $row->no_pendaftaran }}</td>
                             <td class="px-6 py-4 text-sm text-foreground">
                                 <div>{{ $row->nama }}</div>
                                 <div class="text-xs text-secondary">{{ $row->no_identitas }}</div>
+                                <div class="text-xs text-secondary">{{ $row->no_telp ?: '-' }}</div>
                             </td>
                             <td class="px-6 py-4 text-sm text-foreground">{{ $row->prodi }}</td>
                             <td class="px-6 py-4 text-sm">
@@ -169,9 +136,9 @@
                                     {{ ucfirst(str_replace('_', ' ', $row->status_kehadiran)) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 text-sm text-foreground">{{ $plpDone ? 'Selesai' : 'Belum' }}</td>
-                            <td class="px-6 py-4 text-sm text-foreground">{{ $dokterDone ? 'Selesai' : 'Belum' }}</td>
-                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst(str_replace('_', ' ', $kesimpulanEfektif)) }}</td>
+                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst($row->status_plp) }}</td>
+                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst($row->status_dokter) }}</td>
+                            <td class="px-6 py-4 text-sm text-foreground">{{ ucfirst(str_replace('_', ' ', $row->kesimpulan_akhir)) }}</td>
                             <td class="px-6 py-4 text-center">
                                 <a href="{{ route('mahasiswa.show', $row) }}" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-all">
                                     <i data-lucide="eye" class="size-4"></i>

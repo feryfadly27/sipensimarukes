@@ -185,6 +185,7 @@ class PlpController extends Controller
             'suhu' => 'required|numeric|min:0|max:42',
             'tensi' => 'required|string|max:20',
             'riwayat_keluarga' => 'required|string|max:255',
+            'keterangan_pemeriksaan' => 'nullable|string|max:500',
             'buta_warna' => 'required|in:Tidak buta warna,Buta warna parsial,Buta warna total',
             'tinggi_badan' => 'required|numeric|min:0|max:250',
             'berat_badan' => 'required|numeric|min:0|max:200',
@@ -205,6 +206,9 @@ class PlpController extends Controller
                     'suhu' => $validated['suhu'],
                     'tensi' => $validated['tensi'],
                     'riwayat_keluarga' => $validated['riwayat_keluarga'],
+                    'keterangan_pemeriksaan' => filled(trim((string) ($validated['keterangan_pemeriksaan'] ?? '')))
+                        ? trim((string) $validated['keterangan_pemeriksaan'])
+                        : '-',
                     'buta_warna' => $validated['buta_warna'],
                     'tinggi_badan' => $validated['tinggi_badan'],
                     'berat_badan' => $validated['berat_badan'],

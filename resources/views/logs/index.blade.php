@@ -78,15 +78,6 @@
                         class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                     >
                 </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Tampil</label>
-                    <select name="per_page" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm">
-                        @foreach([10, 25, 50, 100] as $size)
-                            <option value="{{ $size }}" @selected((int) request('per_page', 25) === $size)>{{ $size }}</option>
-                        @endforeach
-                    </select>
-                </div>
             </div>
 
             <div class="flex gap-3 pt-2">

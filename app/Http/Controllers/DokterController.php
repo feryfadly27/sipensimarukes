@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\LogAktivitas;
 use App\Models\Mahasiswa;
 use App\Models\PemeriksaanDokter;
+use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
@@ -69,7 +70,7 @@ class DokterController extends Controller
         }
 
         $mahasiswa = $query->orderByDesc('updated_at')->paginate($perPage)->withQueryString();
-        $prodis = Mahasiswa::select('prodi')->distinct()->whereNotNull('prodi')->pluck('prodi');
+        $prodis = Prodi::aktif()->orderBy('nama')->pluck('nama');
 
         return view('dokter.completed', compact('mahasiswa', 'prodis'));
     }
@@ -151,6 +152,8 @@ class DokterController extends Controller
             'kulit' => 'required|in:Putih,Kuning,Hitam,Sawo matang',
             'mata_kacamata' => 'required|in:Berkacamata,Tidak berkacamata',
             'mata_normal' => 'required|in:Normal,Tidak normal',
+            'mata_sklera' => 'required|in:Normal,Tidak normal',
+            'mata_konjungtiba' => 'required|in:Normal,Tidak normal',
             'mata_minus' => 'required|boolean',
             'mata_minus_nilai' => 'nullable|numeric|required_if:mata_minus,1',
             'mata_silindris' => 'required|boolean',

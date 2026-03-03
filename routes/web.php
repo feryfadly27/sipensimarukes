@@ -10,6 +10,7 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\PlpController;
 use App\Http\Controllers\DokterController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ProdiController;
 
 // Redirect root to login
 Route::get('/', function () {
@@ -40,13 +41,15 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
     });
     
     // Pendaftaran validasi (now part of dashboard but keeping route for modal submission)
-    Route::post('/pendaftaran/{mahasiswa}/validasi', [PendaftaranController::class, 'validasi'])->name('pendaftaran.validasi');
+    Route::post('/pendaftaran/{mahasiswa}/validasi', [PendaftaranController::class, 'validasi'])
+        ->name('pendaftaran.validasi')
+        ->middleware('role:pendaftaran,superadmin');
     
     // PLP examination (new route for PLP form submission)
-    Route::post('/plp/{mahasiswa}', [PlpController::class, 'store'])->name('plp.store');
-    Route::get('/plp/check-ongoing', [PlpController::class, 'checkOngoing'])->name('plp.checkOngoing');
-    Route::post('/plp/{mahasiswa}/start', [PlpController::class, 'startExamination'])->name('plp.start');
-    Route::get('/plp/{mahasiswa}/verify', [PlpController::class, 'verifyStudent'])->name('plp.verify');
+    Route::post('/plp/{mahasiswa}', [PlpController::class, 'store'])->name('plp.store')->middleware('role:plp,superadmin');
+    Route::get('/plp/check-ongoing', [PlpController::class, 'checkOngoing'])->name('plp.checkOngoing')->middleware('role:plp,superadmin');
+    Route::post('/plp/{mahasiswa}/start', [PlpController::class, 'startExamination'])->name('plp.start')->middleware('role:plp,superadmin');
+    Route::get('/plp/{mahasiswa}/verify', [PlpController::class, 'verifyStudent'])->name('plp.verify')->middleware('role:plp,superadmin');
 
     // Dokter examination
     Route::get('/dokter/selesai', [DokterController::class, 'completed'])->name('dokter.completed')->middleware('role:dokter,superadmin');
@@ -56,9 +59,9 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
     Route::post('/dokter/{mahasiswa}', [DokterController::class, 'store'])->name('dokter.store')->middleware('role:dokter,superadmin');
     
     // Placeholder routes
-    Route::get('/pendaftaran', [DashboardController::class, 'index'])->name('pendaftaran.index');
-    Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index');
-    Route::get('/dokter', [DashboardController::class, 'index'])->name('dokter.index');
+    Route::get('/pendaftaran', [DashboardController::class, 'index'])->name('pendaftaran.index')->middleware('role:pendaftaran,superadmin');
+    Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index')->middleware('role:plp,superadmin');
+    Route::get('/dokter', [DashboardController::class, 'index'])->name('dokter.index')->middleware('role:dokter,superadmin');
     Route::get('/log', [LogAktivitasController::class, 'index'])->name('logs.index');
     Route::middleware('role:superadmin')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
@@ -67,6 +70,12 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::get('/prodis', [ProdiController::class, 'index'])->name('prodis.index');
+        Route::post('/prodis', [ProdiController::class, 'store'])->name('prodis.store');
+        Route::put('/prodis/{prodi}', [ProdiController::class, 'update'])->name('prodis.update');
+        Route::patch('/prodis/{prodi}/toggle', [ProdiController::class, 'toggle'])->name('prodis.toggle');
+        Route::delete('/prodis/{prodi}', [ProdiController::class, 'destroy'])->name('prodis.destroy');
     });
 });
 

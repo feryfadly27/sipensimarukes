@@ -74,6 +74,10 @@
                 <p class="font-medium text-foreground">{{ $pemeriksaanPlp->bmi ?? '-' }}</p>
             </div>
         </div>
+        <div class="mt-4 text-sm">
+            <p class="text-secondary mb-1">Keterangan Pemeriksaan PLP</p>
+            <p class="font-medium text-foreground">{{ $pemeriksaanPlp->keterangan_pemeriksaan ?? '-' }}</p>
+        </div>
     </div>
 
     <div class="rounded-2xl border border-border p-6 bg-white">
@@ -117,6 +121,27 @@
                     <option value="Tidak normal" @selected(old('mata_normal') === 'Tidak normal')>Tidak normal</option>
                 </select>
                 @error('mata_normal')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Mata - Sklera</label>
+                    <select name="mata_sklera" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Normal" @selected(old('mata_sklera') === 'Normal')>Normal</option>
+                        <option value="Tidak normal" @selected(old('mata_sklera') === 'Tidak normal')>Tidak normal</option>
+                    </select>
+                    @error('mata_sklera')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Mata - Konjungtiba</label>
+                    <select name="mata_konjungtiba" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Normal" @selected(old('mata_konjungtiba') === 'Normal')>Normal</option>
+                        <option value="Tidak normal" @selected(old('mata_konjungtiba') === 'Tidak normal')>Tidak normal</option>
+                    </select>
+                    @error('mata_konjungtiba')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
