@@ -12,6 +12,7 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
 class LaporanController extends Controller
 {
@@ -292,7 +293,13 @@ class LaporanController extends Controller
             
             foreach ($data as $colIndex => $value) {
                 $col = Coordinate::stringFromColumnIndex($colIndex + 1);
-                $sheet->setCellValue($col . $rowIndex, $value);
+                $cell = $col . $rowIndex;
+
+                if (in_array($colIndex, [0, 1, 2], true)) {
+                    $sheet->setCellValueExplicit($cell, (string) ($value ?? ''), DataType::TYPE_STRING);
+                } else {
+                    $sheet->setCellValue($cell, $value);
+                }
             }
             
             $rowIndex++;
@@ -303,6 +310,8 @@ class LaporanController extends Controller
             $col = Coordinate::stringFromColumnIndex($i);
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
+
+        $sheet->getStyle('A:C')->getNumberFormat()->setFormatCode('@');
 
         LogAktivitas::catat(
             'Unduh laporan data peserta',
