@@ -152,6 +152,12 @@
                 @error('pendengaran_ket')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
+            <div class="rounded-lg border border-border bg-muted/40 px-4 py-3 text-sm text-secondary">
+                <p class="font-medium text-foreground mb-1">Contoh Pengisian Nilai Minus/Silindris</p>
+                <p>Jika memilih <strong>Ya</strong>, isi nilai <strong>kiri</strong> dan <strong>kanan</strong>. Contoh: Minus kiri <strong>-1.25</strong>, kanan <strong>-0.75</strong>.</p>
+                <p>Gunakan titik desimal (contoh <strong>-0.50</strong>) dengan rentang nilai <strong>-9.99</strong> sampai <strong>9.99</strong>.</p>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Mata Minus</label>
