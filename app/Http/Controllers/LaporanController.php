@@ -87,6 +87,159 @@ class LaporanController extends Controller
     }
 
     /**
+     * Display laporan ringkas keseluruhan
+     */
+    public function ringkas(Request $request)
+    {
+        $today = now()->toDateString();
+
+        $ringkasan = [
+            'total_peserta' => Mahasiswa::count(),
+            'hadir_hari_ini' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', $today)
+                ->count(),
+            'hadir_hari_sebelumnya' => Mahasiswa::where('status_kehadiran', 'hadir')
+                ->whereDate('updated_at', '<', $today)
+                ->count(),
+            'memenuhi_syarat' => Mahasiswa::where('kesimpulan_akhir', 'memenuhi_syarat')->count(),
+            'tidak_memenuhi_syarat' => Mahasiswa::where('kesimpulan_akhir', 'tidak_memenuhi_syarat')->count(),
+        ];
+
+        $memenuhiList = Mahasiswa::query()
+            ->select(['id', 'no_pendaftaran', 'nama'])
+            ->where('kesimpulan_akhir', 'memenuhi_syarat')
+            ->orderBy('nama')
+            ->paginate(15, ['*'], 'memenuhi_page')
+            ->withQueryString();
+
+        $tidakMemenuhiList = Mahasiswa::query()
+            ->select(['id', 'no_pendaftaran', 'nama'])
+            ->where('kesimpulan_akhir', 'tidak_memenuhi_syarat')
+            ->orderBy('nama')
+            ->paginate(15, ['*'], 'tidak_memenuhi_page')
+            ->withQueryString();
+
+        return view('laporan.ringkas', compact('ringkasan', 'memenuhiList', 'tidakMemenuhiList'));
+    }
+
+    /**
+     * Export laporan ringkas ke Excel
+     */
+    public function exportRingkas(Request $request)
+    {
+        $today = now()->toDateString();
+
+        $ringkasan = [
+            ['Total Peserta', Mahasiswa::count()],
+            ['Hadir Hari Ini', Mahasiswa::where('status_kehadiran', 'hadir')->whereDate('updated_at', $today)->count()],
+            ['Hadir Hari Sebelumnya', Mahasiswa::where('status_kehadiran', 'hadir')->whereDate('updated_at', '<', $today)->count()],
+            ['Memenuhi Syarat', Mahasiswa::where('kesimpulan_akhir', 'memenuhi_syarat')->count()],
+            ['Tidak Memenuhi Syarat', Mahasiswa::where('kesimpulan_akhir', 'tidak_memenuhi_syarat')->count()],
+        ];
+
+        $memenuhi = Mahasiswa::query()
+            ->select(['no_pendaftaran', 'nama'])
+            ->where('kesimpulan_akhir', 'memenuhi_syarat')
+            ->orderBy('nama')
+            ->get();
+
+        $tidakMemenuhi = Mahasiswa::query()
+            ->select(['no_pendaftaran', 'nama'])
+            ->where('kesimpulan_akhir', 'tidak_memenuhi_syarat')
+            ->orderBy('nama')
+            ->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Ringkasan');
+
+        $sheet->setCellValue('A1', 'Laporan Ringkas Keseluruhan');
+        $sheet->mergeCells('A1:B1');
+        $sheet->getStyle('A1:B1')->getFont()->setBold(true)->setSize(14);
+
+        $sheet->setCellValue('A3', 'Kategori');
+        $sheet->setCellValue('B3', 'Jumlah');
+        $sheet->getStyle('A3:B3')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '00BCD4']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+
+        $row = 4;
+        foreach ($ringkasan as [$label, $value]) {
+            $sheet->setCellValue('A' . $row, $label);
+            $sheet->setCellValue('B' . $row, $value);
+            $row++;
+        }
+
+        $row += 1;
+        $sheet->setCellValue('A' . $row, 'Mahasiswa Memenuhi Syarat');
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
+        $row++;
+        $sheet->setCellValue('A' . $row, 'No. Pendaftaran');
+        $sheet->setCellValue('B' . $row, 'Nama');
+        $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
+        $row++;
+
+        foreach ($memenuhi as $item) {
+            $sheet->setCellValueExplicit('A' . $row, (string) ($item->no_pendaftaran ?? ''), DataType::TYPE_STRING);
+            $sheet->setCellValue('B' . $row, $item->nama);
+            $row++;
+        }
+
+        $row += 1;
+        $sheet->setCellValue('A' . $row, 'Mahasiswa Tidak Memenuhi Syarat');
+        $sheet->mergeCells('A' . $row . ':B' . $row);
+        $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
+        $row++;
+        $sheet->setCellValue('A' . $row, 'No. Pendaftaran');
+        $sheet->setCellValue('B' . $row, 'Nama');
+        $sheet->getStyle('A' . $row . ':B' . $row)->getFont()->setBold(true);
+        $row++;
+
+        foreach ($tidakMemenuhi as $item) {
+            $sheet->setCellValueExplicit('A' . $row, (string) ($item->no_pendaftaran ?? ''), DataType::TYPE_STRING);
+            $sheet->setCellValue('B' . $row, $item->nama);
+            $row++;
+        }
+
+        $sheet->getColumnDimension('A')->setAutoSize(true);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
+        $sheet->getStyle('A:A')->getNumberFormat()->setFormatCode('@');
+
+        LogAktivitas::catat(
+            'Unduh laporan ringkas',
+            auth()->id(),
+            'mahasiswa',
+            null,
+            [
+                'total_memenuhi' => $memenuhi->count(),
+                'total_tidak_memenuhi' => $tidakMemenuhi->count(),
+            ]
+        );
+
+        $filename = 'Laporan_Ringkas_Uji_Kesehatan_' . date('YmdHis') . '.xlsx';
+        $publicPath = public_path('exports/' . $filename);
+
+        if (!file_exists(public_path('exports'))) {
+            mkdir(public_path('exports'), 0777, true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->save($publicPath);
+
+        $exportDir = public_path('exports');
+        foreach (glob($exportDir . '/*.xlsx') as $file) {
+            if (filemtime($file) < now()->subHour()->timestamp) {
+                @unlink($file);
+            }
+        }
+
+        return redirect(asset('exports/' . $filename));
+    }
+
+    /**
      * Export laporan to Excel
      */
     public function exportExcel(Request $request)
