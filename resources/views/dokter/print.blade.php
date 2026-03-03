@@ -30,6 +30,9 @@
 @php
     $hasilDokter = $mahasiswa->pemeriksaanDokter;
     $hasilPlp = $mahasiswa->pemeriksaanPlp;
+    $tanggalTtdDokter = $hasilDokter?->tgl_periksa
+        ? \Carbon\Carbon::parse($hasilDokter->tgl_periksa)->locale('id')->translatedFormat('d F Y')
+        : '-';
 @endphp
 
     <h1>Laporan Hasil Tes Kesehatan Mahasiswa Baru Poltekkes Kemenkes Tasikmalaya</h1>
@@ -115,8 +118,8 @@
         <table class="ttd-table">
             <tr>
                 <td>
-                    <p>Diperiksa oleh Dokter,</p>
-                    <p>{{ optional($hasilDokter?->tgl_periksa)->format('d-m-Y') ?? '-' }}</p>
+                    <p>{{ $tanggalTtdDokter }}</p>
+                    <p>Dokter Pemeriksa</p>
                     <div class="ttd-space"></div>
                     <p><strong>{{ $hasilDokter->dokter->nama ?? '-' }}</strong></p>
                 </td>
