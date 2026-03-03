@@ -32,7 +32,7 @@
     $hasilPlp = $mahasiswa->pemeriksaanPlp;
 @endphp
 
-    <h1>Laporan Hasil Pemeriksaan Kesehatan</h1>
+    <h1>Laporan Hasil Tes Kesehatan Mahasiswa Baru Poltekkes Kemenkes Tasikmalaya</h1>
     <div class="meta">
         <p><strong>Tanggal Cetak:</strong> {{ now()->format('d-m-Y H:i') }}</p>
         <p><strong>No. Pendaftaran:</strong> {{ $mahasiswa->no_pendaftaran }}</p>
@@ -116,6 +116,7 @@
             <tr>
                 <td>
                     <p>Diperiksa oleh Dokter,</p>
+                    <p>{{ optional($hasilDokter?->tgl_periksa)->format('d-m-Y') ?? '-' }}</p>
                     <div class="ttd-space"></div>
                     <p><strong>{{ $hasilDokter->dokter->nama ?? '-' }}</strong></p>
                 </td>
