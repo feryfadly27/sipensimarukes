@@ -247,7 +247,8 @@ class MahasiswaController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
 
         foreach ($headers as $key => $header) {
-            $sheet->setCellValueByColumnAndRow($key + 1, 1, $header);
+            $coordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($key + 1) . '1';
+            $sheet->setCellValue($coordinate, $header);
         }
 
         $headerStyle = [
@@ -257,17 +258,20 @@ class MahasiswaController extends Controller
         ];
 
         for ($i = 1; $i <= count($headers); $i++) {
-            $sheet->getStyleByColumnAndRow($i, 1)->applyFromArray($headerStyle);
+            $coordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i) . '1';
+            $sheet->getStyle($coordinate)->applyFromArray($headerStyle);
         }
 
         foreach ($sampleData as $rowIndex => $rowData) {
             foreach ($rowData as $colIndex => $cellValue) {
-                $sheet->setCellValueByColumnAndRow($colIndex + 1, $rowIndex + 2, $cellValue);
+                $coordinate = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($colIndex + 1) . ($rowIndex + 2);
+                $sheet->setCellValue($coordinate, $cellValue);
             }
         }
 
         for ($i = 1; $i <= count($headers); $i++) {
-            $sheet->getColumnDimensionByColumn($i)->setAutoSize(true);
+            $column = \PhpOffice\PhpSpreadsheet\Cell\Coordinate::stringFromColumnIndex($i);
+            $sheet->getColumnDimension($column)->setAutoSize(true);
         }
 
         $filename = 'Template_Data_Peserta_' . date('YmdHis') . '.xlsx';
