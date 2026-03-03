@@ -303,7 +303,7 @@
                     <label class="block text-sm font-medium text-foreground mb-2">Jantung</label>
                     <select name="jantung_dbn" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
                         <option value="">Belum diisi</option>
-                        <option value="DBN" @selected(old('jantung_dbn') === 'DBN')>DBN</option>
+                        <option value="DBN" @selected(old('jantung_dbn') === 'DBN')>Dalam Batas Normal</option>
                         <option value="Ada Kelainan" @selected(old('jantung_dbn') === 'Ada Kelainan')>Ada Kelainan</option>
                     </select>
                     @error('jantung_dbn')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
@@ -317,7 +317,7 @@
                     <label class="block text-sm font-medium text-foreground mb-2">Paru</label>
                     <select name="paru_dbn" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
                         <option value="">Belum diisi</option>
-                        <option value="DBN" @selected(old('paru_dbn') === 'DBN')>DBN</option>
+                        <option value="DBN" @selected(old('paru_dbn') === 'DBN')>Dalam Batas Normal</option>
                         <option value="Ada Kelainan" @selected(old('paru_dbn') === 'Ada Kelainan')>Ada Kelainan</option>
                     </select>
                     @error('paru_dbn')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
@@ -340,7 +340,7 @@
                     <label class="block text-sm font-medium text-foreground mb-2">Tulang Belakang</label>
                     <select name="tulang_belakang" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
                         <option value="">Belum diisi</option>
-                        <option value="DBN" @selected(old('tulang_belakang') === 'DBN')>DBN</option>
+                        <option value="DBN" @selected(old('tulang_belakang') === 'DBN')>Dalam Batas Normal</option>
                         <option value="Lordosis" @selected(old('tulang_belakang') === 'Lordosis')>Lordosis</option>
                         <option value="Kifosis" @selected(old('tulang_belakang') === 'Kifosis')>Kifosis</option>
                         <option value="Skoliosis" @selected(old('tulang_belakang') === 'Skoliosis')>Skoliosis</option>

@@ -103,10 +103,10 @@
         <tr><th>Tonsil Pembesaran</th><td>{{ $hasilDokter->tonsil_pembesaran ? 'Ya' : 'Tidak' }}</td></tr>
         <tr><th>Gigi Lengkap</th><td>{{ $hasilDokter->gigi_lengkap ? 'Ya' : 'Tidak' }}</td></tr>
         <tr><th>Leher KGB Pembesaran</th><td>{{ $hasilDokter->leher_kgb_pembesaran ?? '-' }}</td></tr>
-        <tr><th>Jantung</th><td>{{ $hasilDokter->jantung_dbn ?? '-' }}{{ $hasilDokter->jantung_kelainan ? ' (' . $hasilDokter->jantung_kelainan . ')' : '' }}</td></tr>
-        <tr><th>Paru</th><td>{{ $hasilDokter->paru_dbn ?? '-' }}{{ $hasilDokter->paru_kelainan ? ' (' . $hasilDokter->paru_kelainan . ')' : '' }}</td></tr>
+        <tr><th>Jantung</th><td>{{ $hasilDokter->jantung_dbn === 'DBN' ? 'Dalam Batas Normal' : ($hasilDokter->jantung_dbn ?? '-') }}{{ $hasilDokter->jantung_kelainan ? ' (' . $hasilDokter->jantung_kelainan . ')' : '' }}</td></tr>
+        <tr><th>Paru</th><td>{{ $hasilDokter->paru_dbn === 'DBN' ? 'Dalam Batas Normal' : ($hasilDokter->paru_dbn ?? '-') }}{{ $hasilDokter->paru_kelainan ? ' (' . $hasilDokter->paru_kelainan . ')' : '' }}</td></tr>
         <tr><th>Abdomen Hamil</th><td>{{ $hasilDokter->abdomen_hamil ? 'Ya' : 'Tidak' }}</td></tr>
-        <tr><th>Tulang Belakang</th><td>{{ $hasilDokter->tulang_belakang ?? '-' }}</td></tr>
+        <tr><th>Tulang Belakang</th><td>{{ $hasilDokter->tulang_belakang === 'DBN' ? 'Dalam Batas Normal' : ($hasilDokter->tulang_belakang ?? '-') }}</td></tr>
         <tr><th>Jari Tangan</th><td>{{ $hasilDokter->jari_tangan_lengkap ?? '-' }}{{ $hasilDokter->jari_tangan_ket ? ' (' . $hasilDokter->jari_tangan_ket . ')' : '' }}</td></tr>
         <tr><th>Bicara Artikulasi</th><td>{{ $hasilDokter->bicara_artikulasi ?? '-' }}{{ $hasilDokter->bicara_artikulasi_ket ? ' (' . $hasilDokter->bicara_artikulasi_ket . ')' : '' }}</td></tr>
         <tr><th>Cacat Tubuh</th><td>{{ $hasilDokter->cacat_tubuh ?? '-' }}</td></tr>

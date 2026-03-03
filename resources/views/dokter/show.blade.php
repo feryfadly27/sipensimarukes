@@ -138,11 +138,11 @@
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Jantung & Paru</td>
-                    <td class="py-3 text-foreground">Jantung: {{ $hasil->jantung_dbn ?: '-' }}{{ $hasil->jantung_kelainan ? ' (' . $hasil->jantung_kelainan . ')' : '' }} | Paru: {{ $hasil->paru_dbn ?: '-' }}{{ $hasil->paru_kelainan ? ' (' . $hasil->paru_kelainan . ')' : '' }}</td>
+                    <td class="py-3 text-foreground">Jantung: {{ $hasil->jantung_dbn === 'DBN' ? 'Dalam Batas Normal' : ($hasil->jantung_dbn ?: '-') }}{{ $hasil->jantung_kelainan ? ' (' . $hasil->jantung_kelainan . ')' : '' }} | Paru: {{ $hasil->paru_dbn === 'DBN' ? 'Dalam Batas Normal' : ($hasil->paru_dbn ?: '-') }}{{ $hasil->paru_kelainan ? ' (' . $hasil->paru_kelainan . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Leher, Abdomen & Tulang Belakang</td>
-                    <td class="py-3 text-foreground">Leher KGB: {{ $hasil->leher_kgb_pembesaran ?: '-' }} | Abdomen hamil: {{ $hasil->abdomen_hamil ? 'Ya' : 'Tidak' }} | Tulang belakang: {{ $hasil->tulang_belakang ?: '-' }}</td>
+                    <td class="py-3 text-foreground">Leher KGB: {{ $hasil->leher_kgb_pembesaran ?: '-' }} | Abdomen hamil: {{ $hasil->abdomen_hamil ? 'Ya' : 'Tidak' }} | Tulang belakang: {{ $hasil->tulang_belakang === 'DBN' ? 'Dalam Batas Normal' : ($hasil->tulang_belakang ?: '-') }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Jari Tangan & Bicara</td>
