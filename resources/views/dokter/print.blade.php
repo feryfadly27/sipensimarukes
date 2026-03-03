@@ -88,8 +88,8 @@
         <tr><th>Mata Kacamata</th><td>{{ $hasilDokter->mata_kacamata ?? '-' }}</td></tr>
         <tr><th>Mata Ikterik</th><td>{{ $hasilDokter->mata_ikterik ?? '-' }}</td></tr>
         <tr><th>Konjungtiva Anemis</th><td>{{ $hasilDokter->mata_konjungtiva_anemis ?? '-' }}</td></tr>
-        <tr><th>Mata Minus</th><td>{{ $hasilDokter->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_minus_nilai ? '(' . $hasilDokter->mata_minus_nilai . ')' : '' }}</td></tr>
-        <tr><th>Mata Silindris</th><td>{{ $hasilDokter->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_silindris_nilai ? '(' . $hasilDokter->mata_silindris_nilai . ')' : '' }}</td></tr>
+        <tr><th>Mata Minus</th><td>{{ $hasilDokter->mata_minus ? 'Ya' : 'Tidak' }} @if($hasilDokter->mata_minus) (Kiri: {{ $hasilDokter->mata_minus_nilai_kiri ?? $hasilDokter->mata_minus_nilai ?? '-' }}, Kanan: {{ $hasilDokter->mata_minus_nilai_kanan ?? $hasilDokter->mata_minus_nilai ?? '-' }}) @endif</td></tr>
+        <tr><th>Mata Silindris</th><td>{{ $hasilDokter->mata_silindris ? 'Ya' : 'Tidak' }} @if($hasilDokter->mata_silindris) (Kiri: {{ $hasilDokter->mata_silindris_nilai_kiri ?? $hasilDokter->mata_silindris_nilai ?? '-' }}, Kanan: {{ $hasilDokter->mata_silindris_nilai_kanan ?? $hasilDokter->mata_silindris_nilai ?? '-' }}) @endif</td></tr>
         <tr><th>Mata Strabismus</th><td>{{ $hasilDokter->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_strabismus_nilai ? '(' . $hasilDokter->mata_strabismus_nilai . ')' : '' }}</td></tr>
         <tr><th>Pendengaran</th><td>{{ $hasilDokter->pendengaran ?? '-' }}{{ $hasilDokter->pendengaran_ket ? ' (' . $hasilDokter->pendengaran_ket . ')' : '' }}</td></tr>
         <tr><th>Hidung Cuping</th><td>{{ $hasilDokter->hidung_cuping ? 'Ya' : 'Tidak' }}{{ $hasilDokter->hidung_cuping_ket ? ' (' . $hasilDokter->hidung_cuping_ket . ')' : '' }}</td></tr>

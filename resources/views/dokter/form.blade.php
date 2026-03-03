@@ -162,9 +162,14 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Nilai Minus</label>
-                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_minus_nilai" value="{{ old('mata_minus_nilai') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional jika Tidak">
-                    @error('mata_minus_nilai')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    <label class="block text-sm font-medium text-foreground mb-2">Nilai Minus Kiri</label>
+                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_minus_nilai_kiri" value="{{ old('mata_minus_nilai_kiri', $pemeriksaanDokter?->mata_minus_nilai_kiri) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    @error('mata_minus_nilai_kiri')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Nilai Minus Kanan</label>
+                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_minus_nilai_kanan" value="{{ old('mata_minus_nilai_kanan', $pemeriksaanDokter?->mata_minus_nilai_kanan) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    @error('mata_minus_nilai_kanan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Mata Silindris</label>
@@ -178,11 +183,16 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Nilai Silindris</label>
-                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_silindris_nilai" value="{{ old('mata_silindris_nilai') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional jika Tidak">
-                    @error('mata_silindris_nilai')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    <label class="block text-sm font-medium text-foreground mb-2">Nilai Silindris Kiri</label>
+                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_silindris_nilai_kiri" value="{{ old('mata_silindris_nilai_kiri', $pemeriksaanDokter?->mata_silindris_nilai_kiri) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    @error('mata_silindris_nilai_kiri')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Nilai Silindris Kanan</label>
+                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_silindris_nilai_kanan" value="{{ old('mata_silindris_nilai_kanan', $pemeriksaanDokter?->mata_silindris_nilai_kanan) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    @error('mata_silindris_nilai_kanan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-foreground mb-2">Mata Strabismus</label>
                     <select name="mata_strabismus" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
                         <option value="" @selected(old('mata_strabismus', '') === '')>Belum diisi</option>
@@ -424,6 +434,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusKelulusan = form.querySelector('[name="status_kelulusan"]');
     const suratRujukan = form.querySelector('[name="surat_rujukan"]');
     const keteranganKesimpulan = form.querySelector('[name="keterangan_kesimpulan"]');
+    const mataMinus = form.querySelector('[name="mata_minus"]');
+    const minusKiri = form.querySelector('[name="mata_minus_nilai_kiri"]');
+    const minusKanan = form.querySelector('[name="mata_minus_nilai_kanan"]');
+    const mataSilindris = form.querySelector('[name="mata_silindris"]');
+    const silindrisKiri = form.querySelector('[name="mata_silindris_nilai_kiri"]');
+    const silindrisKanan = form.querySelector('[name="mata_silindris_nilai_kanan"]');
 
     function applyConditionalRequired() {
         if (!statusKelulusan || !suratRujukan || !keteranganKesimpulan) return;
@@ -440,6 +456,36 @@ document.addEventListener('DOMContentLoaded', function () {
         statusKelulusan.addEventListener('change', applyConditionalRequired);
         applyConditionalRequired();
     }
+
+    function applyEyeValueRequired() {
+        const requireMinusValues = mataMinus && mataMinus.value === '1';
+        const requireSilindrisValues = mataSilindris && mataSilindris.value === '1';
+
+        if (minusKiri) minusKiri.required = requireMinusValues;
+        if (minusKanan) minusKanan.required = requireMinusValues;
+        if (silindrisKiri) silindrisKiri.required = requireSilindrisValues;
+        if (silindrisKanan) silindrisKanan.required = requireSilindrisValues;
+
+        if (!requireMinusValues) {
+            if (minusKiri) minusKiri.value = '';
+            if (minusKanan) minusKanan.value = '';
+        }
+
+        if (!requireSilindrisValues) {
+            if (silindrisKiri) silindrisKiri.value = '';
+            if (silindrisKanan) silindrisKanan.value = '';
+        }
+    }
+
+    if (mataMinus) {
+        mataMinus.addEventListener('change', applyEyeValueRequired);
+    }
+
+    if (mataSilindris) {
+        mataSilindris.addEventListener('change', applyEyeValueRequired);
+    }
+
+    applyEyeValueRequired();
 
     const requiredControls = Array.from(form.querySelectorAll('input[required], select[required], textarea[required]'))
         .filter((el) => !['hidden', 'submit', 'button'].includes(el.type));

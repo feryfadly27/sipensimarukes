@@ -141,8 +141,10 @@ class DokterController extends Controller
     public function store(Request $request, Mahasiswa $mahasiswa)
     {
         $request->merge([
-            'mata_minus_nilai' => $this->normalizeDecimalInput($request->input('mata_minus_nilai')),
-            'mata_silindris_nilai' => $this->normalizeDecimalInput($request->input('mata_silindris_nilai')),
+            'mata_minus_nilai_kiri' => $this->normalizeDecimalInput($request->input('mata_minus_nilai_kiri')),
+            'mata_minus_nilai_kanan' => $this->normalizeDecimalInput($request->input('mata_minus_nilai_kanan')),
+            'mata_silindris_nilai_kiri' => $this->normalizeDecimalInput($request->input('mata_silindris_nilai_kiri')),
+            'mata_silindris_nilai_kanan' => $this->normalizeDecimalInput($request->input('mata_silindris_nilai_kanan')),
         ]);
 
         if ($mahasiswa->status_plp !== 'selesai' || $mahasiswa->status_dokter !== 'belum') {
@@ -160,9 +162,11 @@ class DokterController extends Controller
             'mata_ikterik' => 'required|in:Tidak,Ya',
             'mata_konjungtiva_anemis' => 'required|in:Tidak,Ya',
             'mata_minus' => 'required|boolean',
-            'mata_minus_nilai' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_minus,1',
+            'mata_minus_nilai_kiri' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_minus,1',
+            'mata_minus_nilai_kanan' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_minus,1',
             'mata_silindris' => 'required|boolean',
-            'mata_silindris_nilai' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_silindris,1',
+            'mata_silindris_nilai_kiri' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_silindris,1',
+            'mata_silindris_nilai_kanan' => 'nullable|numeric|between:-9.99,9.99|required_if:mata_silindris,1',
             'mata_strabismus' => 'required|boolean',
             'mata_strabismus_nilai' => 'nullable|string|max:50|required_if:mata_strabismus,1',
             'pendengaran' => 'required|in:Normal,Terganggu',
@@ -218,10 +222,18 @@ class DokterController extends Controller
 
             if ((string) ($validated['mata_minus'] ?? '0') !== '1') {
                 $data['mata_minus_nilai'] = null;
+                $data['mata_minus_nilai_kiri'] = null;
+                $data['mata_minus_nilai_kanan'] = null;
+            } else {
+                $data['mata_minus_nilai'] = $validated['mata_minus_nilai_kiri'] ?? null;
             }
 
             if ((string) ($validated['mata_silindris'] ?? '0') !== '1') {
                 $data['mata_silindris_nilai'] = null;
+                $data['mata_silindris_nilai_kiri'] = null;
+                $data['mata_silindris_nilai_kanan'] = null;
+            } else {
+                $data['mata_silindris_nilai'] = $validated['mata_silindris_nilai_kiri'] ?? null;
             }
 
             if ((string) ($validated['mata_strabismus'] ?? '0') !== '1') {
