@@ -14,6 +14,36 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
+REPO_DIR="/workspaces/sipensimarukes"
+
+# 0. Ensure git branch is main and synced with origin/main
+echo -e "\n${YELLOW}[0/6] Syncing repository to main...${NC}"
+cd "$REPO_DIR" || exit 1
+
+if [ -n "$(git status --porcelain)" ]; then
+    echo -e "${RED}✗ Working tree has uncommitted changes${NC}"
+    echo "Please commit/stash changes first, then run this script again."
+    exit 1
+fi
+
+if ! git fetch origin main; then
+    echo -e "${RED}✗ Failed to fetch origin/main${NC}"
+    exit 1
+fi
+
+if ! git checkout main; then
+    echo -e "${RED}✗ Failed to checkout main${NC}"
+    exit 1
+fi
+
+if ! git pull --ff-only origin main; then
+    echo -e "${RED}✗ Failed to fast-forward pull main${NC}"
+    echo "Resolve branch divergence manually, then run this script again."
+    exit 1
+fi
+
+echo -e "${GREEN}✓ Repository is on main and up to date${NC}"
+
 # Function to check if service is running
 check_service() {
     if pgrep -x "$1" > /dev/null; then
@@ -26,7 +56,7 @@ check_service() {
 }
 
 # 1. Start MySQL Service
-echo -e "\n${YELLOW}[1/4] Starting MySQL...${NC}"
+echo -e "\n${YELLOW}[1/6] Starting MySQL...${NC}"
 if ! pgrep -x "mysqld" > /dev/null; then
     sudo service mysql start
     sleep 2
@@ -38,7 +68,7 @@ sudo chmod 755 /var/run/mysqld 2>/dev/null
 check_service "mysqld" "MySQL"
 
 # 2. Check database connection
-echo -e "\n${YELLOW}[2/4] Checking database connection...${NC}"
+echo -e "\n${YELLOW}[2/6] Checking database connection...${NC}"
 
 # Load credentials from .env
 DB_USER=$(grep "^DB_USERNAME=" .env | cut -d'=' -f2)
@@ -67,13 +97,13 @@ else
 fi
 
 # 3. Run migrations if needed
-echo -e "\n${YELLOW}[3/4] Running migrations...${NC}"
-cd /workspaces/sipensimarukes
+echo -e "\n${YELLOW}[3/6] Running migrations...${NC}"
+cd "$REPO_DIR"
 php artisan migrate --force 2>/dev/null
 echo -e "${GREEN}✓ Migrations completed${NC}"
 
 # 4. Start Laravel Development Server
-echo -e "\n${YELLOW}[4/4] Starting Laravel server...${NC}"
+echo -e "\n${YELLOW}[4/6] Starting Laravel server...${NC}"
 
 # Kill existing PHP server on port 8000 if any
 pkill -f "php artisan serve" 2>/dev/null
@@ -93,7 +123,7 @@ else
 fi
 
 # 5. Set Codespaces port visibility to public
-echo -e "\n${YELLOW}[5/5] Setting port 8000 to public...${NC}"
+echo -e "\n${YELLOW}[5/6] Setting port 8000 to public...${NC}"
 if command -v gh > /dev/null 2>&1 && [ -n "$CODESPACE_NAME" ]; then
     if gh codespace ports visibility 8000:public -c "$CODESPACE_NAME" > /dev/null 2>&1; then
         echo -e "${GREEN}✓ Port 8000 is now PUBLIC${NC}"

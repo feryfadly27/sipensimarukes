@@ -90,6 +90,10 @@
             <p class="text-secondary mb-1">Keterangan Pemeriksaan PLP</p>
             <p class="font-semibold text-foreground">{{ $hasilPlp?->keterangan_pemeriksaan ?? '-' }}</p>
         </div>
+        <div class="mt-4 text-sm">
+            <p class="text-secondary mb-1">Catatan Warning Dokter pada PLP</p>
+            <p class="font-semibold text-foreground">{{ $hasilPlp?->catatan_warning_dokter ?? '-' }}</p>
+        </div>
     </div>
 
     <div class="rounded-2xl border border-border p-6 bg-white overflow-x-auto">
@@ -101,8 +105,16 @@
                     <td class="py-3 font-semibold text-foreground">{{ $hasil->kesimpulan_text }}</td>
                 </tr>
                 <tr class="border-b border-border">
+                    <td class="py-3 text-secondary">Status Kelulusan</td>
+                    <td class="py-3 text-foreground">{{ $hasil->status_kelulusan ?: '-' }}</td>
+                </tr>
+                <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Keterangan Kesimpulan</td>
                     <td class="py-3 text-foreground">{{ $hasil->keterangan_kesimpulan ?: '-' }}</td>
+                </tr>
+                <tr class="border-b border-border">
+                    <td class="py-3 text-secondary">Surat Rujukan</td>
+                    <td class="py-3 text-foreground">{{ $hasil->surat_rujukan ?: '-' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Kulit</td>
@@ -110,11 +122,11 @@
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Mata</td>
-                    <td class="py-3 text-foreground">{{ $hasil->mata_kacamata ?: '-' }} | Normal: {{ $hasil->mata_normal ?: '-' }} | Sklera: {{ $hasil->mata_sklera ?: '-' }} | Konjungtiba: {{ $hasil->mata_konjungtiba ?: '-' }} | Minus: {{ $hasil->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_minus_nilai ? '(' . $hasil->mata_minus_nilai . ')' : '' }} | Silindris: {{ $hasil->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasil->mata_silindris_nilai ? '(' . $hasil->mata_silindris_nilai . ')' : '' }} | Strabismus: {{ $hasil->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_strabismus_nilai ? '(' . $hasil->mata_strabismus_nilai . ')' : '' }}</td>
+                    <td class="py-3 text-foreground">{{ $hasil->mata_kacamata ?: '-' }} | Ikterik: {{ $hasil->mata_ikterik ?: '-' }} | Konjungtiva anemis: {{ $hasil->mata_konjungtiva_anemis ?: '-' }} | Sklera: {{ $hasil->mata_sklera ?: '-' }} | Konjungtiba: {{ $hasil->mata_konjungtiba ?: '-' }} | Minus: {{ $hasil->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_minus_nilai ? '(' . $hasil->mata_minus_nilai . ')' : '' }} | Silindris: {{ $hasil->mata_silindris ? 'Ya' : 'Tidak' }} {{ $hasil->mata_silindris_nilai ? '(' . $hasil->mata_silindris_nilai . ')' : '' }} | Strabismus: {{ $hasil->mata_strabismus ? 'Ya' : 'Tidak' }} {{ $hasil->mata_strabismus_nilai ? '(' . $hasil->mata_strabismus_nilai . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Telinga Kiri / Kanan</td>
-                    <td class="py-3 text-foreground">{{ $hasil->telinga_kiri ?: '-' }}{{ $hasil->telinga_kiri_ket ? ' (' . $hasil->telinga_kiri_ket . ')' : '' }} | {{ $hasil->telinga_kanan ?: '-' }}{{ $hasil->telinga_kanan_ket ? ' (' . $hasil->telinga_kanan_ket . ')' : '' }}</td>
+                    <td class="py-3 text-foreground">{{ $hasil->telinga_kiri ?: '-' }}{{ $hasil->telinga_kiri_ket ? ' (' . $hasil->telinga_kiri_ket . ')' : '' }} | {{ $hasil->telinga_kanan ?: '-' }}{{ $hasil->telinga_kanan_ket ? ' (' . $hasil->telinga_kanan_ket . ')' : '' }} | Pendengaran: {{ $hasil->pendengaran ?: '-' }}{{ $hasil->pendengaran_ket ? ' (' . $hasil->pendengaran_ket . ')' : '' }}</td>
                 </tr>
                 <tr class="border-b border-border">
                     <td class="py-3 text-secondary">Lidah</td>

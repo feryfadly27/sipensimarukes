@@ -71,6 +71,7 @@
         <tr><th>Tensi</th><td>{{ $hasilPlp->tensi ?? '-' }}</td></tr>
         <tr><th>Riwayat Keluarga</th><td>{{ $hasilPlp->riwayat_keluarga ?? '-' }}</td></tr>
         <tr><th>Keterangan Pemeriksaan PLP</th><td>{{ $hasilPlp->keterangan_pemeriksaan ?? '-' }}</td></tr>
+        <tr><th>Catatan Warning Dokter pada PLP</th><td>{{ $hasilPlp->catatan_warning_dokter ?? '-' }}</td></tr>
         <tr><th>Buta Warna</th><td>{{ $hasilPlp->buta_warna ?? '-' }}</td></tr>
         <tr><th>Tinggi Badan</th><td>{{ $hasilPlp->tinggi_badan ?? '-' }}</td></tr>
         <tr><th>Berat Badan</th><td>{{ $hasilPlp->berat_badan ?? '-' }}</td></tr>
@@ -83,6 +84,8 @@
         <tr><th>Kulit</th><td>{{ $hasilDokter->kulit ?? '-' }}</td></tr>
         <tr><th>Mata Kacamata</th><td>{{ $hasilDokter->mata_kacamata ?? '-' }}</td></tr>
         <tr><th>Mata Normal</th><td>{{ $hasilDokter->mata_normal ?? '-' }}</td></tr>
+        <tr><th>Mata Ikterik</th><td>{{ $hasilDokter->mata_ikterik ?? '-' }}</td></tr>
+        <tr><th>Konjungtiva Anemis</th><td>{{ $hasilDokter->mata_konjungtiva_anemis ?? '-' }}</td></tr>
         <tr><th>Mata Sklera</th><td>{{ $hasilDokter->mata_sklera ?? '-' }}</td></tr>
         <tr><th>Mata Konjungtiba</th><td>{{ $hasilDokter->mata_konjungtiba ?? '-' }}</td></tr>
         <tr><th>Mata Minus</th><td>{{ $hasilDokter->mata_minus ? 'Ya' : 'Tidak' }} {{ $hasilDokter->mata_minus_nilai ? '(' . $hasilDokter->mata_minus_nilai . ')' : '' }}</td></tr>
@@ -111,6 +114,8 @@
         <tr><th>Thorax Photo</th><td>{{ $hasilDokter->thorax_photo_file ? \Illuminate\Support\Facades\Storage::url($hasilDokter->thorax_photo_file) : '-' }}</td></tr>
         <tr><th>Keterangan Thorax</th><td>{{ $hasilDokter->thorax_photo_ket ?? '-' }}</td></tr>
         <tr><th>Kesimpulan Dokter</th><td>{{ $hasilDokter->kesimpulan_text }}</td></tr>
+        <tr><th>Status Kelulusan</th><td>{{ $hasilDokter->status_kelulusan ?? '-' }}</td></tr>
+        <tr><th>Surat Rujukan</th><td>{{ $hasilDokter->surat_rujukan ?? '-' }}</td></tr>
         <tr><th>Keterangan Kesimpulan</th><td>{{ $hasilDokter->keterangan_kesimpulan ?? '-' }}</td></tr>
     </table>
 

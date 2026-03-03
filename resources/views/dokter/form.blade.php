@@ -78,11 +78,28 @@
             <p class="text-secondary mb-1">Keterangan Pemeriksaan PLP</p>
             <p class="font-medium text-foreground">{{ $pemeriksaanPlp->keterangan_pemeriksaan ?? '-' }}</p>
         </div>
+        <div class="mt-4 text-sm">
+            <p class="text-secondary mb-1">Catatan Warning Dokter pada PLP</p>
+            <p class="font-medium text-foreground">{{ $pemeriksaanPlp->catatan_warning_dokter ?? '-' }}</p>
+        </div>
     </div>
 
     <div class="rounded-2xl border border-border p-6 bg-white">
         <form id="dokterForm" action="{{ route('dokter.store', $mahasiswa->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
+
+            <div>
+                <label class="block text-sm font-medium text-foreground mb-2">Catatan Warning Dokter pada PLP</label>
+                <textarea
+                    name="catatan_warning_dokter"
+                    rows="2"
+                    maxlength="500"
+                    placeholder="Isi warning dokter untuk catatan PLP (opsional)"
+                    class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
+                >{{ old('catatan_warning_dokter', $pemeriksaanPlp->catatan_warning_dokter ?? '') }}</textarea>
+                <p class="text-xs text-secondary mt-1">Jika dikosongkan, akan disimpan sebagai -</p>
+                @error('catatan_warning_dokter')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+            </div>
 
             <div>
                 <label class="block text-sm font-medium text-foreground mb-2">Tanggal Pemeriksaan</label>
@@ -92,17 +109,6 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Kulit</label>
-                    <select name="kulit" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
-                        <option value="">Belum diisi</option>
-                        @foreach(['Putih','Kuning','Hitam','Sawo matang'] as $v)
-                            <option value="{{ $v }}" @selected(old('kulit') === $v)>{{ $v }}</option>
-                        @endforeach
-                    </select>
-                    @error('kulit')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
-
-                <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Mata - Kacamata</label>
                     <select name="mata_kacamata" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
                         <option value="">Belum diisi</option>
@@ -111,37 +117,39 @@
                     </select>
                     @error('mata_kacamata')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Mata - Ikterik</label>
+                    <select name="mata_ikterik" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Tidak" @selected(old('mata_ikterik') === 'Tidak')>Tidak</option>
+                        <option value="Ya" @selected(old('mata_ikterik') === 'Ya')>Ya</option>
+                    </select>
+                    @error('mata_ikterik')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Konjungtiva - Anemis</label>
+                    <select name="mata_konjungtiva_anemis" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Tidak" @selected(old('mata_konjungtiva_anemis') === 'Tidak')>Tidak</option>
+                        <option value="Ya" @selected(old('mata_konjungtiva_anemis') === 'Ya')>Ya</option>
+                    </select>
+                    @error('mata_konjungtiva_anemis')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Pendengaran</label>
+                    <select name="pendengaran" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Normal" @selected(old('pendengaran') === 'Normal')>Normal</option>
+                        <option value="Terganggu" @selected(old('pendengaran') === 'Terganggu')>Terganggu</option>
+                    </select>
+                    @error('pendengaran')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-foreground mb-2">Mata - Normal</label>
-                <select name="mata_normal" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
-                    <option value="">Belum diisi</option>
-                    <option value="Normal" @selected(old('mata_normal') === 'Normal')>Normal</option>
-                    <option value="Tidak normal" @selected(old('mata_normal') === 'Tidak normal')>Tidak normal</option>
-                </select>
-                @error('mata_normal')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Mata - Sklera</label>
-                    <select name="mata_sklera" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
-                        <option value="">Belum diisi</option>
-                        <option value="Normal" @selected(old('mata_sklera') === 'Normal')>Normal</option>
-                        <option value="Tidak normal" @selected(old('mata_sklera') === 'Tidak normal')>Tidak normal</option>
-                    </select>
-                    @error('mata_sklera')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Mata - Konjungtiba</label>
-                    <select name="mata_konjungtiba" class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm" required>
-                        <option value="">Belum diisi</option>
-                        <option value="Normal" @selected(old('mata_konjungtiba') === 'Normal')>Normal</option>
-                        <option value="Tidak normal" @selected(old('mata_konjungtiba') === 'Tidak normal')>Tidak normal</option>
-                    </select>
-                    @error('mata_konjungtiba')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
+                <label class="block text-sm font-medium text-foreground mb-2">Keterangan Pendengaran</label>
+                <textarea name="pendengaran_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib diisi jika pendengaran terganggu">{{ old('pendengaran_ket') }}</textarea>
+                @error('pendengaran_ket')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -192,99 +200,154 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Telinga Kiri</label>
-                    <select name="telinga_kiri" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
-                        <option value="">Belum diisi</option>
-                        <option value="Mendengar jelas" @selected(old('telinga_kiri') === 'Mendengar jelas')>Mendengar jelas</option>
-                        <option value="Tidak bisa mendengar" @selected(old('telinga_kiri') === 'Tidak bisa mendengar')>Tidak bisa mendengar</option>
+                    <label class="block text-sm font-medium text-foreground mb-2">Hidung (Cuping)</label>
+                    <select name="hidung_cuping" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="" @selected(old('hidung_cuping', '') === '')>Belum diisi</option>
+                        <option value="0" @selected(old('hidung_cuping') === '0')>Tidak</option>
+                        <option value="1" @selected(old('hidung_cuping') === '1')>Ya</option>
                     </select>
+                    @error('hidung_cuping')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Telinga Kiri</label>
-                    <input type="text" name="telinga_kiri_ket" value="{{ old('telinga_kiri_ket') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm">
+                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Hidung (Cuping)</label>
+                    <textarea name="hidung_cuping_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('hidung_cuping_ket') }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Mulut - Labioskisis</label>
+                    <select name="mulut_labioskisis" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Tidak" @selected(old('mulut_labioskisis') === 'Tidak')>Tidak</option>
+                        <option value="Ya" @selected(old('mulut_labioskisis') === 'Ya')>Ya</option>
+                    </select>
+                    @error('mulut_labioskisis')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Mulut - Palatoskisis</label>
+                    <select name="mulut_palatoskisis" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Tidak" @selected(old('mulut_palatoskisis') === 'Tidak')>Tidak</option>
+                        <option value="Ya" @selected(old('mulut_palatoskisis') === 'Ya')>Ya</option>
+                    </select>
+                    @error('mulut_palatoskisis')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Pharing - Nyeri Tekan</label>
+                    <select name="pharing_nyeri_tekan" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="" @selected(old('pharing_nyeri_tekan', '') === '')>Belum diisi</option>
+                        <option value="0" @selected(old('pharing_nyeri_tekan') === '0')>Tidak</option>
+                        <option value="1" @selected(old('pharing_nyeri_tekan') === '1')>Ya</option>
+                    </select>
+                    @error('pharing_nyeri_tekan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Pharing</label>
+                    <textarea name="pharing_nyeri_tekan_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('pharing_nyeri_tekan_ket') }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Tonsil - Kemerahan</label>
+                    <select name="tonsil_kemerahan" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="" @selected(old('tonsil_kemerahan', '') === '')>Belum diisi</option>
+                        <option value="0" @selected(old('tonsil_kemerahan') === '0')>Tidak</option>
+                        <option value="1" @selected(old('tonsil_kemerahan') === '1')>Ya</option>
+                    </select>
+                    @error('tonsil_kemerahan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Tonsil Kemerahan</label>
+                    <textarea name="tonsil_kemerahan_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('tonsil_kemerahan_ket') }}</textarea>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Tonsil - Pembesaran</label>
+                    <select name="tonsil_pembesaran" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="" @selected(old('tonsil_pembesaran', '') === '')>Belum diisi</option>
+                        <option value="0" @selected(old('tonsil_pembesaran') === '0')>Tidak</option>
+                        <option value="1" @selected(old('tonsil_pembesaran') === '1')>Ya</option>
+                    </select>
+                    @error('tonsil_pembesaran')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Gigi Lengkap</label>
+                    <select name="gigi_lengkap" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="" @selected(old('gigi_lengkap', '') === '')>Belum diisi</option>
+                        <option value="0" @selected(old('gigi_lengkap') === '0')>Tidak</option>
+                        <option value="1" @selected(old('gigi_lengkap') === '1')>Ya</option>
+                    </select>
+                    @error('gigi_lengkap')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Leher - Pembesaran KGB</label>
+                    <select name="leher_kgb_pembesaran" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Tidak" @selected(old('leher_kgb_pembesaran') === 'Tidak')>Tidak</option>
+                        <option value="Ya" @selected(old('leher_kgb_pembesaran') === 'Ya')>Ya</option>
+                    </select>
+                    @error('leher_kgb_pembesaran')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Jantung</label>
+                    <select name="jantung_dbn" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="DBN" @selected(old('jantung_dbn') === 'DBN')>DBN</option>
+                        <option value="Ada Kelainan" @selected(old('jantung_dbn') === 'Ada Kelainan')>Ada Kelainan</option>
+                    </select>
+                    @error('jantung_dbn')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Kelainan Jantung</label>
+                    <textarea name="jantung_kelainan" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib diisi jika ada kelainan">{{ old('jantung_kelainan') }}</textarea>
+                    @error('jantung_kelainan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Paru</label>
+                    <select name="paru_dbn" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="DBN" @selected(old('paru_dbn') === 'DBN')>DBN</option>
+                        <option value="Ada Kelainan" @selected(old('paru_dbn') === 'Ada Kelainan')>Ada Kelainan</option>
+                    </select>
+                    @error('paru_dbn')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Kelainan Paru</label>
+                    <textarea name="paru_kelainan" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib diisi jika ada kelainan">{{ old('paru_kelainan') }}</textarea>
+                    @error('paru_kelainan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Abdomen - Hamil</label>
+                    <select name="abdomen_hamil" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="" @selected(old('abdomen_hamil', '') === '')>Belum diisi</option>
+                        <option value="0" @selected(old('abdomen_hamil') === '0')>Tidak</option>
+                        <option value="1" @selected(old('abdomen_hamil') === '1')>Ya</option>
+                    </select>
+                    @error('abdomen_hamil')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Tulang Belakang</label>
+                    <select name="tulang_belakang" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="DBN" @selected(old('tulang_belakang') === 'DBN')>DBN</option>
+                        <option value="Lordosis" @selected(old('tulang_belakang') === 'Lordosis')>Lordosis</option>
+                        <option value="Kifosis" @selected(old('tulang_belakang') === 'Kifosis')>Kifosis</option>
+                        <option value="Skoliosis" @selected(old('tulang_belakang') === 'Skoliosis')>Skoliosis</option>
+                    </select>
+                    @error('tulang_belakang')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Kelengkapan Jari Tangan</label>
+                    <select name="jari_tangan_lengkap" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                        <option value="">Belum diisi</option>
+                        <option value="Lengkap" @selected(old('jari_tangan_lengkap') === 'Lengkap')>Lengkap</option>
+                        <option value="Tidak Lengkap" @selected(old('jari_tangan_lengkap') === 'Tidak Lengkap')>Tidak Lengkap</option>
+                    </select>
+                    @error('jari_tangan_lengkap')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Jari Tangan</label>
+                    <textarea name="jari_tangan_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib diisi jika tidak lengkap">{{ old('jari_tangan_ket') }}</textarea>
+                    @error('jari_tangan_ket')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Telinga Kanan</label>
-                    <select name="telinga_kanan" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
-                        <option value="">Belum diisi</option>
-                        <option value="Mendengar jelas" @selected(old('telinga_kanan') === 'Mendengar jelas')>Mendengar jelas</option>
-                        <option value="Tidak bisa mendengar" @selected(old('telinga_kanan') === 'Tidak bisa mendengar')>Tidak bisa mendengar</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Telinga Kanan</label>
-                    <input type="text" name="telinga_kanan_ket" value="{{ old('telinga_kanan_ket') }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                @php
-                    $yesNoFields = [
-                        ['field' => 'hidung_cuping', 'label' => 'Hidung (Cuping)', 'ket' => 'hidung_cuping_ket'],
-                        ['field' => 'lidah_stomatitis', 'label' => 'Lidah - Stomatitis', 'ket' => 'lidah_stomatitis_ket'],
-                        ['field' => 'pharing_nyeri_tekan', 'label' => 'Pharing - Nyeri Tekan', 'ket' => 'pharing_nyeri_tekan_ket'],
-                        ['field' => 'tonsil_kemerahan', 'label' => 'Tonsil - Kemerahan', 'ket' => 'tonsil_kemerahan_ket'],
-                        ['field' => 'tonsil_pembesaran', 'label' => 'Tonsil - Pembesaran', 'ket' => null],
-                        ['field' => 'gigi_lengkap', 'label' => 'Gigi Lengkap', 'ket' => null],
-                        ['field' => 'jantung_murmur', 'label' => 'Jantung - Murmur', 'ket' => 'jantung_murmur_ket'],
-                        ['field' => 'paru_suara_tambahan', 'label' => 'Paru - Suara Tambahan', 'ket' => null],
-                        ['field' => 'abdomen_hamil', 'label' => 'Abdomen - Hamil', 'ket' => null],
-                        ['field' => 'tulang_skoliosis', 'label' => 'Tulang - Skoliosis', 'ket' => 'tulang_skoliosis_ket'],
-                        ['field' => 'tulang_lordosis', 'label' => 'Tulang - Lordosis', 'ket' => 'tulang_lordosis_ket'],
-                        ['field' => 'tulang_kifosis', 'label' => 'Tulang - Kifosis', 'ket' => 'tulang_kifosis_ket'],
-                        ['field' => 'tulang_lainnya', 'label' => 'Tulang - Lainnya', 'ket' => 'tulang_lainnya_ket'],
-                    ];
-                @endphp
-
-                @foreach($yesNoFields as $item)
-                    <div>
-                        <label class="block text-sm font-medium text-foreground mb-2">{{ $item['label'] }}</label>
-                        <select name="{{ $item['field'] }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
-                            <option value="" @selected(old($item['field'], '') === '')>Belum diisi</option>
-                            <option value="0" @selected(old($item['field']) === '0')>Tidak</option>
-                            <option value="1" @selected(old($item['field']) === '1')>Ya</option>
-                        </select>
-                        @error($item['field'])<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-
-                        @if($item['ket'])
-                            <label class="block text-sm font-medium text-foreground mt-3 mb-2">Keterangan {{ $item['label'] }}</label>
-                            <textarea name="{{ $item['ket'] }}" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old($item['ket']) }}</textarea>
-                        @endif
-                    </div>
-                @endforeach
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Lidah - Kebersihan</label>
-                    <select name="lidah_kebersihan" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
-                        <option value="">Belum diisi</option>
-                        <option value="Bersih" @selected(old('lidah_kebersihan') === 'Bersih')>Bersih</option>
-                        <option value="Kurang bersih" @selected(old('lidah_kebersihan') === 'Kurang bersih')>Kurang bersih</option>
-                        <option value="Kotor" @selected(old('lidah_kebersihan') === 'Kotor')>Kotor</option>
-                    </select>
-                    @error('lidah_kebersihan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
-
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Keterangan Lidah - Kebersihan</label>
-                    <textarea name="lidah_kebersihan_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('lidah_kebersihan_ket') }}</textarea>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Refleks Pupil</label>
-                    <select name="pupil" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
-                        <option value="">Belum diisi</option>
-                        <option value="Isokor" @selected(old('pupil') === 'Isokor')>Isokor</option>
-                        <option value="Anisokor" @selected(old('pupil') === 'Anisokor')>Anisokor</option>
-                    </select>
-                    @error('pupil')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
-                </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Bicara - Artikulasi</label>
                     <select name="bicara_artikulasi" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
@@ -294,22 +357,15 @@
                     </select>
                     @error('bicara_artikulasi')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
+                <div>
+                    <label class="block text-sm font-medium text-foreground mb-2">Cacat Tubuh yang Mengganggu Tugas</label>
+                    <textarea name="cacat_tubuh" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('cacat_tubuh') }}</textarea>
+                </div>
             </div>
 
             <div>
                 <label class="block text-sm font-medium text-foreground mb-2">Keterangan Bicara</label>
                 <textarea name="bicara_artikulasi_ket" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('bicara_artikulasi_ket') }}</textarea>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Tiroid</label>
-                    <textarea name="tiroid" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('tiroid') }}</textarea>
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Cacat Tubuh yang Mengganggu Tugas</label>
-                    <textarea name="cacat_tubuh" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm">{{ old('cacat_tubuh') }}</textarea>
-                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -326,19 +382,28 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                    <label class="block text-sm font-medium text-foreground mb-2">Kesimpulan</label>
-                    <select name="kesimpulan" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
+                    <label class="block text-sm font-medium text-foreground mb-2">Status Kelulusan</label>
+                    <select name="status_kelulusan" class="w-full px-4 py-2 border border-border rounded-lg text-sm" required>
                         <option value="">Belum diisi</option>
-                        <option value="Memenuhi Syarat" @selected(old('kesimpulan') === 'Memenuhi Syarat')>Memenuhi Syarat</option>
-                        <option value="Tidak Memenuhi Syarat" @selected(old('kesimpulan') === 'Tidak Memenuhi Syarat')>Tidak Memenuhi Syarat</option>
+                        <option value="Lulus" @selected(old('status_kelulusan', $pemeriksaanDokter?->status_kelulusan) === 'Lulus')>Lulus</option>
+                        <option value="Pending" @selected(old('status_kelulusan', $pemeriksaanDokter?->status_kelulusan) === 'Pending')>Pending</option>
+                        <option value="Tidak Lulus" @selected(old('status_kelulusan', $pemeriksaanDokter?->status_kelulusan) === 'Tidak Lulus')>Tidak Lulus</option>
+                        <option value="Lulus Dengan Syarat" @selected(old('status_kelulusan', $pemeriksaanDokter?->status_kelulusan) === 'Lulus Dengan Syarat')>Lulus Dengan Syarat (Legacy)</option>
                     </select>
-                    @error('kesimpulan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
+                    @error('status_kelulusan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Keterangan Kesimpulan</label>
-                    <textarea name="keterangan_kesimpulan" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Opsional">{{ old('keterangan_kesimpulan') }}</textarea>
+                    <textarea name="keterangan_kesimpulan" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib untuk Pending / Tidak Lulus">{{ old('keterangan_kesimpulan', $pemeriksaanDokter?->keterangan_kesimpulan) }}</textarea>
                     @error('keterangan_kesimpulan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-foreground mb-2">Surat Rujukan (wajib jika Pending)</label>
+                <textarea name="surat_rujukan" rows="2" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Contoh: Rujukan ke poli mata RS ...">{{ old('surat_rujukan', $pemeriksaanDokter?->surat_rujukan) }}</textarea>
+                <p class="text-xs text-secondary mt-1">Kompatibel data lama: tetap diterima saat status <strong>Lulus Dengan Syarat</strong>.</p>
+                @error('surat_rujukan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
             </div>
 
             <div class="flex justify-end gap-3 pt-4 border-t border-border">
@@ -355,6 +420,26 @@
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('dokterForm');
     if (!form) return;
+
+    const statusKelulusan = form.querySelector('[name="status_kelulusan"]');
+    const suratRujukan = form.querySelector('[name="surat_rujukan"]');
+    const keteranganKesimpulan = form.querySelector('[name="keterangan_kesimpulan"]');
+
+    function applyConditionalRequired() {
+        if (!statusKelulusan || !suratRujukan || !keteranganKesimpulan) return;
+
+        const status = statusKelulusan.value;
+        const requireSurat = status === 'Pending' || status === 'Lulus Dengan Syarat';
+        const requireKeterangan = status === 'Pending' || status === 'Tidak Lulus';
+
+        suratRujukan.required = requireSurat;
+        keteranganKesimpulan.required = requireKeterangan;
+    }
+
+    if (statusKelulusan) {
+        statusKelulusan.addEventListener('change', applyConditionalRequired);
+        applyConditionalRequired();
+    }
 
     const requiredControls = Array.from(form.querySelectorAll('input[required], select[required], textarea[required]'))
         .filter((el) => !['hidden', 'submit', 'button'].includes(el.type));

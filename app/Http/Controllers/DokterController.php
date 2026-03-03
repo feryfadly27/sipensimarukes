@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\LogAktivitas;
 use App\Models\Mahasiswa;
 use App\Models\PemeriksaanDokter;
+use App\Models\PemeriksaanPlp;
 use App\Models\Prodi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\Rule;
 
 class DokterController extends Controller
 {
@@ -149,54 +151,57 @@ class DokterController extends Controller
 
         $validated = $request->validate([
             'tgl_periksa' => 'required|date',
-            'kulit' => 'required|in:Putih,Kuning,Hitam,Sawo matang',
             'mata_kacamata' => 'required|in:Berkacamata,Tidak berkacamata',
-            'mata_normal' => 'required|in:Normal,Tidak normal',
-            'mata_sklera' => 'required|in:Normal,Tidak normal',
-            'mata_konjungtiba' => 'required|in:Normal,Tidak normal',
+            'mata_ikterik' => 'required|in:Tidak,Ya',
+            'mata_konjungtiva_anemis' => 'required|in:Tidak,Ya',
             'mata_minus' => 'required|boolean',
             'mata_minus_nilai' => 'nullable|numeric|required_if:mata_minus,1',
             'mata_silindris' => 'required|boolean',
             'mata_silindris_nilai' => 'nullable|numeric|required_if:mata_silindris,1',
             'mata_strabismus' => 'required|boolean',
             'mata_strabismus_nilai' => 'nullable|string|max:50|required_if:mata_strabismus,1',
-            'telinga_kiri' => 'required|in:Mendengar jelas,Tidak bisa mendengar',
-            'telinga_kiri_ket' => 'nullable|string',
-            'telinga_kanan' => 'required|in:Mendengar jelas,Tidak bisa mendengar',
-            'telinga_kanan_ket' => 'nullable|string',
+            'pendengaran' => 'required|in:Normal,Terganggu',
+            'pendengaran_ket' => 'nullable|string|required_if:pendengaran,Terganggu',
             'hidung_cuping' => 'required|boolean',
             'hidung_cuping_ket' => 'nullable|string',
-            'lidah_kebersihan' => 'required|in:Bersih,Kurang bersih,Kotor',
-            'lidah_kebersihan_ket' => 'nullable|string',
-            'lidah_stomatitis' => 'required|boolean',
-            'lidah_stomatitis_ket' => 'nullable|string',
+            'mulut_labioskisis' => 'required|in:Tidak,Ya',
+            'mulut_palatoskisis' => 'required|in:Tidak,Ya',
             'pharing_nyeri_tekan' => 'required|boolean',
             'pharing_nyeri_tekan_ket' => 'nullable|string',
             'tonsil_kemerahan' => 'required|boolean',
             'tonsil_kemerahan_ket' => 'nullable|string',
             'tonsil_pembesaran' => 'required|boolean',
             'gigi_lengkap' => 'required|boolean',
-            'tiroid' => 'nullable|string',
-            'jantung_murmur' => 'required|boolean',
-            'jantung_murmur_ket' => 'nullable|string',
-            'paru_suara_tambahan' => 'required|boolean',
+            'leher_kgb_pembesaran' => 'required|in:Tidak,Ya',
+            'jantung_dbn' => 'required|in:DBN,Ada Kelainan',
+            'jantung_kelainan' => 'nullable|string|required_if:jantung_dbn,Ada Kelainan',
+            'paru_dbn' => 'required|in:DBN,Ada Kelainan',
+            'paru_kelainan' => 'nullable|string|required_if:paru_dbn,Ada Kelainan',
             'abdomen_hamil' => 'required|boolean',
-            'pupil' => 'required|in:Isokor,Anisokor',
             'thorax_photo_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
             'thorax_photo_ket' => 'nullable|string',
-            'tulang_skoliosis' => 'required|boolean',
-            'tulang_skoliosis_ket' => 'nullable|string',
-            'tulang_lordosis' => 'required|boolean',
-            'tulang_lordosis_ket' => 'nullable|string',
-            'tulang_kifosis' => 'required|boolean',
-            'tulang_kifosis_ket' => 'nullable|string',
-            'tulang_lainnya' => 'required|boolean',
-            'tulang_lainnya_ket' => 'nullable|string',
+            'tulang_belakang' => 'required|in:DBN,Lordosis,Kifosis,Skoliosis',
+            'jari_tangan_lengkap' => 'required|in:Lengkap,Tidak Lengkap',
+            'jari_tangan_ket' => 'nullable|string|required_if:jari_tangan_lengkap,Tidak Lengkap',
             'bicara_artikulasi' => 'required|in:Artikulasi jelas,Tidak jelas',
             'bicara_artikulasi_ket' => 'nullable|string',
             'cacat_tubuh' => 'nullable|string',
-            'kesimpulan' => 'required|in:Memenuhi Syarat,Tidak Memenuhi Syarat',
-            'keterangan_kesimpulan' => 'nullable|string',
+            'status_kelulusan' => 'required|in:Lulus,Pending,Tidak Lulus,Lulus Dengan Syarat',
+            'surat_rujukan' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(function () use ($request) {
+                    return in_array($request->input('status_kelulusan'), ['Pending', 'Lulus Dengan Syarat'], true);
+                }),
+            ],
+            'keterangan_kesimpulan' => [
+                'nullable',
+                'string',
+                Rule::requiredIf(function () use ($request) {
+                    return in_array($request->input('status_kelulusan'), ['Pending', 'Tidak Lulus'], true);
+                }),
+            ],
+            'catatan_warning_dokter' => 'nullable|string|max:500',
         ]);
 
         DB::transaction(function () use ($request, $mahasiswa, $validated, $existing) {
@@ -205,6 +210,51 @@ class DokterController extends Controller
             $data = $validated;
             $data['dokter_id'] = Auth::id();
             $data['is_locked'] = true;
+            $data['mata_normal'] = 'Normal';
+            $data['mata_sklera'] = $validated['mata_ikterik'] === 'Ya' ? 'Tidak normal' : 'Normal';
+            $data['mata_konjungtiba'] = $validated['mata_konjungtiva_anemis'] === 'Ya' ? 'Tidak normal' : 'Normal';
+            $data['telinga_kiri'] = $validated['pendengaran'] === 'Normal' ? 'Mendengar jelas' : 'Tidak bisa mendengar';
+            $data['telinga_kanan'] = $validated['pendengaran'] === 'Normal' ? 'Mendengar jelas' : 'Tidak bisa mendengar';
+            $data['telinga_kiri_ket'] = $validated['pendengaran_ket'] ?? null;
+            $data['telinga_kanan_ket'] = $validated['pendengaran_ket'] ?? null;
+            $data['jantung_murmur'] = $validated['jantung_dbn'] === 'Ada Kelainan';
+            $data['jantung_murmur_ket'] = $validated['jantung_kelainan'] ?? null;
+            $data['paru_suara_tambahan'] = $validated['paru_dbn'] === 'Ada Kelainan';
+            $data['tulang_skoliosis'] = $validated['tulang_belakang'] === 'Skoliosis';
+            $data['tulang_lordosis'] = $validated['tulang_belakang'] === 'Lordosis';
+            $data['tulang_kifosis'] = $validated['tulang_belakang'] === 'Kifosis';
+            $data['tulang_lainnya'] = false;
+            $data['tulang_skoliosis_ket'] = null;
+            $data['tulang_lordosis_ket'] = null;
+            $data['tulang_kifosis_ket'] = null;
+            $data['tulang_lainnya_ket'] = null;
+            $data['lidah_kebersihan'] = null;
+            $data['lidah_kebersihan_ket'] = null;
+            $data['lidah_stomatitis'] = false;
+            $data['lidah_stomatitis_ket'] = null;
+            $data['tiroid'] = null;
+            $data['pupil'] = null;
+            $data['kulit'] = null;
+
+            $data['surat_rujukan'] = filled(trim((string) ($validated['surat_rujukan'] ?? '')))
+                ? trim((string) $validated['surat_rujukan'])
+                : null;
+
+            $statusKelulusan = $validated['status_kelulusan'];
+
+            $kesimpulanDokter = match ($statusKelulusan) {
+                'Lulus', 'Lulus Dengan Syarat' => 'Memenuhi Syarat',
+                'Pending',
+                'Tidak Lulus' => 'Tidak Memenuhi Syarat',
+            };
+
+            $data['kesimpulan'] = $kesimpulanDokter;
+            if (in_array($statusKelulusan, ['Pending', 'Lulus Dengan Syarat'], true) && filled($data['surat_rujukan'])) {
+                $keteranganSebelumnya = trim((string) ($validated['keterangan_kesimpulan'] ?? ''));
+                $data['keterangan_kesimpulan'] = $keteranganSebelumnya !== ''
+                    ? $keteranganSebelumnya . ' | Rujukan: ' . $data['surat_rujukan']
+                    : 'Rujukan: ' . $data['surat_rujukan'];
+            }
 
             if ($request->hasFile('thorax_photo_file')) {
                 $data['thorax_photo_file'] = $request->file('thorax_photo_file')->store('uploads/thorax', 'public');
@@ -217,7 +267,7 @@ class DokterController extends Controller
                 $data
             );
 
-            $kesimpulanAkhir = $validated['kesimpulan'] === 'Memenuhi Syarat'
+            $kesimpulanAkhir = in_array($statusKelulusan, ['Lulus', 'Lulus Dengan Syarat'], true)
                 ? 'memenuhi_syarat'
                 : 'tidak_memenuhi_syarat';
 
@@ -225,6 +275,12 @@ class DokterController extends Controller
                 'status_dokter' => 'selesai',
                 'kesimpulan_akhir' => $kesimpulanAkhir,
                 'keterangan_kesimpulan' => $validated['keterangan_kesimpulan'] ?? null,
+            ]);
+
+            PemeriksaanPlp::where('mahasiswa_id', $mahasiswa->id)->update([
+                'catatan_warning_dokter' => filled(trim((string) ($validated['catatan_warning_dokter'] ?? '')))
+                    ? trim((string) $validated['catatan_warning_dokter'])
+                    : '-',
             ]);
 
             LogAktivitas::create([

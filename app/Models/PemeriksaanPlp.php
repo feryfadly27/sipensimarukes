@@ -20,6 +20,7 @@ class PemeriksaanPlp extends Model
         'tensi',
         'riwayat_keluarga',
         'keterangan_pemeriksaan',
+        'catatan_warning_dokter',
         'buta_warna',
         'tinggi_badan',
         'berat_badan',

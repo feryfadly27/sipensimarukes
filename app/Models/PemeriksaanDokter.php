@@ -22,6 +22,8 @@ class PemeriksaanDokter extends Model
         'mata_normal',
         'mata_sklera',
         'mata_konjungtiba',
+        'mata_ikterik',
+        'mata_konjungtiva_anemis',
         'mata_minus',
         'mata_minus_nilai',
         'mata_silindris',
@@ -50,13 +52,22 @@ class PemeriksaanDokter extends Model
         'tonsil_pembesaran',
         // Item 10: Gigi
         'gigi_lengkap',
+        'mulut_labioskisis',
+        'mulut_palatoskisis',
         // Item 11: Tiroid
         'tiroid',
+        'leher_kgb_pembesaran',
+        'pendengaran',
+        'pendengaran_ket',
         // Item 12: Jantung
         'jantung_murmur',
         'jantung_murmur_ket',
+        'jantung_dbn',
+        'jantung_kelainan',
         // Item 13: Paru-paru
         'paru_suara_tambahan',
+        'paru_dbn',
+        'paru_kelainan',
         // Item 14: Abdomen
         'abdomen_hamil',
         // Item 15: Pupil
@@ -65,6 +76,7 @@ class PemeriksaanDokter extends Model
         'thorax_photo_file',
         'thorax_photo_ket',
         // Item 17: Tulang Belakang
+        'tulang_belakang',
         'tulang_skoliosis',
         'tulang_skoliosis_ket',
         'tulang_lordosis',
@@ -73,12 +85,16 @@ class PemeriksaanDokter extends Model
         'tulang_kifosis_ket',
         'tulang_lainnya',
         'tulang_lainnya_ket',
+        'jari_tangan_lengkap',
+        'jari_tangan_ket',
         // Item 18: Bicara
         'bicara_artikulasi',
         'bicara_artikulasi_ket',
         // Item 19: Cacat Tubuh
         'cacat_tubuh',
         // Item 20: Kesimpulan
+        'status_kelulusan',
+        'surat_rujukan',
         'kesimpulan',
         'keterangan_kesimpulan',
         'is_locked',
