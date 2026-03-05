@@ -47,7 +47,7 @@
     </div>
 
     <div class="rounded-2xl border border-border p-6 bg-white">
-        <h3 class="text-lg font-semibold text-foreground mb-4">Ringkasan Hasil PLP (Read-only)</h3>
+        <h3 class="text-lg font-semibold text-foreground mb-4">Ringkasan Hasil Nakes (Read-only)</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
                 <p class="text-secondary mb-1">Riwayat Penyakit</p>
@@ -75,11 +75,11 @@
             </div>
         </div>
         <div class="mt-4 text-sm">
-            <p class="text-secondary mb-1">Keterangan Pemeriksaan PLP</p>
+            <p class="text-secondary mb-1">Keterangan Pemeriksaan Nakes</p>
             <p class="font-medium text-foreground">{{ $pemeriksaanPlp->keterangan_pemeriksaan ?? '-' }}</p>
         </div>
         <div class="mt-4 text-sm">
-            <p class="text-secondary mb-1">Catatan Warning Dokter pada PLP</p>
+            <p class="text-secondary mb-1">Catatan Warning Dokter pada Nakes</p>
             <p class="font-medium text-foreground">{{ $pemeriksaanPlp->catatan_warning_dokter ?? '-' }}</p>
         </div>
     </div>
@@ -89,12 +89,12 @@
             @csrf
 
             <div>
-                <label class="block text-sm font-medium text-foreground mb-2">Catatan Warning Dokter pada PLP</label>
+                <label class="block text-sm font-medium text-foreground mb-2">Catatan Warning Dokter pada Nakes</label>
                 <textarea
                     name="catatan_warning_dokter"
                     rows="2"
                     maxlength="500"
-                    placeholder="Isi warning dokter untuk catatan PLP (opsional)"
+                    placeholder="Isi warning dokter untuk catatan Nakes (opsional)"
                     class="w-full px-4 py-2 border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary text-sm"
                 >{{ old('catatan_warning_dokter', $pemeriksaanPlp->catatan_warning_dokter ?? '') }}</textarea>
                 <p class="text-xs text-secondary mt-1">Jika dikosongkan, akan disimpan sebagai -</p>

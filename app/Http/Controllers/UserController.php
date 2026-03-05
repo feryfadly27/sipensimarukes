@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    private array $roles = ['superadmin', 'admin', 'pendaftaran', 'plp', 'dokter'];
+    private array $roles = ['superadmin', 'admin', 'pendaftaran', 'nakes', 'dokter'];
 
     public function index(Request $request)
     {

@@ -27,7 +27,7 @@
             <p class="text-2xl font-bold text-success mt-1">{{ $summary['hadir'] }}</p>
         </div>
         <div class="rounded-2xl border border-border bg-white p-4">
-            <p class="text-sm text-secondary">PLP Selesai</p>
+            <p class="text-sm text-secondary">Nakes Selesai</p>
             <p class="text-2xl font-bold text-foreground mt-1">{{ $summary['plp_selesai'] }}</p>
         </div>
         <div class="rounded-2xl border border-border bg-white p-4">
@@ -63,7 +63,7 @@
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-medium text-foreground mb-2">Status PLP</label>
+                <label class="block text-sm font-medium text-foreground mb-2">Status Nakes</label>
                 <select name="status_plp" class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
                     <option value="">Semua</option>
                     <option value="belum" {{ request('status_plp') === 'belum' ? 'selected' : '' }}>Belum</option>
@@ -109,7 +109,7 @@
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Nama</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Prodi</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Kehadiran</th>
-                        <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">PLP</th>
+                        <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Nakes</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Dokter</th>
                         <th class="px-6 py-4 text-left text-sm font-semibold text-foreground">Kesimpulan</th>
                         <th class="px-6 py-4 text-center text-sm font-semibold text-foreground">Aksi</th>

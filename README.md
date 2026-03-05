@@ -19,7 +19,7 @@ Sistem Informasi Uji Kesehatan untuk pengelolaan peserta, pemeriksaan PLP, pemer
 
 - `admin`: data peserta, laporan, export.
 - `pendaftaran`: validasi pendaftaran peserta.
-- `plp`: pemeriksaan PLP.
+- `nakes`: pemeriksaan PLP.
 - `dokter`: pemeriksaan dokter dan daftar selesai.
 
 ## Teknologi
@@ -90,7 +90,7 @@ Semua password default: `password`
 
 - `admin`
 - `pendaftaran`
-- `plp`
+- `nakes`
 - `dokter`
 
 ## Perintah Penting

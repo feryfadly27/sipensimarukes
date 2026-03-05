@@ -41,7 +41,7 @@
                         <option value="superadmin" @selected(old('role') === 'superadmin')>Superadmin</option>
                         <option value="admin" @selected(old('role') === 'admin')>Admin</option>
                         <option value="pendaftaran" @selected(old('role') === 'pendaftaran')>Pendaftaran</option>
-                        <option value="plp" @selected(old('role') === 'plp')>PLP</option>
+                        <option value="nakes" @selected(old('role') === 'nakes')>Nakes</option>
                         <option value="dokter" @selected(old('role') === 'dokter')>Dokter</option>
                     </select>
                     @error('role')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror

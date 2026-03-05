@@ -7,9 +7,24 @@ use App\Models\PemeriksaanPlp;
 use App\Models\LogAktivitas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PlpController extends Controller
 {
+    private function canBeHandledByNakes(Mahasiswa $mahasiswa): bool
+    {
+        if ($mahasiswa->status_kehadiran !== 'hadir') {
+            return false;
+        }
+
+        if ($mahasiswa->status_plp === 'belum') {
+            return true;
+        }
+
+        $existing = $mahasiswa->pemeriksaanPlp()->with('plp:id,role')->first();
+        return $mahasiswa->status_plp === 'selesai' && $existing?->plp?->role === 'superadmin';
+    }
+
     /**
      * Cek pemeriksaan yang sedang berjalan (untuk mencegah tumpang tindih)
      */
@@ -46,8 +61,8 @@ class PlpController extends Controller
      */
     public function verifyStudent(Mahasiswa $mahasiswa)
     {
-        // Verify student is ready for PLP examination
-        if ($mahasiswa->status_kehadiran !== 'hadir' || $mahasiswa->status_plp !== 'belum') {
+        // Verify student is ready for Nakes examination
+        if (!$this->canBeHandledByNakes($mahasiswa)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Mahasiswa tidak siap untuk pemeriksaan PLP'
@@ -62,7 +77,29 @@ class PlpController extends Controller
         $isResume = false;
         if ($ongoing) {
             if ($ongoing->plp_id !== Auth::id()) {
-                $plpName = $ongoing->plp?->nama ?? 'PLP lain';
+                if ($ongoing->plp?->role === 'superadmin') {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Pemeriksaan superadmin ditemukan, Anda dapat melanjutkan pemeriksaan mahasiswa ini',
+                        'is_resume' => false,
+                        'data' => [
+                            'id' => $mahasiswa->id,
+                            'nama' => $mahasiswa->nama,
+                            'no_pendaftaran' => $mahasiswa->no_pendaftaran,
+                            'no_identitas' => $mahasiswa->no_identitas,
+                            'jenis_kelamin' => $mahasiswa->jenis_kelamin,
+                            'prodi' => $mahasiswa->prodi,
+                            'prodi_pilihan_1' => $mahasiswa->prodi_pilihan_1,
+                            'prodi_pilihan_2' => $mahasiswa->prodi_pilihan_2,
+                            'tempat_lahir' => $mahasiswa->tempat_lahir,
+                            'tanggal_lahir' => $mahasiswa->tanggal_lahir?->format('d-m-Y'),
+                            'nomor_urut' => $mahasiswa->nomor_urut,
+                            'foto_kehadiran' => $mahasiswa->foto_kehadiran ? asset('storage/' . $mahasiswa->foto_kehadiran) : null,
+                        ],
+                    ]);
+                }
+
+                $plpName = $ongoing->plp?->nama ?? 'Nakes lain';
                 return response()->json([
                     'success' => false,
                     'message' => 'Mahasiswa ini sedang diperiksa oleh ' . $plpName
@@ -104,14 +141,29 @@ class PlpController extends Controller
      */
     public function startExamination(Mahasiswa $mahasiswa)
     {
-        // Cek apakah MAHASISWA INI sedang diperiksa oleh PLP lain
+        // Cek apakah MAHASISWA INI sedang diperiksa oleh Nakes lain
         $ongoing = PemeriksaanPlp::where('mahasiswa_id', $mahasiswa->id)
             ->where('status_pemeriksaan', 'sedang_diperiksa')
             ->with('plp')
             ->first();
         if ($ongoing) {
             if ($ongoing->plp_id !== Auth::id()) {
-                $plpName = $ongoing->plp?->nama ?? 'PLP lain';
+                if ($ongoing->plp?->role === 'superadmin') {
+                    $ongoing->update([
+                        'plp_id' => Auth::id(),
+                        'started_at' => now(),
+                    ]);
+
+                    $ongoing->load('mahasiswa');
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Pemeriksaan superadmin diambil alih untuk ' . $mahasiswa->nama,
+                        'data' => $ongoing,
+                        'is_resume' => true,
+                    ]);
+                }
+
+                $plpName = $ongoing->plp?->nama ?? 'Nakes lain';
                 return response()->json([
                     'success' => false,
                     'message' => 'Mahasiswa ini sedang diperiksa oleh ' . $plpName
@@ -127,8 +179,8 @@ class PlpController extends Controller
             ]);
         }
 
-        // Verify student is ready for PLP examination
-        if ($mahasiswa->status_kehadiran !== 'hadir' || $mahasiswa->status_plp !== 'belum') {
+        // Verify student is ready for Nakes examination
+        if (!$this->canBeHandledByNakes($mahasiswa)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Mahasiswa tidak siap untuk pemeriksaan PLP'
@@ -170,8 +222,8 @@ class PlpController extends Controller
 
     public function store(Request $request, Mahasiswa $mahasiswa)
     {
-        // Verify student is ready for PLP examination
-        if ($mahasiswa->status_kehadiran !== 'hadir' || $mahasiswa->status_plp !== 'belum') {
+        // Verify student is ready for Nakes examination
+        if (!$this->canBeHandledByNakes($mahasiswa)) {
             return response()->json([
                 'success' => false,
                 'message' => 'Mahasiswa tidak siap untuk pemeriksaan PLP'
@@ -192,55 +244,59 @@ class PlpController extends Controller
         ]);
 
         try {
-            // Calculate BMI
-            $tinggi_m = $validated['tinggi_badan'] / 100;
-            $bmi = round($validated['berat_badan'] / ($tinggi_m * $tinggi_m), 2);
+            $pemeriksaanPlp = DB::transaction(function () use ($validated, $mahasiswa, $request) {
+                // Calculate BMI
+                $tinggi_m = $validated['tinggi_badan'] / 100;
+                $bmi = round($validated['berat_badan'] / ($tinggi_m * $tinggi_m), 2);
 
-            // Store PLP examination results
-            $pemeriksaanPlp = PemeriksaanPlp::updateOrCreate(
-                ['mahasiswa_id' => $mahasiswa->id],
-                [
-                    'plp_id' => Auth::id(),
-                    'tgl_periksa' => $validated['tgl_periksa'],
-                    'riwayat_penyakit' => $validated['riwayat_penyakit'],
-                    'suhu' => $validated['suhu'],
-                    'tensi' => $validated['tensi'],
-                    'riwayat_keluarga' => $validated['riwayat_keluarga'],
-                    'keterangan_pemeriksaan' => filled(trim((string) ($validated['keterangan_pemeriksaan'] ?? '')))
-                        ? trim((string) $validated['keterangan_pemeriksaan'])
-                        : '-',
-                    'buta_warna' => $validated['buta_warna'],
-                    'tinggi_badan' => $validated['tinggi_badan'],
-                    'berat_badan' => $validated['berat_badan'],
-                    'bmi' => $bmi,
-                    'status_pemeriksaan' => 'selesai',
-                    'ended_at' => now(),
-                ]
-            );
+                // Store examination results
+                $pemeriksaanPlp = PemeriksaanPlp::updateOrCreate(
+                    ['mahasiswa_id' => $mahasiswa->id],
+                    [
+                        'plp_id' => Auth::id(),
+                        'tgl_periksa' => $validated['tgl_periksa'],
+                        'riwayat_penyakit' => $validated['riwayat_penyakit'],
+                        'suhu' => $validated['suhu'],
+                        'tensi' => $validated['tensi'],
+                        'riwayat_keluarga' => $validated['riwayat_keluarga'],
+                        'keterangan_pemeriksaan' => filled(trim((string) ($validated['keterangan_pemeriksaan'] ?? '')))
+                            ? trim((string) $validated['keterangan_pemeriksaan'])
+                            : '-',
+                        'buta_warna' => $validated['buta_warna'],
+                        'tinggi_badan' => $validated['tinggi_badan'],
+                        'berat_badan' => $validated['berat_badan'],
+                        'bmi' => $bmi,
+                        'status_pemeriksaan' => 'selesai',
+                        'ended_at' => now(),
+                    ]
+                );
 
-            // Update mahasiswa status
-            $mahasiswa->update(['status_plp' => 'selesai']);
+                $mahasiswa->update(['status_plp' => 'selesai']);
 
-            // Log activity
-            LogAktivitas::create([
-                'user_id' => Auth::id(),
-                'aksi' => 'Menyelesaikan pemeriksaan PLP',
-                'target_tabel' => 'pemeriksaan_plp',
-                'target_id' => $pemeriksaanPlp->id,
-                'data_lama' => null,
-                'data_baru' => json_encode($validated),
-                'ip_address' => $request->ip(),
-            ]);
+                LogAktivitas::create([
+                    'user_id' => Auth::id(),
+                    'aksi' => 'Menyelesaikan pemeriksaan Nakes',
+                    'target_tabel' => 'pemeriksaan_plp',
+                    'target_id' => $pemeriksaanPlp->id,
+                    'data_lama' => null,
+                    'data_baru' => $validated,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'waktu' => now(),
+                ]);
+
+                return $pemeriksaanPlp;
+            });
 
             return response()->json([
                 'success' => true,
-                'message' => 'Pemeriksaan PLP berhasil direkam',
+                'message' => 'Pemeriksaan Nakes berhasil direkam',
                 'data' => $pemeriksaanPlp,
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menyimpan pemeriksaan PLP: ' . $e->getMessage()
+                'message' => 'Gagal menyimpan pemeriksaan Nakes: ' . $e->getMessage()
             ], 500);
         }
     }

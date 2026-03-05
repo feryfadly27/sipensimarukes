@@ -31,6 +31,7 @@ class DashboardController extends Controller
                 break;
                 
             case 'plp':
+            case 'nakes':
                 $stats['antrian_plp'] = Mahasiswa::antrianPlp()->count();
                 $peserta_menunggu = Mahasiswa::antrianPlp()
                     ->orderBy('updated_at', 'asc')
@@ -84,7 +85,7 @@ class DashboardController extends Controller
             ];
         }
 
-        if (in_array($user->role, ['plp', 'superadmin'])) {
+        if (in_array($user->role, ['nakes', 'plp', 'superadmin'])) {
             // PLP: Tampilkan mahasiswa yang sudah hadir tapi belum pemeriksaan PLP
             $queryPlp = Mahasiswa::where('status_kehadiran', 'hadir')
                 ->where('status_plp', 'belum');

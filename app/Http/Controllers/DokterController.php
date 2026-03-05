@@ -15,6 +15,16 @@ use Illuminate\Validation\Rule;
 
 class DokterController extends Controller
 {
+    private function isDokterExamBySuperadmin(?PemeriksaanDokter $exam): bool
+    {
+        if (!$exam) {
+            return false;
+        }
+
+        $exam->loadMissing('dokter:id,role');
+        return $exam->dokter?->role === 'superadmin';
+    }
+
     public function completed(Request $request)
     {
         $allowedPerPage = [10, 25, 50, 100];
@@ -83,12 +93,12 @@ class DokterController extends Controller
             return redirect()->route('dokter.index')->with('error', 'Peserta belum menyelesaikan pemeriksaan PLP.');
         }
 
-        if ($mahasiswa->status_dokter === 'selesai') {
-            return redirect()->route('dokter.index')->with('error', 'Pemeriksaan dokter peserta ini sudah selesai.');
-        }
-
         $pemeriksaanPlp = $mahasiswa->pemeriksaanPlp;
         $pemeriksaanDokter = $mahasiswa->pemeriksaanDokter;
+
+        if ($mahasiswa->status_dokter === 'selesai' && !$this->isDokterExamBySuperadmin($pemeriksaanDokter)) {
+            return redirect()->route('dokter.index')->with('error', 'Pemeriksaan dokter peserta ini sudah selesai.');
+        }
 
         Cache::put('dokter_active_' . Auth::id(), [
             'dokter_id' => Auth::id(),
@@ -147,12 +157,18 @@ class DokterController extends Controller
             'mata_silindris_nilai_kanan' => $this->normalizeDecimalInput($request->input('mata_silindris_nilai_kanan')),
         ]);
 
-        if ($mahasiswa->status_plp !== 'selesai' || $mahasiswa->status_dokter !== 'belum') {
+        if ($mahasiswa->status_plp !== 'selesai') {
             return redirect()->route('dokter.index')->with('error', 'Peserta tidak siap untuk pemeriksaan dokter.');
         }
 
-        $existing = PemeriksaanDokter::where('mahasiswa_id', $mahasiswa->id)->first();
-        if ($existing && $existing->is_locked) {
+        $existing = PemeriksaanDokter::with('dokter:id,role')->where('mahasiswa_id', $mahasiswa->id)->first();
+        $isBySuperadmin = $this->isDokterExamBySuperadmin($existing);
+
+        if ($mahasiswa->status_dokter !== 'belum' && !$isBySuperadmin) {
+            return redirect()->route('dokter.index')->with('error', 'Peserta tidak siap untuk pemeriksaan dokter.');
+        }
+
+        if ($existing && $existing->is_locked && !$isBySuperadmin) {
             return redirect()->route('dokter.index')->with('error', 'Data pemeriksaan dokter sudah terkunci.');
         }
 

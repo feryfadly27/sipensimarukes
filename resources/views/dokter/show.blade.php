@@ -56,7 +56,7 @@
                 <p class="font-semibold text-foreground">{{ $hasil->dokter->nama ?? '-' }}</p>
             </div>
             <div>
-                <p class="text-secondary mb-1">Petugas PLP Pemeriksa</p>
+                <p class="text-secondary mb-1">Petugas Nakes Pemeriksa</p>
                 <p class="font-semibold text-foreground">{{ $hasilPlp->plp->nama ?? '-' }}</p>
             </div>
             <div>
@@ -64,14 +64,14 @@
                 <p class="font-semibold text-foreground">{{ $petugasPendaftaran->nama ?? '-' }}</p>
             </div>
             <div>
-                <p class="text-secondary mb-1">Tanggal Pemeriksaan PLP</p>
+                <p class="text-secondary mb-1">Tanggal Pemeriksaan Nakes</p>
                 <p class="font-semibold text-foreground">{{ optional($hasilPlp?->tgl_periksa)->format('d-m-Y H:i') ?? '-' }}</p>
             </div>
         </div>
     </div>
 
     <div class="rounded-2xl border border-border p-6 bg-white">
-        <h3 class="text-lg font-semibold text-foreground mb-4">Ringkasan Hasil PLP</h3>
+        <h3 class="text-lg font-semibold text-foreground mb-4">Ringkasan Hasil Nakes</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
             <div>
                 <p class="text-secondary mb-1">Suhu</p>
@@ -87,11 +87,11 @@
             </div>
         </div>
         <div class="mt-4 text-sm">
-            <p class="text-secondary mb-1">Keterangan Pemeriksaan PLP</p>
+            <p class="text-secondary mb-1">Keterangan Pemeriksaan Nakes</p>
             <p class="font-semibold text-foreground">{{ $hasilPlp?->keterangan_pemeriksaan ?? '-' }}</p>
         </div>
         <div class="mt-4 text-sm">
-            <p class="text-secondary mb-1">Catatan Warning Dokter pada PLP</p>
+            <p class="text-secondary mb-1">Catatan Warning Dokter pada Nakes</p>
             <p class="font-semibold text-foreground">{{ $hasilPlp?->catatan_warning_dokter ?? '-' }}</p>
         </div>
     </div>

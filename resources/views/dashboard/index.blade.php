@@ -32,13 +32,13 @@
         </div>
     </div>
 
-    <!-- 3. PLP Selesai -->
+    <!-- 3. Nakes Selesai -->
     <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white hover:ring-1 hover:ring-primary transition-all duration-300">
         <div class="flex items-center gap-[6px]">
             <div class="size-11 bg-warning/10 rounded-xl flex items-center justify-center shrink-0">
                 <i data-lucide="clipboard-check" class="size-6 text-warning-dark"></i>
             </div>
-            <p class="font-medium text-secondary truncate">PLP Selesai</p>
+            <p class="font-medium text-secondary truncate">Nakes Selesai</p>
         </div>
         <div class="flex items-end justify-between gap-2">
             <p class="font-bold text-[28px] leading-8">{{ $stats['plp_selesai'] }}</p>
@@ -229,7 +229,7 @@
     <!-- Dokter Header -->
     <div class="flex flex-col gap-2">
         <h2 class="text-2xl font-bold text-foreground">Pemeriksaan Dokter</h2>
-        <p class="text-secondary">Peserta yang sudah selesai pemeriksaan PLP</p>
+        <p class="text-secondary">Peserta yang sudah selesai pemeriksaan Nakes</p>
     </div>
 
     <!-- Dokter Stats Cards -->
@@ -237,7 +237,7 @@
         <div class="rounded-2xl border border-border p-6 bg-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-secondary font-medium mb-2">PLP Selesai</p>
+                    <p class="text-sm text-secondary font-medium mb-2">Nakes Selesai</p>
                     <p class="text-4xl font-bold text-foreground">{{ $dokterStats['total_plp_selesai'] ?? 0 }}</p>
                 </div>
                 <div class="size-14 rounded-2xl bg-blue-100 flex items-center justify-center">
@@ -356,7 +356,7 @@
                     <tr>
                         <td colspan="6" class="px-6 py-12 text-center">
                             <i data-lucide="inbox" class="size-12 text-secondary mx-auto mb-3"></i>
-                            <p class="text-secondary">Belum ada peserta yang selesai PLP ✓</p>
+                            <p class="text-secondary">Belum ada peserta yang selesai Nakes ✓</p>
                         </td>
                     </tr>
                 @endforelse
@@ -374,11 +374,11 @@
 @endif
 
 <!-- PLP Section (Pemeriksaan Lab) -->
-@if(in_array(auth()->user()->role, ['plp', 'superadmin']))
+@if(in_array(auth()->user()->role, ['nakes', 'plp', 'superadmin']))
 <div class="space-y-6">
     <!-- PLP Header -->
     <div class="flex flex-col gap-2">
-        <h2 class="text-2xl font-bold text-foreground">Pemeriksaan Kesehatan Lab (PLP)</h2>
+        <h2 class="text-2xl font-bold text-foreground">Pemeriksaan Kesehatan Lab (Nakes)</h2>
         <p class="text-secondary">Lakukan pemeriksaan kesehatan untuk peserta yang siap diperiksa</p>
     </div>
 
@@ -811,7 +811,7 @@
     <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 space-y-4">
         <!-- Header -->
         <div class="space-y-1 sticky top-0 bg-white pb-4">
-            <h2 class="text-xl font-bold text-foreground">Pemeriksaan Kesehatan Lab (PLP)</h2>
+            <h2 class="text-xl font-bold text-foreground">Pemeriksaan Kesehatan Lab (Nakes)</h2>
             <p class="text-sm text-secondary">
                 <span id="plpPesertaNama" class="font-semibold"></span>
             </p>
@@ -890,9 +890,9 @@
                 <span class="text-red-500 text-xs mt-1" style="display: none;"></span>
             </div>
 
-            <!-- Keterangan Pemeriksaan PLP -->
+            <!-- Keterangan Pemeriksaan Nakes -->
             <div>
-                <label class="block text-sm font-medium text-foreground mb-2">Keterangan Pemeriksaan PLP</label>
+                <label class="block text-sm font-medium text-foreground mb-2">Keterangan Pemeriksaan Nakes</label>
                 <textarea
                     name="keterangan_pemeriksaan"
                     placeholder="Tambahkan catatan pemeriksaan (opsional)"
@@ -1024,6 +1024,7 @@
     let videoStream = null;
     let selectedPhotoBlob = null;
     let cameraMode = 'capture';
+    let isPlpSubmitting = false;
 
     function openValidasiModal(pesertaId, pesertaNama) {
         currentPesertaId = pesertaId;
@@ -1411,6 +1412,10 @@
     document.getElementById('plpForm').addEventListener('submit', async function(e) {
         e.preventDefault();
 
+        if (isPlpSubmitting) {
+            return;
+        }
+
         if (!this.reportValidity()) {
             return;
         }
@@ -1420,6 +1425,13 @@
         }
 
         const formData = new FormData(this);
+        const submitButton = this.querySelector('button[type="submit"]');
+        const originalSubmitText = submitButton ? submitButton.textContent : null;
+        isPlpSubmitting = true;
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = 'Menyimpan...';
+        }
 
         try {
             const response = await fetch(`/plp/${currentPesertaId}`, {
@@ -1453,6 +1465,12 @@
         } catch (error) {
             console.error('Error:', error);
             alert('Terjadi kesalahan, silakan coba lagi');
+        } finally {
+            isPlpSubmitting = false;
+            if (submitButton) {
+                submitButton.disabled = false;
+                submitButton.textContent = originalSubmitText || 'Simpan Pemeriksaan';
+            }
         }
     });
 
@@ -1508,7 +1526,7 @@
                     ongoingHtml += `
                         <div class="flex items-start justify-between p-3 bg-warning/5 rounded-lg border border-warning/20">
                             <div>
-                                <p class="text-xs text-secondary mb-1">PLP: ${exam.plp_nama || '-'} - ${exam.mahasiswa_nama}</p>
+                                <p class="text-xs text-secondary mb-1">Nakes: ${exam.plp_nama || '-'} - ${exam.mahasiswa_nama}</p>
                                 <p class="text-xs text-warning-dark">No. Urut: ${exam.mahasiswa_no_urut}</p>
                                 <p class="text-xs text-secondary mt-1">Mulai: ${new Date(exam.started_at).toLocaleTimeString('id-ID')}</p>
                             </div>

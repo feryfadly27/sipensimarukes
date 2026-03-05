@@ -296,8 +296,8 @@ class LaporanController extends Controller
             'Asal Sekolah',
             'Status Kehadiran',
             
-            // Hasil Pemeriksaan PLP
-            'Tgl Periksa PLP',
+            // Hasil Pemeriksaan Nakes
+            'Tgl Periksa Nakes',
             'Riwayat Penyakit',
             'Suhu (°C)',
             'Tensi (mmHg)',
@@ -306,7 +306,7 @@ class LaporanController extends Controller
             'Tinggi Badan (cm)',
             'Berat Badan (kg)',
             'BMI',
-            'Status PLP',
+            'Status Nakes',
             
             // Hasil Pemeriksaan Dokter
             'Tgl Periksa Dokter',
@@ -388,7 +388,7 @@ class LaporanController extends Controller
                 $row->asal_sekolah,
                 $row->status_kehadiran,
                 
-                // Hasil Pemeriksaan PLP
+                // Hasil Pemeriksaan Nakes
                 $plp ? optional($plp->tgl_periksa)->format('Y-m-d H:i') : '-',
                 $plp->riwayat_penyakit ?? '-',
                 $plp->suhu ?? '-',

@@ -89,9 +89,14 @@ class User extends Authenticatable
         return $this->role === 'pendaftaran';
     }
 
+    public function isNakes()
+    {
+        return in_array($this->role, ['nakes', 'plp'], true);
+    }
+
     public function isPlp()
     {
-        return $this->role === 'plp';
+        return $this->isNakes();
     }
 
     public function isDokter()

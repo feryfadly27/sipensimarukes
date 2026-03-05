@@ -106,7 +106,7 @@
                     </div>
                 </div>
                 <div>
-                    <label class="text-sm text-secondary font-medium">Status PLP</label>
+                    <label class="text-sm text-secondary font-medium">Status Nakes</label>
                     <p class="text-foreground font-medium mt-1">{{ ucfirst($mahasiswa->status_plp) }}</p>
                 </div>
                 <div>

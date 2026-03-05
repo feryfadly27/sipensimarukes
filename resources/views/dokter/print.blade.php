@@ -53,7 +53,7 @@
         <tr><th>Asal Sekolah</th><td>{{ $mahasiswa->asal_sekolah ?? '-' }}</td></tr>
         <tr><th>Alamat</th><td>{{ $mahasiswa->alamat ?? '-' }}</td></tr>
         <tr><th>Status Kehadiran</th><td>{{ $mahasiswa->status_kehadiran_text }}</td></tr>
-        <tr><th>Status PLP</th><td>{{ ucfirst($mahasiswa->status_plp) }}</td></tr>
+        <tr><th>Status Nakes</th><td>{{ ucfirst($mahasiswa->status_plp) }}</td></tr>
         <tr><th>Status Dokter</th><td>{{ ucfirst($mahasiswa->status_dokter) }}</td></tr>
         <tr><th>Kesimpulan Akhir</th><td>{{ $mahasiswa->kesimpulan_akhir_text }}</td></tr>
         <tr><th>Keterangan Kesimpulan</th><td>{{ $mahasiswa->keterangan_kesimpulan ?: '-' }}</td></tr>
@@ -62,19 +62,19 @@
     <h2>Petugas Pemeriksa</h2>
     <table>
         <tr><th>Petugas Pendaftaran</th><td>{{ $petugasPendaftaran->nama ?? '-' }}</td></tr>
-        <tr><th>Petugas PLP</th><td>{{ $hasilPlp->plp->nama ?? '-' }}</td></tr>
+        <tr><th>Petugas Nakes</th><td>{{ $hasilPlp->plp->nama ?? '-' }}</td></tr>
         <tr><th>Dokter Pemeriksa</th><td>{{ $hasilDokter->dokter->nama ?? '-' }}</td></tr>
     </table>
 
-    <h2>Hasil Pemeriksaan PLP</h2>
+    <h2>Hasil Pemeriksaan Nakes</h2>
     <table>
         <tr><th>Tanggal Pemeriksaan</th><td>{{ optional($hasilPlp?->tgl_periksa)->format('d-m-Y H:i') ?? '-' }}</td></tr>
         <tr><th>Riwayat Penyakit</th><td>{{ $hasilPlp->riwayat_penyakit ?? '-' }}</td></tr>
         <tr><th>Suhu</th><td>{{ $hasilPlp?->suhu ? $hasilPlp->suhu . ' °C' : '-' }}</td></tr>
         <tr><th>Tensi</th><td>{{ $hasilPlp->tensi ?? '-' }}</td></tr>
         <tr><th>Riwayat Keluarga</th><td>{{ $hasilPlp->riwayat_keluarga ?? '-' }}</td></tr>
-        <tr><th>Keterangan Pemeriksaan PLP</th><td>{{ $hasilPlp->keterangan_pemeriksaan ?? '-' }}</td></tr>
-        <tr><th>Catatan Warning Dokter pada PLP</th><td>{{ $hasilPlp->catatan_warning_dokter ?? '-' }}</td></tr>
+        <tr><th>Keterangan Pemeriksaan Nakes</th><td>{{ $hasilPlp->keterangan_pemeriksaan ?? '-' }}</td></tr>
+        <tr><th>Catatan Warning Dokter pada Nakes</th><td>{{ $hasilPlp->catatan_warning_dokter ?? '-' }}</td></tr>
         <tr><th>Buta Warna</th><td>{{ $hasilPlp->buta_warna ?? '-' }}</td></tr>
         <tr><th>Tinggi Badan</th><td>{{ $hasilPlp->tinggi_badan ?? '-' }}</td></tr>
         <tr><th>Berat Badan</th><td>{{ $hasilPlp->berat_badan ?? '-' }}</td></tr>

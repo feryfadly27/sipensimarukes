@@ -36,7 +36,7 @@
                     <option value="superadmin" @selected(request('role') === 'superadmin')>Superadmin</option>
                     <option value="admin" @selected(request('role') === 'admin')>Admin</option>
                     <option value="pendaftaran" @selected(request('role') === 'pendaftaran')>Pendaftaran</option>
-                    <option value="plp" @selected(request('role') === 'plp')>PLP</option>
+                    <option value="nakes" @selected(request('role') === 'nakes')>Nakes</option>
                     <option value="dokter" @selected(request('role') === 'dokter')>Dokter</option>
                 </select>
             </div>

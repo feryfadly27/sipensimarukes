@@ -40,12 +40,12 @@
                     </a>
                     @endif
                     
-                    @if(in_array($role, ['plp', 'superadmin']))
-                    <!-- Pemeriksaan PLP -->
+                    @if(in_array($role, ['nakes', 'plp', 'superadmin']))
+                    <!-- Pemeriksaan Nakes -->
                     <a href="{{ route('plp.index') }}" class="group {{ request()->routeIs('plp.*') ? 'active' : '' }} cursor-pointer">
                         <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
                             <i data-lucide="clipboard-list" class="size-6 text-secondary group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300"></i>
-                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Pemeriksaan PLP</span>
+                            <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Pemeriksaan Nakes</span>
                         </div>
                     </a>
                     @endif

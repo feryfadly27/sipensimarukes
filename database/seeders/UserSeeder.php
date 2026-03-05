@@ -38,8 +38,8 @@ class UserSeeder extends Seeder
             ],
             [
                 'nama' => 'PLP (Pranata Lab)',
-                'role' => 'plp',
-                'username' => 'plp',
+                'role' => 'nakes',
+                'username' => 'nakes',
                 'password' => Hash::make('password'),
                 'no_telp' => '081234567893',
             ],
@@ -60,7 +60,7 @@ class UserSeeder extends Seeder
         $this->command->info('  - superadmin / arteriahelena');
         $this->command->info('  - admin / password');
         $this->command->info('  - pendaftaran / password');
-        $this->command->info('  - plp / password');
+        $this->command->info('  - nakes / password');
         $this->command->info('  - dokter / password');
     }
 }

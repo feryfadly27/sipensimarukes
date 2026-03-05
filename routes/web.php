@@ -46,10 +46,10 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
         ->middleware('role:pendaftaran,superadmin');
     
     // PLP examination (new route for PLP form submission)
-    Route::post('/plp/{mahasiswa}', [PlpController::class, 'store'])->name('plp.store')->middleware('role:plp,superadmin');
-    Route::get('/plp/check-ongoing', [PlpController::class, 'checkOngoing'])->name('plp.checkOngoing')->middleware('role:plp,superadmin');
-    Route::post('/plp/{mahasiswa}/start', [PlpController::class, 'startExamination'])->name('plp.start')->middleware('role:plp,superadmin');
-    Route::get('/plp/{mahasiswa}/verify', [PlpController::class, 'verifyStudent'])->name('plp.verify')->middleware('role:plp,superadmin');
+    Route::post('/plp/{mahasiswa}', [PlpController::class, 'store'])->name('plp.store')->middleware('role:nakes,plp,superadmin');
+    Route::get('/plp/check-ongoing', [PlpController::class, 'checkOngoing'])->name('plp.checkOngoing')->middleware('role:nakes,plp,superadmin');
+    Route::post('/plp/{mahasiswa}/start', [PlpController::class, 'startExamination'])->name('plp.start')->middleware('role:nakes,plp,superadmin');
+    Route::get('/plp/{mahasiswa}/verify', [PlpController::class, 'verifyStudent'])->name('plp.verify')->middleware('role:nakes,plp,superadmin');
 
     // Dokter examination
     Route::get('/dokter/selesai', [DokterController::class, 'completed'])->name('dokter.completed')->middleware('role:dokter,superadmin');
@@ -60,9 +60,9 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
     
     // Placeholder routes
     Route::get('/pendaftaran', [DashboardController::class, 'index'])->name('pendaftaran.index')->middleware('role:pendaftaran,superadmin');
-    Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index')->middleware('role:plp,superadmin');
+    Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index')->middleware('role:nakes,plp,superadmin');
     Route::get('/dokter', [DashboardController::class, 'index'])->name('dokter.index')->middleware('role:dokter,superadmin');
-    Route::get('/log', [LogAktivitasController::class, 'index'])->name('logs.index');
+    Route::get('/log', [LogAktivitasController::class, 'index'])->name('logs.index')->middleware('role:superadmin');
     Route::middleware('role:superadmin')->group(function () {
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
         Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
