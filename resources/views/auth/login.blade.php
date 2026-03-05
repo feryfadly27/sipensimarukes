@@ -45,7 +45,7 @@
             </div>
             <h1 class="text-3xl font-bold text-foreground mb-2">Sipenmaru Uji Kesehatan</h1>
             <p class="text-base text-secondary max-w-md mx-auto">
-                Selamat Datang di Sistem Informasi Pemeriskaan Kesehatan Mahasiswa Baru<br>
+                Selamat Datang di Sistem Informasi Pemeriksaan Kesehatan Mahasiswa Baru<br>
                 Poltekkes Kemenkes Tasikmalaya
             </p>
         </div>
