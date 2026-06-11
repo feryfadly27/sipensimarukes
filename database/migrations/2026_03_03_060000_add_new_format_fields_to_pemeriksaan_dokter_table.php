@@ -26,7 +26,7 @@ return new class extends Migration
             $table->enum('tulang_belakang', ['DBN', 'Lordosis', 'Kifosis', 'Skoliosis'])->nullable()->after('thorax_photo_ket');
             $table->enum('jari_tangan_lengkap', ['Lengkap', 'Tidak Lengkap'])->nullable()->after('tulang_belakang');
             $table->string('jari_tangan_ket')->nullable()->after('jari_tangan_lengkap');
-            $table->enum('status_kelulusan', ['Lulus', 'Lulus Dengan Syarat', 'Tidak Lulus'])->nullable()->after('jari_tangan_ket');
+            $table->enum('status_kelulusan', ['Lulus', 'Pending', 'Lulus Dengan Syarat', 'Tidak Lulus'])->nullable()->after('jari_tangan_ket');
             $table->text('surat_rujukan')->nullable()->after('status_kelulusan');
         });
     }

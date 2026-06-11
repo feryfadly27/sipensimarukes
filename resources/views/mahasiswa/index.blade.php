@@ -65,7 +65,7 @@
                 <label class="block text-sm font-medium text-foreground mb-2">Status Kehadiran</label>
                 <select name="status_kehadiran" class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
                     <option value="">Semua Status</option>
-                    <option value="belum_konfirmasi" {{ request('status_kehadiran') === 'belum_konfirmasi' ? 'selected' : '' }}>Belum Konfirmasi</option>
+                    <option value="belum_hadir" {{ request('status_kehadiran') === 'belum_hadir' ? 'selected' : '' }}>Belum Konfirmasi</option>
                     <option value="hadir" {{ request('status_kehadiran') === 'hadir' ? 'selected' : '' }}>Hadir</option>
                     <option value="tidak_hadir" {{ request('status_kehadiran') === 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
                 </select>
@@ -130,6 +130,10 @@
                                         <i data-lucide="pencil" class="size-4"></i>
                                         Edit
                                     </a>
+                                    <button type="button" onclick="confirmHapus({{ $peserta->id }}, '{{ addslashes($peserta->nama) }}')" class="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500 text-white text-sm font-medium hover:bg-red-600 transition-all">
+                                        <i data-lucide="trash-2" class="size-4"></i>
+                                        Hapus
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -226,6 +230,34 @@
     </div>
 </div>
 
+<!-- Modal Konfirmasi Hapus -->
+<div id="hapus-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md mx-4 shadow-xl">
+        <div class="flex items-center gap-4 mb-4">
+            <div class="size-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="trash-2" class="size-6 text-red-600"></i>
+            </div>
+            <div>
+                <h3 class="text-lg font-semibold text-foreground">Hapus Peserta</h3>
+                <p class="text-sm text-secondary">Tindakan ini tidak dapat dibatalkan.</p>
+            </div>
+        </div>
+        <p class="text-sm text-foreground mb-6">Apakah Anda yakin ingin menghapus peserta <strong id="hapus-nama"></strong>? Seluruh data pemeriksaan terkait juga akan ikut terhapus.</p>
+        <div class="flex gap-3">
+            <button type="button" onclick="closeModal('hapus-modal')" class="flex-1 px-4 py-3 rounded-xl border border-border text-foreground font-medium hover:bg-muted transition-all">
+                Batal
+            </button>
+            <form id="hapus-form" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="w-full px-4 py-3 rounded-xl bg-red-500 text-white font-medium hover:bg-red-600 transition-all">
+                    Ya, Hapus
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
 <script>
 function openModal(modalId) {
     document.getElementById(modalId).classList.remove('hidden');
@@ -238,6 +270,12 @@ function closeModal(modalId) {
 function updateFileName(input) {
     const fileName = input.files[0]?.name || 'Klik untuk memilih file';
     document.getElementById('file-name').textContent = fileName;
+}
+
+function confirmHapus(id, nama) {
+    document.getElementById('hapus-nama').textContent = nama;
+    document.getElementById('hapus-form').action = '/mahasiswa/' + id;
+    openModal('hapus-modal');
 }
 
 document.addEventListener('DOMContentLoaded', function() {

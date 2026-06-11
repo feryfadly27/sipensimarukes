@@ -14,7 +14,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm text-secondary font-medium mb-2">Menunggu Validasi</p>
-                    <p class="text-4xl font-bold text-foreground">{{ $stats['total_belum_konfirmasi'] }}</p>
+                    <p class="text-4xl font-bold text-foreground">{{ $stats['total_belum_hadir'] }}</p>
                 </div>
                 <div class="size-14 rounded-2xl bg-yellow-100 flex items-center justify-center">
                     <i data-lucide="clock" class="size-8 text-yellow-600"></i>

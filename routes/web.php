@@ -59,7 +59,7 @@ Route::middleware(['auth', 'prevent_cache'])->group(function () {
     Route::post('/dokter/{mahasiswa}', [DokterController::class, 'store'])->name('dokter.store')->middleware('role:dokter,superadmin');
     
     // Placeholder routes
-    Route::get('/pendaftaran', [DashboardController::class, 'index'])->name('pendaftaran.index')->middleware('role:pendaftaran,superadmin');
+    Route::get('/pendaftaran', [PendaftaranController::class, 'index'])->name('pendaftaran.index')->middleware('role:pendaftaran,superadmin');
     Route::get('/plp', [DashboardController::class, 'index'])->name('plp.index')->middleware('role:nakes,plp,superadmin');
     Route::get('/dokter', [DashboardController::class, 'index'])->name('dokter.index')->middleware('role:dokter,superadmin');
     Route::get('/log', [LogAktivitasController::class, 'index'])->name('logs.index')->middleware('role:superadmin');

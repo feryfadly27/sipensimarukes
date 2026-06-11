@@ -26,18 +26,15 @@ return new class extends Migration
             }
         });
 
-        // Expand enums to include new values
-        DB::statement("ALTER TABLE mahasiswa MODIFY jenis_kelamin ENUM('L','P','Laki-laki','Perempuan')");
-        DB::statement("ALTER TABLE mahasiswa MODIFY status_kehadiran ENUM('belum_hadir','belum_konfirmasi','hadir','tidak_hadir') DEFAULT 'belum_konfirmasi'");
-
-        // Normalize existing values
+        // Normalize existing values (compatible with SQLite and MySQL)
         DB::statement("UPDATE mahasiswa SET jenis_kelamin = CASE WHEN jenis_kelamin = 'L' THEN 'Laki-laki' WHEN jenis_kelamin = 'P' THEN 'Perempuan' ELSE jenis_kelamin END");
-        DB::statement("UPDATE mahasiswa SET status_kehadiran = CASE WHEN status_kehadiran = 'belum_hadir' THEN 'belum_konfirmasi' ELSE status_kehadiran END");
         DB::statement("UPDATE mahasiswa SET prodi = prodi_pilihan WHERE prodi IS NULL");
 
-        // Tighten enums to the new set
-        DB::statement("ALTER TABLE mahasiswa MODIFY jenis_kelamin ENUM('Laki-laki','Perempuan')");
-        DB::statement("ALTER TABLE mahasiswa MODIFY status_kehadiran ENUM('belum_konfirmasi','hadir','tidak_hadir') DEFAULT 'belum_konfirmasi'");
+        // MySQL-only: modify enum columns (skip on SQLite)
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE mahasiswa MODIFY jenis_kelamin ENUM('Laki-laki','Perempuan')");
+            DB::statement("ALTER TABLE mahasiswa MODIFY status_kehadiran ENUM('belum_hadir','hadir','tidak_hadir') DEFAULT 'belum_hadir'");
+        }
     }
 
     /**
@@ -45,8 +42,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        DB::statement("ALTER TABLE mahasiswa MODIFY jenis_kelamin ENUM('L','P')");
-        DB::statement("ALTER TABLE mahasiswa MODIFY status_kehadiran ENUM('belum_hadir','hadir','tidak_hadir') DEFAULT 'belum_hadir'");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE mahasiswa MODIFY jenis_kelamin ENUM('L','P')");
+            DB::statement("ALTER TABLE mahasiswa MODIFY status_kehadiran ENUM('belum_hadir','hadir','tidak_hadir') DEFAULT 'belum_hadir'");
+        }
 
         Schema::table('mahasiswa', function (Blueprint $table) {
             if (Schema::hasColumn('mahasiswa', 'no_identitas')) {

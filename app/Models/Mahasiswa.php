@@ -63,7 +63,7 @@ class Mahasiswa extends Model
 
     public function scopeBelumHadir($query)
     {
-        return $query->where('status_kehadiran', 'belum_konfirmasi');
+        return $query->where('status_kehadiran', 'belum_hadir');
     }
 
     /**
@@ -116,7 +116,7 @@ class Mahasiswa extends Model
     public function getStatusKehadiranTextAttribute()
     {
         return match($this->status_kehadiran) {
-            'belum_konfirmasi' => 'Belum Konfirmasi',
+            'belum_hadir' => 'Belum Konfirmasi',
             'hadir' => 'Hadir',
             'tidak_hadir' => 'Tidak Hadir',
             default => '-'

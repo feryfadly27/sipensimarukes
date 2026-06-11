@@ -59,7 +59,7 @@ class LaporanController extends Controller
         $summary = [
             'total' => Mahasiswa::count(),
             'hadir' => Mahasiswa::where('status_kehadiran', 'hadir')->count(),
-            'belum_konfirmasi' => Mahasiswa::where('status_kehadiran', 'belum_konfirmasi')->count(),
+            'belum_hadir' => Mahasiswa::where('status_kehadiran', 'belum_hadir')->count(),
             'tidak_hadir' => Mahasiswa::where('status_kehadiran', 'tidak_hadir')->count(),
             'plp_selesai' => Mahasiswa::where('status_plp', 'selesai')->count(),
             'dokter_selesai' => Mahasiswa::where('status_dokter', 'selesai')->count(),

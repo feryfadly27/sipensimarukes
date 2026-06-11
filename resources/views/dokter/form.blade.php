@@ -169,12 +169,12 @@
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Nilai Minus Kiri</label>
-                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_minus_nilai_kiri" value="{{ old('mata_minus_nilai_kiri', $pemeriksaanDokter?->mata_minus_nilai_kiri) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    <input type="number" step="any" name="mata_minus_nilai_kiri" value="{{ old('mata_minus_nilai_kiri', $pemeriksaanDokter?->mata_minus_nilai_kiri) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
                     @error('mata_minus_nilai_kiri')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Nilai Minus Kanan</label>
-                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_minus_nilai_kanan" value="{{ old('mata_minus_nilai_kanan', $pemeriksaanDokter?->mata_minus_nilai_kanan) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    <input type="number" step="any" name="mata_minus_nilai_kanan" value="{{ old('mata_minus_nilai_kanan', $pemeriksaanDokter?->mata_minus_nilai_kanan) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
                     @error('mata_minus_nilai_kanan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
@@ -190,12 +190,12 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Nilai Silindris Kiri</label>
-                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_silindris_nilai_kiri" value="{{ old('mata_silindris_nilai_kiri', $pemeriksaanDokter?->mata_silindris_nilai_kiri) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    <input type="number" step="any" name="mata_silindris_nilai_kiri" value="{{ old('mata_silindris_nilai_kiri', $pemeriksaanDokter?->mata_silindris_nilai_kiri) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
                     @error('mata_silindris_nilai_kiri')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-foreground mb-2">Nilai Silindris Kanan</label>
-                    <input type="number" step="0.25" min="-9.99" max="9.99" name="mata_silindris_nilai_kanan" value="{{ old('mata_silindris_nilai_kanan', $pemeriksaanDokter?->mata_silindris_nilai_kanan) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
+                    <input type="number" step="any" name="mata_silindris_nilai_kanan" value="{{ old('mata_silindris_nilai_kanan', $pemeriksaanDokter?->mata_silindris_nilai_kanan) }}" class="w-full px-4 py-2 border border-border rounded-lg text-sm" placeholder="Wajib jika Ya">
                     @error('mata_silindris_nilai_kanan')<p class="text-xs text-red-500 mt-1">{{ $message }}</p>@enderror
                 </div>
                 <div class="md:col-span-2">

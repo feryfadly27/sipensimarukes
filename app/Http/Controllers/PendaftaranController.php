@@ -11,8 +11,8 @@ class PendaftaranController extends Controller
 {
     public function index(Request $request)
     {
-        // Get students that need confirmation (status belum_konfirmasi)
-        $query = Mahasiswa::where('status_kehadiran', 'belum_konfirmasi');
+        // Get students that need confirmation (status belum_hadir)
+        $query = Mahasiswa::whereIn('status_kehadiran', ['belum_hadir', 'belum_hadir']);
 
         // Search by name or registration number
         if ($request->filled('search')) {
@@ -36,7 +36,7 @@ class PendaftaranController extends Controller
 
         // Calculate stats
         $stats = [
-            'total_belum_konfirmasi' => Mahasiswa::where('status_kehadiran', 'belum_konfirmasi')->count(),
+            'total_belum_hadir' => Mahasiswa::whereIn('status_kehadiran', ['belum_hadir', 'belum_hadir'])->count(),
             'total_hadir' => Mahasiswa::where('status_kehadiran', 'hadir')->count(),
             'total_tidak_hadir' => Mahasiswa::where('status_kehadiran', 'tidak_hadir')->count(),
         ];

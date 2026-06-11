@@ -57,7 +57,7 @@
                 <label class="block text-sm font-medium text-foreground mb-2">Status Kehadiran</label>
                 <select name="status_kehadiran" class="w-full px-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all">
                     <option value="">Semua</option>
-                    <option value="belum_konfirmasi" {{ request('status_kehadiran') === 'belum_konfirmasi' ? 'selected' : '' }}>Belum Konfirmasi</option>
+                    <option value="belum_hadir" {{ request('status_kehadiran') === 'belum_hadir' ? 'selected' : '' }}>Belum Konfirmasi</option>
                     <option value="hadir" {{ request('status_kehadiran') === 'hadir' ? 'selected' : '' }}>Hadir</option>
                     <option value="tidak_hadir" {{ request('status_kehadiran') === 'tidak_hadir' ? 'selected' : '' }}>Tidak Hadir</option>
                 </select>

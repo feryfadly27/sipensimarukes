@@ -58,7 +58,7 @@ class DashboardController extends Controller
         $dokterStats = null;
         
         if (in_array($user->role, ['pendaftaran', 'superadmin'])) {
-            $queryPendaftaran = Mahasiswa::where('status_kehadiran', 'belum_konfirmasi');
+            $queryPendaftaran = Mahasiswa::where('status_kehadiran', 'belum_hadir');
 
             // Search
             if ($request->filled('search')) {
@@ -79,7 +79,7 @@ class DashboardController extends Controller
 
             // Stats pendaftaran
             $statsPendaftaran = [
-                'total_belum_konfirmasi' => Mahasiswa::where('status_kehadiran', 'belum_konfirmasi')->count(),
+                'total_belum_hadir' => Mahasiswa::where('status_kehadiran', 'belum_hadir')->count(),
                 'total_hadir' => Mahasiswa::where('status_kehadiran', 'hadir')->count(),
                 'total_tidak_hadir' => Mahasiswa::where('status_kehadiran', 'tidak_hadir')->count(),
             ];
